@@ -161,7 +161,7 @@ export default function HomePage() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: 0.6 }}
-                  className="pt-8"
+                  className="pt-8 flex gap-4"
                 >
                   <Link 
                     to="/compiler"
@@ -169,6 +169,15 @@ export default function HomePage() {
                   >
                     <span className="relative z-10 flex items-center gap-2">
                       {HERO_DATA.cta}
+                      <ChevronRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+                    </span>
+                  </Link>
+                  <Link 
+                    to="/compiler-classic"
+                    className="group relative inline-flex items-center justify-center px-8 py-4 bg-transparent border border-primary text-primary font-mono text-sm uppercase tracking-wider hover:bg-primary hover:text-primary-foreground transition-colors duration-300"
+                  >
+                    <span className="relative z-10 flex items-center gap-2">
+                      Classic View
                       <ChevronRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
                     </span>
                   </Link>

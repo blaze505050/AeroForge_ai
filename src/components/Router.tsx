@@ -4,6 +4,7 @@ import { ScrollToTop } from '@/lib/scroll-to-top';
 import ErrorPage from '@/integrations/errorHandlers/ErrorPage';
 import HomePage from '@/components/pages/HomePage';
 import CompilerPage from '@/components/pages/CompilerPage';
+import CompilerSplitPage from '@/components/pages/CompilerSplitPage';
 import ResultsPage from '@/components/pages/ResultsPage';
 import ArchitecturePage from '@/components/pages/ArchitecturePage';
 import DSLDocsPage from '@/components/pages/DSLDocsPage';
@@ -34,9 +35,16 @@ const router = createBrowserRouter([
       },
       {
         path: "compiler",
-        element: <CompilerPage />,
+        element: <CompilerSplitPage />,
         routeMetadata: {
           pageIdentifier: 'compiler',
+        },
+      },
+      {
+        path: "compiler-classic",
+        element: <CompilerPage />,
+        routeMetadata: {
+          pageIdentifier: 'compiler-classic',
         },
       },
       {

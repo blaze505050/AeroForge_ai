@@ -3,7 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 export default function Header() {
   const location = useLocation();
   
-  const isActive = (path: string) => location.pathname === path;
+  const isActive = (path: string) => location.pathname === path || (path === '/compiler' && location.pathname === '/compiler-classic');
   
   return (
     <header className="w-full border-b border-secondary/20">
