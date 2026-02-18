@@ -1,5 +1,6 @@
 import { useLocation, Link } from 'react-router-dom';
 import { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Check, X, Download, Copy } from 'lucide-react';
@@ -117,13 +118,28 @@ export default function ResultsPage() {
                 <Download className="w-4 h-4" />
                 Download JSON
               </button>
-              <button
-                onClick={handleCopy}
-                className="flex items-center gap-2 bg-transparent text-primary border border-primary font-paragraph text-base font-semibold px-6 py-3 rounded transition-colors duration-200 hover:bg-primary hover:text-primary-foreground"
-              >
-                <Copy className="w-4 h-4" />
-                {copied ? 'Copied!' : 'Copy JSON'}
-              </button>
+              <div className="relative">
+                <button
+                  onClick={handleCopy}
+                  className="flex items-center gap-2 bg-transparent text-primary border border-primary font-paragraph text-base font-semibold px-6 py-3 rounded transition-colors duration-200 hover:bg-primary hover:text-primary-foreground"
+                >
+                  <Copy className="w-4 h-4" />
+                  {copied ? 'Copied!' : 'Copy JSON'}
+                </button>
+                <AnimatePresence>
+                  {copied && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -10 }}
+                      transition={{ duration: 0.3 }}
+                      className="absolute top-full mt-2 left-1/2 transform -translate-x-1/2 bg-green-600 text-white font-paragraph text-sm font-semibold px-4 py-2 rounded whitespace-nowrap"
+                    >
+                      ✓ Copied to clipboard!
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
             </div>
 
             {/* JSON Viewer */}
