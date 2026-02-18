@@ -31,6 +31,22 @@ export default function Header() {
               Compiler
             </Link>
             <Link 
+              to="/dsl-docs" 
+              className={`font-paragraph text-base transition-colors duration-200 ${
+                isActive('/dsl-docs') ? 'text-primary font-semibold' : 'text-foreground hover:text-primary'
+              }`}
+            >
+              DSL Docs
+            </Link>
+            <Link 
+              to="/api" 
+              className={`font-paragraph text-base transition-colors duration-200 ${
+                isActive('/api') ? 'text-primary font-semibold' : 'text-foreground hover:text-primary'
+              }`}
+            >
+              API
+            </Link>
+            <Link 
               to="/architecture" 
               className={`font-paragraph text-base transition-colors duration-200 ${
                 isActive('/architecture') ? 'text-primary font-semibold' : 'text-foreground hover:text-primary'

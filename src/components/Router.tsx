@@ -6,6 +6,8 @@ import HomePage from '@/components/pages/HomePage';
 import CompilerPage from '@/components/pages/CompilerPage';
 import ResultsPage from '@/components/pages/ResultsPage';
 import ArchitecturePage from '@/components/pages/ArchitecturePage';
+import DSLDocsPage from '@/components/pages/DSLDocsPage';
+import APIDocPage from '@/components/pages/APIDocPage';
 
 // Layout component that includes ScrollToTop
 function Layout() {
@@ -49,6 +51,20 @@ const router = createBrowserRouter([
         element: <ArchitecturePage />,
         routeMetadata: {
           pageIdentifier: 'architecture',
+        },
+      },
+      {
+        path: "dsl-docs",
+        element: <DSLDocsPage />,
+        routeMetadata: {
+          pageIdentifier: 'dsl-docs',
+        },
+      },
+      {
+        path: "api",
+        element: <APIDocPage />,
+        routeMetadata: {
+          pageIdentifier: 'api',
         },
       },
       {

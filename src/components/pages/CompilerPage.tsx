@@ -8,7 +8,7 @@ import { compileDesign } from '@/services/compilerService';
 export default function CompilerPage() {
   const navigate = useNavigate();
   const [input, setInput] = useState('');
-  const [units, setUnits] = useState('millimeters');
+  const [units, setUnits] = useState<'mm' | 'cm' | 'in' | 'ft'>('mm');
   const [isGenerating, setIsGenerating] = useState(false);
 
   const handleGenerate = async () => {
@@ -29,6 +29,7 @@ export default function CompilerPage() {
           isValid: response.success,
           errors: response.errors,
           warnings: response.warnings,
+          executionLog: response.executionLog,
         } 
       });
     } catch (error) {
@@ -56,7 +57,7 @@ export default function CompilerPage() {
               Design Input
             </h1>
             <p className="font-paragraph text-base text-foreground mb-12">
-              Describe your mechanical part in natural language. The compiler will generate a validated JSON Feature DSL.
+              Describe your mechanical part in natural language. The compiler will generate a validated JSON Feature DSL v1.0.
             </p>
 
             <div className="space-y-6">
@@ -83,12 +84,14 @@ export default function CompilerPage() {
                 <select
                   id="units"
                   value={units}
-                  onChange={(e) => setUnits(e.target.value)}
+                  onChange={(e) => setUnits(e.target.value as 'mm' | 'cm' | 'in' | 'ft')}
                   className="w-full px-4 py-3 border border-secondary rounded bg-background text-foreground font-paragraph text-base focus:outline-none focus:border-primary transition-colors duration-200"
                   disabled={isGenerating}
                 >
-                  <option value="millimeters">Millimeters</option>
-                  <option value="inches">Inches</option>
+                  <option value="mm">Millimeters (mm)</option>
+                  <option value="cm">Centimeters (cm)</option>
+                  <option value="in">Inches (in)</option>
+                  <option value="ft">Feet (ft)</option>
                 </select>
               </div>
 
@@ -101,10 +104,10 @@ export default function CompilerPage() {
                 {isGenerating ? (
                   <>
                     <LoadingSpinner />
-                    <span>Generating...</span>
+                    <span>Compiling...</span>
                   </>
                 ) : (
-                  'Generate'
+                  'Compile Design'
                 )}
               </button>
             </div>
