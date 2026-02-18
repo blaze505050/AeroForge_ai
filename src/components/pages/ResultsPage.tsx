@@ -6,7 +6,7 @@ import { Check, X, Download, Copy } from 'lucide-react';
 
 export default function ResultsPage() {
   const location = useLocation();
-  const { result, isValid } = location.state || { result: null, isValid: false };
+  const { result, isValid, errors: passedErrors, warnings } = location.state || { result: null, isValid: false, errors: [], warnings: [] };
   const [copied, setCopied] = useState(false);
 
   if (!result) {
@@ -49,7 +49,7 @@ export default function ResultsPage() {
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const errors = result.errors || (result.error ? [result.error] : []);
+  const errors = passedErrors || (result?.errors) || (result?.error ? [result.error] : []);
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
@@ -88,6 +88,20 @@ export default function ResultsPage() {
                   {errors.map((error: string, index: number) => (
                     <li key={index} className="font-paragraph text-base text-foreground">
                       • {error}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {/* Warnings List */}
+            {warnings && warnings.length > 0 && (
+              <div className="mb-8">
+                <h2 className="font-heading text-xl text-yellow-600 mb-4">Warnings</h2>
+                <ul className="space-y-2">
+                  {warnings.map((warning: string, index: number) => (
+                    <li key={index} className="font-paragraph text-base text-foreground">
+                      ⚠ {warning}
                     </li>
                   ))}
                 </ul>

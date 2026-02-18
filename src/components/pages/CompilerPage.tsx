@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
+import { compileDesign } from '@/services/compilerService';
 
 export default function CompilerPage() {
   const navigate = useNavigate();
@@ -16,32 +17,27 @@ export default function CompilerPage() {
     setIsGenerating(true);
     
     try {
-      const response = await fetch('/generate', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          input: input.trim(),
-          units,
-        }),
+      const response = await compileDesign({
+        input: input.trim(),
+        units,
       });
-      
-      const data = await response.json();
       
       // Navigate to results page with the response data
       navigate('/results', { 
         state: { 
-          result: data,
-          isValid: response.ok 
+          result: response.dsl || { errors: response.errors },
+          isValid: response.success,
+          errors: response.errors,
+          warnings: response.warnings,
         } 
       });
     } catch (error) {
       // Navigate to results page with error
       navigate('/results', { 
         state: { 
-          result: { error: 'Failed to connect to backend compiler endpoint.' },
-          isValid: false 
+          result: { error: 'Failed to compile design. Please try again.' },
+          isValid: false,
+          errors: ['An unexpected error occurred during compilation.'],
         } 
       });
     } finally {
