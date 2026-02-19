@@ -13,6 +13,9 @@ import AerospaceToolsPage from '@/components/pages/AerospaceToolsPage';
 import AirfoilDesignerPage from '@/components/pages/AirfoilDesignerPage';
 import AirfoilDownloaderPage from '@/components/pages/AirfoilDownloaderPage';
 import CFDSimulatorPage from '@/components/pages/CFDSimulatorPage';
+import WingCalculatorPage from '@/components/pages/WingCalculatorPage';
+import ThrustCalculatorPage from '@/components/pages/ThrustCalculatorPage';
+import DragCalculatorPage from '@/components/pages/DragCalculatorPage';
 
 // Layout component that includes ScrollToTop
 function Layout() {
@@ -105,6 +108,27 @@ const router = createBrowserRouter([
         element: <CFDSimulatorPage />,
         routeMetadata: {
           pageIdentifier: 'cfd-simulator',
+        },
+      },
+      {
+        path: "wing-calculator",
+        element: <WingCalculatorPage />,
+        routeMetadata: {
+          pageIdentifier: 'wing-calculator',
+        },
+      },
+      {
+        path: "thrust-calculator",
+        element: <ThrustCalculatorPage />,
+        routeMetadata: {
+          pageIdentifier: 'thrust-calculator',
+        },
+      },
+      {
+        path: "drag-calculator",
+        element: <DragCalculatorPage />,
+        routeMetadata: {
+          pageIdentifier: 'drag-calculator',
         },
       },
       {

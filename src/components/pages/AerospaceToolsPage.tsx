@@ -1,6 +1,7 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Wind, Database, Wrench, Zap, Download, Cpu } from 'lucide-react';
+import { Wind, Database, Wrench, Zap, Download, Cpu, Calculator } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 
@@ -12,6 +13,7 @@ interface Tool {
   category: string;
   features: string[];
   color: string;
+  path?: string;
 }
 
 const tools: Tool[] = [
@@ -23,6 +25,7 @@ const tools: Tool[] = [
     category: 'Aerodynamics',
     features: ['Real-time visualization', 'NACA profile generation', 'Geometry optimization', 'Export to CAD'],
     color: 'from-blue-500 to-cyan-500',
+    path: '/airfoil-designer',
   },
   {
     id: 'airfoil-downloader',
@@ -32,6 +35,7 @@ const tools: Tool[] = [
     category: 'Data Management',
     features: ['Natural language search', 'CSV export', 'Batch download', 'Performance curves'],
     color: 'from-green-500 to-emerald-500',
+    path: '/airfoil-downloader',
   },
   {
     id: 'cfd-simulator',
@@ -41,6 +45,37 @@ const tools: Tool[] = [
     category: 'Simulation',
     features: ['Mesh generation', 'Solver configuration', 'Results visualization', 'Data export'],
     color: 'from-purple-500 to-pink-500',
+    path: '/cfd-simulator',
+  },
+  {
+    id: 'wing-calculator',
+    title: 'Wing Calculator',
+    description: 'Calculate wing performance metrics and aerodynamic characteristics instantly',
+    icon: <Calculator className="w-8 h-8" />,
+    category: 'Calculations',
+    features: ['Wing span calculation', 'Performance metrics', 'Speed analysis', 'CSV export'],
+    color: 'from-amber-500 to-yellow-500',
+    path: '/wing-calculator',
+  },
+  {
+    id: 'thrust-calculator',
+    title: 'Thrust Calculator',
+    description: 'Calculate engine thrust and performance metrics for jet and piston engines',
+    icon: <Zap className="w-8 h-8" />,
+    category: 'Calculations',
+    features: ['Jet engine analysis', 'Piston engine analysis', 'Power output', 'Fuel consumption'],
+    color: 'from-red-500 to-pink-500',
+    path: '/thrust-calculator',
+  },
+  {
+    id: 'drag-calculator',
+    title: 'Drag Calculator',
+    description: 'Analyze aerodynamic drag forces and components for aircraft design',
+    icon: <Wind className="w-8 h-8" />,
+    category: 'Calculations',
+    features: ['Drag components', 'Compressibility effects', 'Performance analysis', 'CSV export'],
+    color: 'from-teal-500 to-cyan-500',
+    path: '/drag-calculator',
   },
   {
     id: 'aerospace-templates',
@@ -72,6 +107,7 @@ const tools: Tool[] = [
 ];
 
 export default function AerospaceToolsPage() {
+  const navigate = useNavigate();
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [hoveredTool, setHoveredTool] = useState<string | null>(null);
 
@@ -79,6 +115,12 @@ export default function AerospaceToolsPage() {
   const filteredTools = selectedCategory 
     ? tools.filter(t => t.category === selectedCategory)
     : tools;
+
+  const handleToolClick = (tool: Tool) => {
+    if (tool.path) {
+      navigate(tool.path);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
@@ -178,13 +220,14 @@ export default function AerospaceToolsPage() {
                     <motion.button
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
+                      onClick={() => handleToolClick(tool)}
                       className={`w-full py-3 rounded-lg font-paragraph font-semibold transition-all duration-300 ${
                         hoveredTool === tool.id
                           ? `bg-gradient-to-r ${tool.color} text-white`
                           : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
                       }`}
                     >
-                      Launch Tool
+                      {tool.path ? 'Launch Tool' : 'Coming Soon'}
                     </motion.button>
                   </div>
                 </div>
