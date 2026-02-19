@@ -37,7 +37,10 @@ export default function Viewer3D({ dsl, isLoading = false }: Viewer3DProps) {
   const [selectedFeature, setSelectedFeature] = useState<string | null>(null);
   const [measurements, setMeasurements] = useState<MeasurementData[]>([]);
   const [fps, setFps] = useState(60);
+  const [isAutoRotating, setIsAutoRotating] = useState(true);
+  const [rotationSpeed, setRotationSpeed] = useState(0.001);
   const fpsCounterRef = useRef({ frames: 0, lastTime: Date.now() });
+  const autoRotateRef = useRef(true);
 
   // Initialize Three.js scene
   useEffect(() => {
@@ -128,6 +131,7 @@ export default function Viewer3D({ dsl, isLoading = false }: Viewer3DProps) {
     renderer.domElement.addEventListener('mousedown', (e) => {
       isDragging = true;
       isMouseDown = true;
+      autoRotateRef.current = false;
       previousMousePosition = { x: e.clientX, y: e.clientY };
       velocity = { x: 0, y: 0 };
     });
@@ -204,6 +208,20 @@ export default function Viewer3D({ dsl, isLoading = false }: Viewer3DProps) {
         setFps(fpsCounterRef.current.frames);
         fpsCounterRef.current.frames = 0;
         fpsCounterRef.current.lastTime = now;
+      }
+
+      // Auto-rotate when not dragging
+      if (autoRotateRef.current && !isMouseDown && cameraRef.current) {
+        const radius = cameraRef.current.position.length();
+        const theta = Math.atan2(cameraRef.current.position.x, cameraRef.current.position.z);
+        const phi = Math.acos(cameraRef.current.position.y / radius);
+
+        const newTheta = theta + rotationSpeed;
+
+        cameraRef.current.position.x = radius * Math.sin(phi) * Math.sin(newTheta);
+        cameraRef.current.position.y = radius * Math.cos(phi);
+        cameraRef.current.position.z = radius * Math.sin(phi) * Math.cos(newTheta);
+        cameraRef.current.lookAt(0, 0, 0);
       }
 
       // Apply momentum to camera
@@ -425,13 +443,18 @@ export default function Viewer3D({ dsl, isLoading = false }: Viewer3DProps) {
     }
   };
 
+  const toggleAutoRotate = () => {
+    autoRotateRef.current = !autoRotateRef.current;
+    setIsAutoRotating(!isAutoRotating);
+  };
+
   return (
     <>
       {/* Normal View */}
       <div
         ref={containerRef}
         className={`relative bg-gray-900 overflow-hidden ${
-          isFullscreen ? 'hidden' : 'w-full h-full rounded-lg border border-secondary/20'
+          isFullscreen ? 'hidden' : 'w-full h-96 lg:h-[600px] rounded-lg border border-secondary/20'
         }`}
       >
         {isLoading && (
@@ -464,6 +487,25 @@ export default function Viewer3D({ dsl, isLoading = false }: Viewer3DProps) {
 
         {/* Advanced Controls */}
         <div className="absolute top-4 right-4 flex gap-2 z-20">
+          <motion.button
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={toggleAutoRotate}
+            className={`p-2 rounded-lg shadow transition-all ${
+              isAutoRotating
+                ? 'bg-cyan-500 text-white'
+                : 'bg-gray-800 text-cyan-300 hover:bg-gray-700'
+            }`}
+            title="Toggle auto-rotate"
+          >
+            <motion.div
+              animate={{ rotate: isAutoRotating ? 360 : 0 }}
+              transition={{ duration: 4, repeat: isAutoRotating ? Infinity : 0, ease: "linear" }}
+              className="w-5 h-5"
+            >
+              <RotateCcw className="w-5 h-5" />
+            </motion.div>
+          </motion.button>
           <motion.button
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.95 }}
@@ -566,6 +608,25 @@ export default function Viewer3D({ dsl, isLoading = false }: Viewer3DProps) {
 
           {/* Fullscreen Controls */}
           <div className="absolute top-4 right-4 flex gap-2 z-20">
+            <motion.button
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={toggleAutoRotate}
+              className={`p-2 rounded-lg shadow transition-all ${
+                isAutoRotating
+                  ? 'bg-cyan-500 text-white'
+                  : 'bg-gray-800 text-cyan-300 hover:bg-gray-700'
+              }`}
+              title="Toggle auto-rotate"
+            >
+              <motion.div
+                animate={{ rotate: isAutoRotating ? 360 : 0 }}
+                transition={{ duration: 4, repeat: isAutoRotating ? Infinity : 0, ease: "linear" }}
+                className="w-5 h-5"
+              >
+                <RotateCcw className="w-5 h-5" />
+              </motion.div>
+            </motion.button>
             <motion.button
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.95 }}
