@@ -5,7 +5,7 @@ import { LoadingSpinner } from '@/components/ui/loading-spinner';
 import Viewer3D from '@/components/3DViewer';
 import { compileDesign } from '@/services/compilerService';
 import { AeroForgeDSL } from '@/services/dslSchema';
-import { Copy, Download, AlertCircle, CheckCircle2, X, ChevronDown } from 'lucide-react';
+import { Copy, Download, AlertCircle, CheckCircle2, X, ChevronDown, Zap, Sparkles } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export default function CompilerSplitPage() {
@@ -75,43 +75,50 @@ export default function CompilerSplitPage() {
   const jsonString = dsl ? JSON.stringify(dsl, null, 2) : '';
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex flex-col">
       <Header />
 
       <main className="flex-1 flex flex-col lg:flex-row overflow-hidden">
         {/* Left Panel - Compiler */}
-        <div className="w-full lg:w-1/2 flex flex-col border-b lg:border-b-0 lg:border-r border-secondary/20 overflow-y-auto">
+        <div className="w-full lg:w-1/2 flex flex-col border-b lg:border-b-0 lg:border-r border-cyan-500/20 overflow-y-auto bg-gray-900">
           <section className="flex-1 px-6 lg:px-8 py-8">
             <div className="max-w-2xl">
               <div className="flex items-center justify-between mb-2">
-                <h1 className="font-heading text-3xl text-foreground">Design Compiler</h1>
+                <div className="flex items-center gap-3">
+                  <Sparkles className="w-6 h-6 text-cyan-400" />
+                  <h1 className="font-heading text-3xl text-cyan-300">Design Compiler</h1>
+                </div>
                 <button
                   onClick={() => setExpandedPanel(!expandedPanel)}
-                  className="lg:hidden p-2 hover:bg-secondary/10 rounded transition-colors"
+                  className="lg:hidden p-2 hover:bg-cyan-500/10 rounded transition-colors"
                 >
                   <ChevronDown
-                    className={`w-5 h-5 text-foreground transition-transform ${
+                    className={`w-5 h-5 text-cyan-300 transition-transform ${
                       expandedPanel ? 'rotate-180' : ''
                     }`}
                   />
                 </button>
               </div>
-              <p className="font-paragraph text-sm text-foreground/60 mb-8">
+              <p className="font-paragraph text-sm text-cyan-300/60 mb-8">
                 Describe your mechanical part and watch it render in real-time
               </p>
 
               {expandedPanel && (
-                <div className="space-y-6">
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="space-y-6"
+                >
                   {/* Text Input */}
                   <div>
-                    <label htmlFor="design-input" className="block font-paragraph text-sm font-medium text-foreground mb-2">
+                    <label htmlFor="design-input" className="block font-paragraph text-sm font-medium text-cyan-300 mb-2">
                       Describe your mechanical part
                     </label>
                     <textarea
                       id="design-input"
                       value={input}
                       onChange={(e) => setInput(e.target.value)}
-                      className="w-full h-48 px-4 py-3 border border-secondary rounded bg-background text-foreground font-paragraph text-sm resize-none focus:outline-none focus:border-primary transition-colors duration-200"
+                      className="w-full h-48 px-4 py-3 border border-cyan-500/30 rounded bg-gray-800 text-cyan-100 font-paragraph text-sm resize-none focus:outline-none focus:border-cyan-400 focus:ring-2 focus:ring-cyan-500/20 transition-all duration-200 placeholder-gray-500"
                       placeholder="Example: Create a mounting bracket with two 6mm bolt holes spaced 50mm apart, with rounded corners..."
                       disabled={isGenerating}
                     />
@@ -119,14 +126,14 @@ export default function CompilerSplitPage() {
 
                   {/* Units Dropdown */}
                   <div>
-                    <label htmlFor="units" className="block font-paragraph text-sm font-medium text-foreground mb-2">
+                    <label htmlFor="units" className="block font-paragraph text-sm font-medium text-cyan-300 mb-2">
                       Units
                     </label>
                     <select
                       id="units"
                       value={units}
                       onChange={(e) => setUnits(e.target.value as 'mm' | 'cm' | 'in' | 'ft')}
-                      className="w-full px-4 py-2 border border-secondary rounded bg-background text-foreground font-paragraph text-sm focus:outline-none focus:border-primary transition-colors duration-200"
+                      className="w-full px-4 py-2 border border-cyan-500/30 rounded bg-gray-800 text-cyan-100 font-paragraph text-sm focus:outline-none focus:border-cyan-400 focus:ring-2 focus:ring-cyan-500/20 transition-all duration-200"
                       disabled={isGenerating}
                     >
                       <option value="mm">Millimeters (mm)</option>
@@ -137,10 +144,12 @@ export default function CompilerSplitPage() {
                   </div>
 
                   {/* Generate Button */}
-                  <button
+                  <motion.button
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
                     onClick={handleGenerate}
                     disabled={isGenerating || !input.trim()}
-                    className="w-full bg-accent text-accent-foreground font-paragraph text-sm font-semibold px-6 py-3 rounded transition-colors duration-200 hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                    className="w-full bg-gradient-to-r from-cyan-500 to-pink-500 text-white font-paragraph text-sm font-semibold px-6 py-3 rounded transition-all duration-200 hover:shadow-lg hover:shadow-cyan-500/50 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                   >
                     {isGenerating ? (
                       <>
@@ -148,10 +157,13 @@ export default function CompilerSplitPage() {
                         <span>Compiling...</span>
                       </>
                     ) : (
-                      'Compile & Render'
+                      <>
+                        <Zap className="w-4 h-4" />
+                        <span>Compile & Render</span>
+                      </>
                     )}
-                  </button>
-                </div>
+                  </motion.button>
+                </motion.div>
               )}
 
               {/* Status Panel */}
@@ -159,49 +171,53 @@ export default function CompilerSplitPage() {
                 <motion.div
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="mt-8 p-4 border border-secondary/20 rounded bg-background"
+                  className="mt-8 p-4 border border-cyan-500/20 rounded bg-gray-800/50 backdrop-blur"
                 >
                   <div className="grid grid-cols-3 gap-4 mb-6">
                     <div>
                       <div className="flex items-center gap-2 mb-1">
                         {isValid ? (
-                          <CheckCircle2 className="w-4 h-4 text-green-600" />
+                          <CheckCircle2 className="w-4 h-4 text-green-400" />
                         ) : (
-                          <AlertCircle className="w-4 h-4 text-destructive" />
+                          <AlertCircle className="w-4 h-4 text-pink-500" />
                         )}
-                        <span className="font-mono text-xs uppercase text-foreground/60">Status</span>
+                        <span className="font-mono text-xs uppercase text-cyan-300/60">Status</span>
                       </div>
-                      <div className={`font-heading text-lg font-bold ${isValid ? 'text-green-600' : 'text-destructive'}`}>
+                      <div className={`font-heading text-lg font-bold ${isValid ? 'text-green-400' : 'text-pink-500'}`}>
                         {isValid ? 'PASS' : 'FAIL'}
                       </div>
                     </div>
                     <div>
-                      <span className="font-mono text-xs uppercase text-foreground/60 block mb-1">Features</span>
-                      <div className="font-heading text-lg font-bold text-primary">{dsl.features?.length || 0}</div>
+                      <span className="font-mono text-xs uppercase text-cyan-300/60 block mb-1">Features</span>
+                      <div className="font-heading text-lg font-bold text-cyan-300">{dsl.features?.length || 0}</div>
                     </div>
                     <div>
-                      <span className="font-mono text-xs uppercase text-foreground/60 block mb-1">Constraints</span>
-                      <div className="font-heading text-lg font-bold text-primary">{dsl.constraints?.length || 0}</div>
+                      <span className="font-mono text-xs uppercase text-cyan-300/60 block mb-1">Constraints</span>
+                      <div className="font-heading text-lg font-bold text-cyan-300">{dsl.constraints?.length || 0}</div>
                     </div>
                   </div>
 
                   {/* Action Buttons */}
                   <div className="flex gap-2">
-                    <button
+                    <motion.button
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
                       onClick={handleDownload}
-                      className="flex-1 flex items-center justify-center gap-2 bg-primary text-primary-foreground font-paragraph text-xs font-semibold px-3 py-2 rounded transition-colors duration-200 hover:opacity-90"
+                      className="flex-1 flex items-center justify-center gap-2 bg-cyan-600 text-white font-paragraph text-xs font-semibold px-3 py-2 rounded transition-all duration-200 hover:bg-cyan-500"
                     >
                       <Download className="w-4 h-4" />
                       Download
-                    </button>
+                    </motion.button>
                     <div className="relative flex-1">
-                      <button
+                      <motion.button
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
                         onClick={handleCopy}
-                        className="w-full flex items-center justify-center gap-2 bg-transparent text-primary border border-primary font-paragraph text-xs font-semibold px-3 py-2 rounded transition-colors duration-200 hover:bg-primary hover:text-primary-foreground"
+                        className="w-full flex items-center justify-center gap-2 bg-transparent text-cyan-300 border border-cyan-500/50 font-paragraph text-xs font-semibold px-3 py-2 rounded transition-all duration-200 hover:bg-cyan-500/10 hover:border-cyan-400"
                       >
                         <Copy className="w-4 h-4" />
                         {copied ? 'Copied!' : 'Copy'}
-                      </button>
+                      </motion.button>
                       <AnimatePresence>
                         {copied && (
                           <motion.div
@@ -224,15 +240,15 @@ export default function CompilerSplitPage() {
                 <motion.div
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="mt-6 p-4 border border-destructive/20 bg-destructive/5 rounded"
+                  className="mt-6 p-4 border border-pink-500/20 bg-pink-500/5 rounded"
                 >
-                  <h3 className="font-heading text-sm text-destructive mb-3 flex items-center gap-2">
+                  <h3 className="font-heading text-sm text-pink-400 mb-3 flex items-center gap-2">
                     <X className="w-4 h-4" />
                     Errors ({errors.length})
                   </h3>
                   <ul className="space-y-1">
                     {errors.map((error, i) => (
-                      <li key={i} className="font-paragraph text-xs text-foreground">
+                      <li key={i} className="font-paragraph text-xs text-cyan-200">
                         • {error}
                       </li>
                     ))}
@@ -247,10 +263,10 @@ export default function CompilerSplitPage() {
                   animate={{ opacity: 1, y: 0 }}
                   className="mt-4 p-4 border border-yellow-600/20 bg-yellow-600/5 rounded"
                 >
-                  <h3 className="font-heading text-sm text-yellow-600 mb-3">Warnings ({warnings.length})</h3>
+                  <h3 className="font-heading text-sm text-yellow-400 mb-3">Warnings ({warnings.length})</h3>
                   <ul className="space-y-1">
                     {warnings.map((warning, i) => (
-                      <li key={i} className="font-paragraph text-xs text-foreground">
+                      <li key={i} className="font-paragraph text-xs text-cyan-200">
                         ⚠ {warning}
                       </li>
                     ))}
@@ -265,13 +281,13 @@ export default function CompilerSplitPage() {
                   animate={{ opacity: 1, y: 0 }}
                   className="mt-6"
                 >
-                  <div className="mb-3 flex gap-2 border-b border-secondary/20">
+                  <div className="mb-3 flex gap-2 border-b border-cyan-500/20">
                     <button
                       onClick={() => setActiveTab('dsl')}
                       className={`pb-2 font-paragraph text-xs font-medium transition-colors ${
                         activeTab === 'dsl'
-                          ? 'text-primary border-b-2 border-primary'
-                          : 'text-foreground/60 hover:text-foreground'
+                          ? 'text-cyan-300 border-b-2 border-cyan-400'
+                          : 'text-cyan-300/60 hover:text-cyan-300'
                       }`}
                     >
                       DSL Output
@@ -281,8 +297,8 @@ export default function CompilerSplitPage() {
                         onClick={() => setActiveTab('validation')}
                         className={`pb-2 font-paragraph text-xs font-medium transition-colors ${
                           activeTab === 'validation'
-                            ? 'text-primary border-b-2 border-primary'
-                            : 'text-foreground/60 hover:text-foreground'
+                            ? 'text-cyan-300 border-b-2 border-cyan-400'
+                            : 'text-cyan-300/60 hover:text-cyan-300'
                         }`}
                       >
                         Validation ({dsl.validationResults.length})
@@ -291,8 +307,8 @@ export default function CompilerSplitPage() {
                   </div>
 
                   {activeTab === 'dsl' && (
-                    <div className="bg-json-background p-3 rounded overflow-auto max-h-64 border border-secondary/20">
-                      <pre className="font-mono text-xs text-foreground whitespace-pre">{jsonString}</pre>
+                    <div className="bg-gray-950 p-3 rounded overflow-auto max-h-64 border border-cyan-500/20">
+                      <pre className="font-mono text-xs text-cyan-300 whitespace-pre">{jsonString}</pre>
                     </div>
                   )}
 
@@ -303,14 +319,14 @@ export default function CompilerSplitPage() {
                           key={i}
                           className={`p-2 rounded border text-xs ${
                             result.severity === 'ERROR'
-                              ? 'border-destructive/20 bg-destructive/5'
+                              ? 'border-pink-500/20 bg-pink-500/5'
                               : result.severity === 'WARNING'
                               ? 'border-yellow-600/20 bg-yellow-600/5'
-                              : 'border-secondary/20 bg-secondary/5'
+                              : 'border-cyan-500/20 bg-cyan-500/5'
                           }`}
                         >
-                          <div className="font-mono uppercase text-foreground/60 mb-1">{result.type}</div>
-                          <p className="font-paragraph text-foreground">{result.message}</p>
+                          <div className="font-mono uppercase text-cyan-300/60 mb-1">{result.type}</div>
+                          <p className="font-paragraph text-cyan-200">{result.message}</p>
                         </div>
                       ))}
                     </div>
@@ -322,7 +338,7 @@ export default function CompilerSplitPage() {
         </div>
 
         {/* Right Panel - 3D Viewer */}
-        <div className="w-full lg:w-1/2 flex flex-col bg-gray-50 min-h-96 lg:min-h-auto">
+        <div className="w-full lg:w-1/2 flex flex-col bg-gray-900 min-h-96 lg:min-h-auto">
           <div className="flex-1 p-4 lg:p-8">
             <Viewer3D dsl={dsl} isLoading={isGenerating} />
           </div>
