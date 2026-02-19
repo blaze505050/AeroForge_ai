@@ -23,6 +23,14 @@ export default function Header() {
               Home
             </Link>
             <Link 
+              to="/aerospace-tools" 
+              className={`font-paragraph text-base transition-colors duration-200 ${
+                isActive('/aerospace-tools') ? 'text-primary font-semibold' : 'text-foreground hover:text-primary'
+              }`}
+            >
+              Aerospace Tools
+            </Link>
+            <Link 
               to="/compiler" 
               className={`font-paragraph text-base transition-colors duration-200 ${
                 isActive('/compiler') ? 'text-primary font-semibold' : 'text-foreground hover:text-primary'

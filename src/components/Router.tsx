@@ -9,6 +9,10 @@ import ResultsPage from '@/components/pages/ResultsPage';
 import ArchitecturePage from '@/components/pages/ArchitecturePage';
 import DSLDocsPage from '@/components/pages/DSLDocsPage';
 import APIDocPage from '@/components/pages/APIDocPage';
+import AerospaceToolsPage from '@/components/pages/AerospaceToolsPage';
+import AirfoilDesignerPage from '@/components/pages/AirfoilDesignerPage';
+import AirfoilDownloaderPage from '@/components/pages/AirfoilDownloaderPage';
+import CFDSimulatorPage from '@/components/pages/CFDSimulatorPage';
 
 // Layout component that includes ScrollToTop
 function Layout() {
@@ -73,6 +77,34 @@ const router = createBrowserRouter([
         element: <APIDocPage />,
         routeMetadata: {
           pageIdentifier: 'api',
+        },
+      },
+      {
+        path: "aerospace-tools",
+        element: <AerospaceToolsPage />,
+        routeMetadata: {
+          pageIdentifier: 'aerospace-tools',
+        },
+      },
+      {
+        path: "airfoil-designer",
+        element: <AirfoilDesignerPage />,
+        routeMetadata: {
+          pageIdentifier: 'airfoil-designer',
+        },
+      },
+      {
+        path: "airfoil-downloader",
+        element: <AirfoilDownloaderPage />,
+        routeMetadata: {
+          pageIdentifier: 'airfoil-downloader',
+        },
+      },
+      {
+        path: "cfd-simulator",
+        element: <CFDSimulatorPage />,
+        routeMetadata: {
+          pageIdentifier: 'cfd-simulator',
         },
       },
       {
