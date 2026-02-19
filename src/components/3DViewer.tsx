@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { AeroForgeDSL } from '@/services/dslSchema';
-import { Maximize2, RotateCcw, Download, Minimize2, Eye, EyeOff, Zap, Grid3x3, Layers } from 'lucide-react';
+import { Maximize2, RotateCcw, Download, Minimize2, Eye, EyeOff, Zap, Grid3x3, Layers, Lightbulb, Palette, Maximize, Minimize } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface Viewer3DProps {
@@ -14,6 +14,14 @@ interface MeasurementData {
   points: THREE.Vector3[];
 }
 
+interface FeatureNode {
+  id: string;
+  name: string;
+  type: string;
+  visible: boolean;
+  mesh?: THREE.Mesh;
+}
+
 export default function Viewer3D({ dsl, isLoading = false }: Viewer3DProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const fullscreenContainerRef = useRef<HTMLDivElement>(null);
@@ -21,12 +29,19 @@ export default function Viewer3D({ dsl, isLoading = false }: Viewer3DProps) {
   const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
   const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
   const meshesRef = useRef<THREE.Mesh[]>([]);
+  const featureNodesRef = useRef<Map<string, FeatureNode>>(new Map());
   const controlsRef = useRef<any>(null);
   const raycasterRef = useRef(new THREE.Raycaster());
   const mouseRef = useRef(new THREE.Vector2());
   const selectedObjectRef = useRef<THREE.Mesh | null>(null);
   const measurementLineRef = useRef<THREE.Line | null>(null);
   const measurementPointsRef = useRef<THREE.Points | null>(null);
+  const lightsRef = useRef<{ main: THREE.Light; fill: THREE.Light; rim: THREE.Light; point: THREE.Light }>({
+    main: null as any,
+    fill: null as any,
+    rim: null as any,
+    point: null as any,
+  });
 
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [stats, setStats] = useState({ vertices: 0, faces: 0, triangles: 0 });
@@ -39,6 +54,9 @@ export default function Viewer3D({ dsl, isLoading = false }: Viewer3DProps) {
   const [fps, setFps] = useState(60);
   const [isAutoRotating, setIsAutoRotating] = useState(true);
   const [rotationSpeed, setRotationSpeed] = useState(0.001);
+  const [lightingMode, setLightingMode] = useState<'studio' | 'dramatic' | 'soft'>('studio');
+  const [renderMode, setRenderMode] = useState<'solid' | 'wireframe' | 'hybrid'>('solid');
+  const [featureTree, setFeatureTree] = useState<FeatureNode[]>([]);
   const fpsCounterRef = useRef({ frames: 0, lastTime: Date.now() });
   const autoRotateRef = useRef(true);
 
@@ -79,39 +97,106 @@ export default function Viewer3D({ dsl, isLoading = false }: Viewer3DProps) {
     targetContainer.appendChild(renderer.domElement);
     rendererRef.current = renderer;
 
-    // Advanced Lighting Setup
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
-    scene.add(ambientLight);
+    // Advanced Lighting Setup with Dynamic Modes
+    const setupLighting = (mode: 'studio' | 'dramatic' | 'soft') => {
+      // Clear existing lights
+      scene.children.forEach((child) => {
+        if (child instanceof THREE.Light) {
+          scene.remove(child);
+        }
+      });
 
-    // Main directional light
-    const directionalLight = new THREE.DirectionalLight(0xffffff, 1.2);
-    directionalLight.position.set(200, 200, 150);
-    directionalLight.castShadow = true;
-    directionalLight.shadow.mapSize.width = 4096;
-    directionalLight.shadow.mapSize.height = 4096;
-    directionalLight.shadow.camera.far = 1000;
-    directionalLight.shadow.camera.left = -500;
-    directionalLight.shadow.camera.right = 500;
-    directionalLight.shadow.camera.top = 500;
-    directionalLight.shadow.camera.bottom = -500;
-    directionalLight.shadow.bias = -0.0001;
-    scene.add(directionalLight);
+      if (mode === 'studio') {
+        // Studio lighting - balanced, professional
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+        scene.add(ambientLight);
 
-    // Fill light for better depth
-    const fillLight = new THREE.DirectionalLight(0x87ceeb, 0.4);
-    fillLight.position.set(-200, 100, 200);
-    scene.add(fillLight);
+        const mainLight = new THREE.DirectionalLight(0xffffff, 1.2);
+        mainLight.position.set(200, 200, 150);
+        mainLight.castShadow = true;
+        mainLight.shadow.mapSize.width = 4096;
+        mainLight.shadow.mapSize.height = 4096;
+        mainLight.shadow.camera.far = 1000;
+        mainLight.shadow.camera.left = -500;
+        mainLight.shadow.camera.right = 500;
+        mainLight.shadow.camera.top = 500;
+        mainLight.shadow.camera.bottom = -500;
+        mainLight.shadow.bias = -0.0001;
+        scene.add(mainLight);
 
-    // Rim light for edge definition
-    const rimLight = new THREE.DirectionalLight(0xff6b9d, 0.3);
-    rimLight.position.set(0, 50, -300);
-    scene.add(rimLight);
+        const fillLight = new THREE.DirectionalLight(0x87ceeb, 0.4);
+        fillLight.position.set(-200, 100, 200);
+        scene.add(fillLight);
 
-    // Point light for highlights
-    const pointLight = new THREE.PointLight(0xffffff, 0.5);
-    pointLight.position.set(100, 200, 100);
-    pointLight.castShadow = true;
-    scene.add(pointLight);
+        const rimLight = new THREE.DirectionalLight(0xff6b9d, 0.3);
+        rimLight.position.set(0, 50, -300);
+        scene.add(rimLight);
+
+        const pointLight = new THREE.PointLight(0xffffff, 0.5);
+        pointLight.position.set(100, 200, 100);
+        pointLight.castShadow = true;
+        scene.add(pointLight);
+
+        lightsRef.current = { main: mainLight, fill: fillLight, rim: rimLight, point: pointLight };
+      } else if (mode === 'dramatic') {
+        // Dramatic lighting - high contrast, cinematic
+        const ambientLight = new THREE.AmbientLight(0x1a1a2e, 0.3);
+        scene.add(ambientLight);
+
+        const mainLight = new THREE.DirectionalLight(0xffffff, 2);
+        mainLight.position.set(300, 300, 200);
+        mainLight.castShadow = true;
+        mainLight.shadow.mapSize.width = 4096;
+        mainLight.shadow.mapSize.height = 4096;
+        mainLight.shadow.camera.far = 1500;
+        mainLight.shadow.camera.left = -600;
+        mainLight.shadow.camera.right = 600;
+        mainLight.shadow.camera.top = 600;
+        mainLight.shadow.camera.bottom = -600;
+        mainLight.shadow.bias = -0.0001;
+        scene.add(mainLight);
+
+        const rimLight = new THREE.DirectionalLight(0xff00ff, 0.8);
+        rimLight.position.set(-300, 100, -300);
+        scene.add(rimLight);
+
+        const pointLight = new THREE.PointLight(0x00ffff, 1);
+        pointLight.position.set(200, 300, 200);
+        pointLight.castShadow = true;
+        scene.add(pointLight);
+
+        lightsRef.current = { main: mainLight, fill: new THREE.Light(), rim: rimLight, point: pointLight };
+      } else if (mode === 'soft') {
+        // Soft lighting - diffuse, gentle
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
+        scene.add(ambientLight);
+
+        const mainLight = new THREE.DirectionalLight(0xffffff, 0.8);
+        mainLight.position.set(150, 150, 150);
+        mainLight.castShadow = true;
+        mainLight.shadow.mapSize.width = 2048;
+        mainLight.shadow.mapSize.height = 2048;
+        mainLight.shadow.camera.far = 800;
+        mainLight.shadow.camera.left = -400;
+        mainLight.shadow.camera.right = 400;
+        mainLight.shadow.camera.top = 400;
+        mainLight.shadow.camera.bottom = -400;
+        mainLight.shadow.bias = -0.0001;
+        scene.add(mainLight);
+
+        const fillLight = new THREE.DirectionalLight(0xccccff, 0.5);
+        fillLight.position.set(-150, 100, 150);
+        scene.add(fillLight);
+
+        const rimLight = new THREE.DirectionalLight(0xffcccc, 0.3);
+        rimLight.position.set(0, 50, -200);
+        scene.add(rimLight);
+
+        lightsRef.current = { main: mainLight, fill: fillLight, rim: rimLight, point: new THREE.Light() };
+      }
+    };
+
+    setupLighting('studio');
 
     // Grid helper
     const gridHelper = new THREE.GridHelper(800, 80, 0x444444, 0x222222);
@@ -303,57 +388,77 @@ export default function Viewer3D({ dsl, isLoading = false }: Viewer3DProps) {
       }
     });
     meshesRef.current = [];
+    featureNodesRef.current.clear();
     selectedObjectRef.current = null;
     setSelectedFeature(null);
 
     let totalVertices = 0;
     let totalFaces = 0;
     let totalTriangles = 0;
+    const newFeatureTree: FeatureNode[] = [];
 
-    // Create geometries from DSL features
+    // Enhanced color palette with better contrast
+    const colors = [
+      0x00d9ff, // cyan
+      0xff006e, // pink
+      0x00f5ff, // bright cyan
+      0xffbe0b, // yellow
+      0x8338ec, // purple
+      0x3a86ff, // blue
+      0xfb5607, // orange
+      0x06ffa5, // green
+      0xff1744, // red
+      0x00e676, // bright green
+    ];
+
+    // Create geometries from DSL features with enhanced rendering
     dsl.features?.forEach((feature, index) => {
       let geometry: THREE.BufferGeometry | null = null;
       let position = { x: 0, y: 0, z: 0 };
-      const colors = [
-        0x00d9ff, // cyan
-        0xff006e, // pink
-        0x00f5ff, // bright cyan
-        0xffbe0b, // yellow
-        0x8338ec, // purple
-        0x3a86ff, // blue
-        0xfb5607, // orange
-        0x06ffa5, // green
-      ];
       const color = colors[index % colors.length];
+      let segmentDetail = 32; // Default segment detail
+
+      // Adjust segment detail based on feature type for better quality
+      if (feature.type === 'HOLE' || feature.type === 'FILLET') {
+        segmentDetail = 64;
+      }
 
       if (feature.type === 'PAD') {
         if (feature.padProfile === 'RECTANGULAR') {
           const width = (feature.padWidth?.value || 100);
           const length = (feature.padLength?.value || 100);
           const height = (feature.padHeight?.value || 10);
-          geometry = new THREE.BoxGeometry(width, height, length, 16, 16, 16);
+          geometry = new THREE.BoxGeometry(width, height, length, 32, 32, 32);
           position.y = height / 2;
         } else if (feature.padProfile === 'CIRCULAR') {
           const radius = (feature.padWidth?.value || 50) / 2;
           const height = (feature.padHeight?.value || 50);
-          geometry = new THREE.CylinderGeometry(radius, radius, height, 64, 32);
+          geometry = new THREE.CylinderGeometry(radius, radius, height, segmentDetail, 32);
           position.y = height / 2;
         }
       } else if (feature.type === 'HOLE') {
         const diameter = (feature.holeDiameter?.value || 6) / 2;
-        geometry = new THREE.CylinderGeometry(diameter, diameter, 100, 64, 32);
+        geometry = new THREE.CylinderGeometry(diameter, diameter, 100, segmentDetail, 32);
         if (feature.coordinate) {
           position.x = feature.coordinate.x?.value || 0;
           position.z = feature.coordinate.z?.value || 0;
         }
       } else if (feature.type === 'FILLET') {
         const radius = (feature.radius?.value || 2);
-        geometry = new THREE.SphereGeometry(radius, 32, 32);
+        geometry = new THREE.SphereGeometry(radius, segmentDetail, segmentDetail);
       } else if (feature.type === 'POCKET') {
         const width = (feature.padWidth?.value || 50);
         const length = (feature.padLength?.value || 50);
         const height = (feature.padHeight?.value || 5);
-        geometry = new THREE.BoxGeometry(width, height, length, 16, 16, 16);
+        geometry = new THREE.BoxGeometry(width, height, length, 32, 32, 32);
+      } else if (feature.type === 'CHAMFER') {
+        const size = (feature.chamferDistance?.value || 2);
+        geometry = new THREE.ConeGeometry(size, size * 2, 32);
+      } else if (feature.type === 'AIRFOIL') {
+        // Create a simplified airfoil shape
+        const length = (feature.padLength?.value || 100);
+        const height = (feature.padHeight?.value || 20);
+        geometry = new THREE.ConeGeometry(height / 2, length, 32);
       }
 
       if (geometry) {
@@ -366,14 +471,17 @@ export default function Viewer3D({ dsl, isLoading = false }: Viewer3DProps) {
           totalTriangles += geometry.index.count / 3;
         }
 
+        // Create material with enhanced properties
         const material = new THREE.MeshStandardMaterial({
           color,
-          metalness: 0.6,
-          roughness: 0.4,
+          metalness: 0.5,
+          roughness: 0.5,
           emissive: 0x000000,
           emissiveIntensity: 0,
-          wireframe: showWireframe,
+          wireframe: renderMode === 'wireframe',
+          side: THREE.DoubleSide,
         });
+
         const mesh = new THREE.Mesh(geometry, material);
         
         // Apply coordinate-based positioning if available
@@ -389,12 +497,24 @@ export default function Viewer3D({ dsl, isLoading = false }: Viewer3DProps) {
         mesh.userData = { featureId: feature.id, featureName: feature.name };
         sceneRef.current!.add(mesh);
         meshesRef.current.push(mesh);
+
+        // Add to feature tree
+        const featureNode: FeatureNode = {
+          id: feature.id,
+          name: feature.name,
+          type: feature.type,
+          visible: true,
+          mesh,
+        };
+        featureNodesRef.current.set(feature.id, featureNode);
+        newFeatureTree.push(featureNode);
       }
     });
 
+    setFeatureTree(newFeatureTree);
     setStats({ vertices: totalVertices, faces: totalFaces, triangles: totalTriangles });
 
-    // Auto-fit camera to view all objects
+    // Auto-fit camera to view all objects with better framing
     if (meshesRef.current.length > 0) {
       const box = new THREE.Box3();
       meshesRef.current.forEach((mesh) => box.expandByObject(mesh));
@@ -402,13 +522,13 @@ export default function Viewer3D({ dsl, isLoading = false }: Viewer3DProps) {
       const maxDim = Math.max(size.x, size.y, size.z);
       const fov = cameraRef.current!.fov * (Math.PI / 180);
       let cameraZ = Math.abs(maxDim / 2 / Math.tan(fov / 2));
-      cameraZ *= 1.5;
+      cameraZ *= 1.8; // Increased from 1.5 for better framing
 
       const center = box.getCenter(new THREE.Vector3());
-      cameraRef.current!.position.set(center.x + cameraZ, center.y + cameraZ, center.z + cameraZ);
+      cameraRef.current!.position.set(center.x + cameraZ * 0.8, center.y + cameraZ * 0.8, center.z + cameraZ);
       cameraRef.current!.lookAt(center);
     }
-  }, [dsl, showWireframe]);
+  }, [dsl, renderMode]);
 
   const handleResetView = () => {
     if (cameraRef.current) {
@@ -433,6 +553,97 @@ export default function Viewer3D({ dsl, isLoading = false }: Viewer3DProps) {
         mesh.material.wireframe = !showWireframe;
       }
     });
+  };
+
+  const changeLightingMode = (mode: 'studio' | 'dramatic' | 'soft') => {
+    setLightingMode(mode);
+    if (sceneRef.current) {
+      // Re-setup lighting with new mode
+      sceneRef.current.children.forEach((child) => {
+        if (child instanceof THREE.Light) {
+          sceneRef.current!.remove(child);
+        }
+      });
+
+      if (mode === 'studio') {
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+        sceneRef.current.add(ambientLight);
+        const mainLight = new THREE.DirectionalLight(0xffffff, 1.2);
+        mainLight.position.set(200, 200, 150);
+        mainLight.castShadow = true;
+        mainLight.shadow.mapSize.width = 4096;
+        mainLight.shadow.mapSize.height = 4096;
+        mainLight.shadow.camera.far = 1000;
+        mainLight.shadow.camera.left = -500;
+        mainLight.shadow.camera.right = 500;
+        mainLight.shadow.camera.top = 500;
+        mainLight.shadow.camera.bottom = -500;
+        mainLight.shadow.bias = -0.0001;
+        sceneRef.current.add(mainLight);
+        const fillLight = new THREE.DirectionalLight(0x87ceeb, 0.4);
+        fillLight.position.set(-200, 100, 200);
+        sceneRef.current.add(fillLight);
+        const rimLight = new THREE.DirectionalLight(0xff6b9d, 0.3);
+        rimLight.position.set(0, 50, -300);
+        sceneRef.current.add(rimLight);
+        const pointLight = new THREE.PointLight(0xffffff, 0.5);
+        pointLight.position.set(100, 200, 100);
+        pointLight.castShadow = true;
+        sceneRef.current.add(pointLight);
+      } else if (mode === 'dramatic') {
+        const ambientLight = new THREE.AmbientLight(0x1a1a2e, 0.3);
+        sceneRef.current.add(ambientLight);
+        const mainLight = new THREE.DirectionalLight(0xffffff, 2);
+        mainLight.position.set(300, 300, 200);
+        mainLight.castShadow = true;
+        mainLight.shadow.mapSize.width = 4096;
+        mainLight.shadow.mapSize.height = 4096;
+        mainLight.shadow.camera.far = 1500;
+        mainLight.shadow.camera.left = -600;
+        mainLight.shadow.camera.right = 600;
+        mainLight.shadow.camera.top = 600;
+        mainLight.shadow.camera.bottom = -600;
+        mainLight.shadow.bias = -0.0001;
+        sceneRef.current.add(mainLight);
+        const rimLight = new THREE.DirectionalLight(0xff00ff, 0.8);
+        rimLight.position.set(-300, 100, -300);
+        sceneRef.current.add(rimLight);
+        const pointLight = new THREE.PointLight(0x00ffff, 1);
+        pointLight.position.set(200, 300, 200);
+        pointLight.castShadow = true;
+        sceneRef.current.add(pointLight);
+      } else if (mode === 'soft') {
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
+        sceneRef.current.add(ambientLight);
+        const mainLight = new THREE.DirectionalLight(0xffffff, 0.8);
+        mainLight.position.set(150, 150, 150);
+        mainLight.castShadow = true;
+        mainLight.shadow.mapSize.width = 2048;
+        mainLight.shadow.mapSize.height = 2048;
+        mainLight.shadow.camera.far = 800;
+        mainLight.shadow.camera.left = -400;
+        mainLight.shadow.camera.right = 400;
+        mainLight.shadow.camera.top = 400;
+        mainLight.shadow.camera.bottom = -400;
+        mainLight.shadow.bias = -0.0001;
+        sceneRef.current.add(mainLight);
+        const fillLight = new THREE.DirectionalLight(0xccccff, 0.5);
+        fillLight.position.set(-150, 100, 150);
+        sceneRef.current.add(fillLight);
+        const rimLight = new THREE.DirectionalLight(0xffcccc, 0.3);
+        rimLight.position.set(0, 50, -200);
+        sceneRef.current.add(rimLight);
+      }
+    }
+  };
+
+  const toggleFeatureVisibility = (featureId: string) => {
+    const node = featureNodesRef.current.get(featureId);
+    if (node && node.mesh) {
+      node.mesh.visible = !node.mesh.visible;
+      node.visible = !node.visible;
+      setFeatureTree([...featureTree]);
+    }
   };
 
   const toggleGrid = () => {
@@ -494,7 +705,81 @@ export default function Viewer3D({ dsl, isLoading = false }: Viewer3DProps) {
         )}
 
         {/* Advanced Controls */}
-        <div className="absolute top-4 right-4 flex gap-2 z-20">
+        <div className="absolute top-4 right-4 flex gap-2 z-20 flex-wrap justify-end max-w-xs">
+          {/* Lighting Mode */}
+          <div className="flex gap-1 bg-gray-800/80 backdrop-blur p-1 rounded-lg">
+            <motion.button
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => changeLightingMode('studio')}
+              className={`p-2 rounded transition-all ${
+                lightingMode === 'studio'
+                  ? 'bg-cyan-500 text-white'
+                  : 'bg-gray-700 text-cyan-300 hover:bg-gray-600'
+              }`}
+              title="Studio lighting"
+            >
+              <Lightbulb className="w-4 h-4" />
+            </motion.button>
+            <motion.button
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => changeLightingMode('dramatic')}
+              className={`p-2 rounded transition-all ${
+                lightingMode === 'dramatic'
+                  ? 'bg-pink-500 text-white'
+                  : 'bg-gray-700 text-cyan-300 hover:bg-gray-600'
+              }`}
+              title="Dramatic lighting"
+            >
+              <Zap className="w-4 h-4" />
+            </motion.button>
+            <motion.button
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => changeLightingMode('soft')}
+              className={`p-2 rounded transition-all ${
+                lightingMode === 'soft'
+                  ? 'bg-yellow-500 text-white'
+                  : 'bg-gray-700 text-cyan-300 hover:bg-gray-600'
+              }`}
+              title="Soft lighting"
+            >
+              <Eye className="w-4 h-4" />
+            </motion.button>
+          </div>
+
+          {/* Render Mode */}
+          <div className="flex gap-1 bg-gray-800/80 backdrop-blur p-1 rounded-lg">
+            <motion.button
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => setRenderMode('solid')}
+              className={`p-2 rounded transition-all ${
+                renderMode === 'solid'
+                  ? 'bg-cyan-500 text-white'
+                  : 'bg-gray-700 text-cyan-300 hover:bg-gray-600'
+              }`}
+              title="Solid rendering"
+            >
+              <Palette className="w-4 h-4" />
+            </motion.button>
+            <motion.button
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => setRenderMode('wireframe')}
+              className={`p-2 rounded transition-all ${
+                renderMode === 'wireframe'
+                  ? 'bg-cyan-500 text-white'
+                  : 'bg-gray-700 text-cyan-300 hover:bg-gray-600'
+              }`}
+              title="Wireframe rendering"
+            >
+              <Grid3x3 className="w-4 h-4" />
+            </motion.button>
+          </div>
+
+          {/* Standard Controls */}
           <motion.button
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.95 }}
@@ -513,19 +798,6 @@ export default function Viewer3D({ dsl, isLoading = false }: Viewer3DProps) {
             >
               <RotateCcw className="w-5 h-5" />
             </motion.div>
-          </motion.button>
-          <motion.button
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={toggleWireframe}
-            className={`p-2 rounded-lg shadow transition-all ${
-              showWireframe
-                ? 'bg-cyan-500 text-white'
-                : 'bg-gray-800 text-cyan-300 hover:bg-gray-700'
-            }`}
-            title="Toggle wireframe"
-          >
-            <Grid3x3 className="w-5 h-5" />
           </motion.button>
           <motion.button
             whileHover={{ scale: 1.1 }}
@@ -615,7 +887,81 @@ export default function Viewer3D({ dsl, isLoading = false }: Viewer3DProps) {
           )}
 
           {/* Fullscreen Controls */}
-          <div className="absolute top-4 right-4 flex gap-2 z-20">
+          <div className="absolute top-4 right-4 flex gap-2 z-20 flex-wrap justify-end max-w-xs">
+            {/* Lighting Mode */}
+            <div className="flex gap-1 bg-gray-800/80 backdrop-blur p-1 rounded-lg">
+              <motion.button
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => changeLightingMode('studio')}
+                className={`p-2 rounded transition-all ${
+                  lightingMode === 'studio'
+                    ? 'bg-cyan-500 text-white'
+                    : 'bg-gray-700 text-cyan-300 hover:bg-gray-600'
+                }`}
+                title="Studio lighting"
+              >
+                <Lightbulb className="w-4 h-4" />
+              </motion.button>
+              <motion.button
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => changeLightingMode('dramatic')}
+                className={`p-2 rounded transition-all ${
+                  lightingMode === 'dramatic'
+                    ? 'bg-pink-500 text-white'
+                    : 'bg-gray-700 text-cyan-300 hover:bg-gray-600'
+                }`}
+                title="Dramatic lighting"
+              >
+                <Zap className="w-4 h-4" />
+              </motion.button>
+              <motion.button
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => changeLightingMode('soft')}
+                className={`p-2 rounded transition-all ${
+                  lightingMode === 'soft'
+                    ? 'bg-yellow-500 text-white'
+                    : 'bg-gray-700 text-cyan-300 hover:bg-gray-600'
+                }`}
+                title="Soft lighting"
+              >
+                <Eye className="w-4 h-4" />
+              </motion.button>
+            </div>
+
+            {/* Render Mode */}
+            <div className="flex gap-1 bg-gray-800/80 backdrop-blur p-1 rounded-lg">
+              <motion.button
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => setRenderMode('solid')}
+                className={`p-2 rounded transition-all ${
+                  renderMode === 'solid'
+                    ? 'bg-cyan-500 text-white'
+                    : 'bg-gray-700 text-cyan-300 hover:bg-gray-600'
+                }`}
+                title="Solid rendering"
+              >
+                <Palette className="w-4 h-4" />
+              </motion.button>
+              <motion.button
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => setRenderMode('wireframe')}
+                className={`p-2 rounded transition-all ${
+                  renderMode === 'wireframe'
+                    ? 'bg-cyan-500 text-white'
+                    : 'bg-gray-700 text-cyan-300 hover:bg-gray-600'
+                }`}
+                title="Wireframe rendering"
+              >
+                <Grid3x3 className="w-4 h-4" />
+              </motion.button>
+            </div>
+
+            {/* Standard Controls */}
             <motion.button
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.95 }}
@@ -634,19 +980,6 @@ export default function Viewer3D({ dsl, isLoading = false }: Viewer3DProps) {
               >
                 <RotateCcw className="w-5 h-5" />
               </motion.div>
-            </motion.button>
-            <motion.button
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={toggleWireframe}
-              className={`p-2 rounded-lg shadow transition-all ${
-                showWireframe
-                  ? 'bg-cyan-500 text-white'
-                  : 'bg-gray-800 text-cyan-300 hover:bg-gray-700'
-              }`}
-              title="Toggle wireframe"
-            >
-              <Grid3x3 className="w-5 h-5" />
             </motion.button>
             <motion.button
               whileHover={{ scale: 1.1 }}
