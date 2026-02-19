@@ -328,32 +328,32 @@ export default function Viewer3D({ dsl, isLoading = false }: Viewer3DProps) {
 
       if (feature.type === 'PAD') {
         if (feature.padProfile === 'RECTANGULAR') {
-          const width = (feature.padWidth?.value || 100) * 0.5;
-          const length = (feature.padLength?.value || 100) * 0.5;
-          const height = (feature.padHeight?.value || 10) * 0.5;
-          geometry = new THREE.BoxGeometry(width * 2, height * 2, length * 2, 16, 16, 16);
-          position.y = height;
+          const width = (feature.padWidth?.value || 100);
+          const length = (feature.padLength?.value || 100);
+          const height = (feature.padHeight?.value || 10);
+          geometry = new THREE.BoxGeometry(width, height, length, 16, 16, 16);
+          position.y = height / 2;
         } else if (feature.padProfile === 'CIRCULAR') {
-          const radius = (feature.padWidth?.value || 50) * 0.5;
-          const height = (feature.padHeight?.value || 50) * 0.5;
-          geometry = new THREE.CylinderGeometry(radius, radius, height * 2, 64, 32);
-          position.y = height;
+          const radius = (feature.padWidth?.value || 50) / 2;
+          const height = (feature.padHeight?.value || 50);
+          geometry = new THREE.CylinderGeometry(radius, radius, height, 64, 32);
+          position.y = height / 2;
         }
       } else if (feature.type === 'HOLE') {
-        const diameter = (feature.holeDiameter?.value || 6) * 0.5;
+        const diameter = (feature.holeDiameter?.value || 6) / 2;
         geometry = new THREE.CylinderGeometry(diameter, diameter, 100, 64, 32);
         if (feature.coordinate) {
           position.x = feature.coordinate.x?.value || 0;
           position.z = feature.coordinate.z?.value || 0;
         }
       } else if (feature.type === 'FILLET') {
-        const radius = (feature.radius?.value || 2) * 0.5;
+        const radius = (feature.radius?.value || 2);
         geometry = new THREE.SphereGeometry(radius, 32, 32);
       } else if (feature.type === 'POCKET') {
-        const width = (feature.padWidth?.value || 50) * 0.5;
-        const length = (feature.padLength?.value || 50) * 0.5;
-        const height = (feature.padHeight?.value || 5) * 0.5;
-        geometry = new THREE.BoxGeometry(width * 2, height * 2, length * 2, 16, 16, 16);
+        const width = (feature.padWidth?.value || 50);
+        const length = (feature.padLength?.value || 50);
+        const height = (feature.padHeight?.value || 5);
+        geometry = new THREE.BoxGeometry(width, height, length, 16, 16, 16);
       }
 
       if (geometry) {
@@ -375,6 +375,14 @@ export default function Viewer3D({ dsl, isLoading = false }: Viewer3DProps) {
           wireframe: showWireframe,
         });
         const mesh = new THREE.Mesh(geometry, material);
+        
+        // Apply coordinate-based positioning if available
+        if (feature.coordinate) {
+          position.x = feature.coordinate.x?.value || position.x;
+          position.y = feature.coordinate.y?.value || position.y;
+          position.z = feature.coordinate.z?.value || position.z;
+        }
+        
         mesh.position.set(position.x, position.y, position.z);
         mesh.castShadow = true;
         mesh.receiveShadow = true;

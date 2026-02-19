@@ -120,8 +120,56 @@ function parseNaturalLanguageToFeatures(input: string, units: string): Feature[]
   // Extract all dimensions with units
   const dimensions = extractDimensions(input, units);
 
-  // Base feature detection with better logic
-  if (lowerInput.includes('bracket') || lowerInput.includes('mount') || lowerInput.includes('support')) {
+  // Detect mounting bracket specifically
+  if (lowerInput.includes('bracket') && (lowerInput.includes('mount') || lowerInput.includes('support'))) {
+    // Create a more complex mounting bracket structure
+    
+    // Base plate
+    features.push({
+      id: `feature_${featureIndex++}`,
+      name: 'bracket_base_plate',
+      type: 'PAD',
+      padProfile: 'RECTANGULAR',
+      padWidth: dimensions[0] || { value: 100, unit: units as any },
+      padLength: dimensions[1] || { value: 150, unit: units as any },
+      padHeight: dimensions[2] || { value: 12, unit: units as any },
+      description: 'Main mounting bracket base plate',
+    });
+
+    // Vertical support arm
+    features.push({
+      id: `feature_${featureIndex++}`,
+      name: 'bracket_vertical_arm',
+      type: 'PAD',
+      padProfile: 'RECTANGULAR',
+      padWidth: dimensions[3] || { value: 80, unit: units as any },
+      padLength: dimensions[4] || { value: 15, unit: units as any },
+      padHeight: dimensions[5] || { value: 80, unit: units as any },
+      coordinate: {
+        x: { value: 0, unit: units as any },
+        y: { value: (dimensions[2]?.value || 12) / 2 + (dimensions[5]?.value || 80) / 2, unit: units as any },
+        z: { value: (dimensions[1]?.value || 150) / 2 - (dimensions[4]?.value || 15) / 2, unit: units as any },
+      },
+      description: 'Vertical support arm for mounting',
+    });
+
+    // Top mounting flange
+    features.push({
+      id: `feature_${featureIndex++}`,
+      name: 'bracket_top_flange',
+      type: 'PAD',
+      padProfile: 'RECTANGULAR',
+      padWidth: dimensions[6] || { value: 100, unit: units as any },
+      padLength: dimensions[7] || { value: 40, unit: units as any },
+      padHeight: dimensions[8] || { value: 10, unit: units as any },
+      coordinate: {
+        x: { value: 0, unit: units as any },
+        y: { value: (dimensions[2]?.value || 12) / 2 + (dimensions[5]?.value || 80), unit: units as any },
+        z: { value: (dimensions[1]?.value || 150) / 2 - (dimensions[4]?.value || 15) / 2, unit: units as any },
+      },
+      description: 'Top mounting flange for attachment',
+    });
+  } else if (lowerInput.includes('bracket') || lowerInput.includes('mount') || lowerInput.includes('support')) {
     features.push({
       id: `feature_${featureIndex++}`,
       name: 'mounting_bracket',
