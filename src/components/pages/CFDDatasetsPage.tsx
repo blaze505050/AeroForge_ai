@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Download, Eye, Filter, Search, Database, ChevronDown, Grid3x3, Layers, Zap } from 'lucide-react';
+import { Download, Eye, Filter, Search, Database, ChevronDown, Grid3x3, Layers, Zap, Gauge } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { BaseCrudService } from '@/integrations';
 import { CFDDatasets } from '@/entities';
+import Preview3DModal from '@/components/3DPreviewModal';
 
 interface TutorialStep {
   title: string;
@@ -70,6 +71,10 @@ export default function CFDDatasetsPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [expandedTutorial, setExpandedTutorial] = useState<number | null>(0);
+  const [previewModal, setPreviewModal] = useState<{ isOpen: boolean; dataset: CFDDatasets | null }>({
+    isOpen: false,
+    dataset: null,
+  });
 
   useEffect(() => {
     const loadDatasets = async () => {
@@ -105,6 +110,24 @@ export default function CFDDatasetsPage() {
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
+    }
+  };
+
+  const handlePreview = (dataset: CFDDatasets) => {
+    setPreviewModal({ isOpen: true, dataset });
+  };
+
+  const handleDownloadSTL = () => {
+    if (previewModal.dataset?.dataDownloadUrl) {
+      const url = previewModal.dataset.dataDownloadUrl.replace(/\.[^.]+$/, '.stl');
+      handleDownload(url);
+    }
+  };
+
+  const handleDownloadSTEP = () => {
+    if (previewModal.dataset?.dataDownloadUrl) {
+      const url = previewModal.dataset.dataDownloadUrl.replace(/\.[^.]+$/, '.step');
+      handleDownload(url);
     }
   };
 
@@ -249,9 +272,12 @@ export default function CFDDatasetsPage() {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5, delay: index * 0.1 }}
-                    className="bg-slate-800 rounded-lg shadow-lg hover:shadow-xl transition-shadow border border-slate-700 overflow-hidden"
+                    className="bg-slate-800 rounded-lg shadow-lg hover:shadow-xl transition-shadow border border-slate-700 overflow-hidden group"
                   >
-                    <div className="p-6">
+                    {/* Gradient Background */}
+                    <div className="absolute inset-0 bg-gradient-to-br from-blue-600/10 to-cyan-600/10 opacity-0 group-hover:opacity-100 transition-opacity" />
+                    
+                    <div className="p-6 relative z-10">
                       <div className="flex items-start justify-between mb-3">
                         <div className="flex items-center gap-2">
                           <Database className="w-5 h-5 text-blue-400" />
@@ -270,24 +296,32 @@ export default function CFDDatasetsPage() {
 
                       {dataset.simulationParameters && (
                         <div className="mb-4 p-3 bg-slate-900 rounded border border-slate-700">
-                          <p className="font-paragraph text-xs text-slate-500 mb-1">Simulation Parameters:</p>
-                          <p className="font-mono text-xs text-slate-300 line-clamp-2">
-                            {dataset.simulationParameters}
-                          </p>
+                          <p className="font-paragraph text-xs text-slate-500 mb-2">Simulation Parameters:</p>
+                          <div className="grid grid-cols-2 gap-2 text-xs">
+                            {dataset.simulationParameters.split(',').map((param, i) => (
+                              <div key={i} className="flex items-center gap-1 text-slate-300">
+                                <Gauge className="w-3 h-3 text-cyan-400" />
+                                <span className="truncate">{param.trim()}</span>
+                              </div>
+                            ))}
+                          </div>
                         </div>
                       )}
 
                       <div className="flex gap-2">
-                        <button className="flex-1 flex items-center justify-center gap-2 bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors font-paragraph text-sm font-semibold">
-                          <Eye className="w-4 h-4" />
-                          View
+                        <button 
+                          onClick={() => handlePreview(dataset)}
+                          className="flex-1 flex items-center justify-center gap-2 bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors font-paragraph text-sm font-semibold group/btn"
+                        >
+                          <Eye className="w-4 h-4 group-hover/btn:scale-110 transition-transform" />
+                          Preview 3D
                         </button>
                         {dataset.dataDownloadUrl && (
                           <button 
                             onClick={() => handleDownload(dataset.dataDownloadUrl)}
-                            className="flex-1 flex items-center justify-center gap-2 bg-slate-700 text-slate-200 py-2 rounded-lg hover:bg-slate-600 transition-colors font-paragraph text-sm font-semibold"
+                            className="flex-1 flex items-center justify-center gap-2 bg-slate-700 text-slate-200 py-2 rounded-lg hover:bg-slate-600 transition-colors font-paragraph text-sm font-semibold group/btn"
                           >
-                            <Download className="w-4 h-4" />
+                            <Download className="w-4 h-4 group-hover/btn:scale-110 transition-transform" />
                             Download
                           </button>
                         )}
@@ -346,6 +380,23 @@ export default function CFDDatasetsPage() {
           </section>
         </motion.div>
       </main>
+
+      {/* 3D Preview Modal */}
+      <Preview3DModal
+        isOpen={previewModal.isOpen}
+        onClose={() => setPreviewModal({ isOpen: false, dataset: null })}
+        title={previewModal.dataset?.datasetName || 'CFD Dataset Preview'}
+        description={previewModal.dataset?.description}
+        onDownloadSTL={handleDownloadSTL}
+        onDownloadSTEP={handleDownloadSTEP}
+        geometryType="complex"
+        simulationData={{
+          meshDensity: previewModal.dataset?.simulationParameters ? parseInt(previewModal.dataset.simulationParameters.split(',')[0]) : undefined,
+          reynoldsNumber: 100000,
+          machNumber: 0.5,
+          temperature: 288,
+        }}
+      />
 
       <Footer />
     </div>

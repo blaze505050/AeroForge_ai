@@ -6,6 +6,7 @@ import Footer from '@/components/Footer';
 import { BaseCrudService } from '@/integrations';
 import { AerospaceTemplates, MechanicalTemplates } from '@/entities';
 import { Image } from '@/components/ui/image';
+import Preview3DModal from '@/components/3DPreviewModal';
 
 export default function TemplatesPage() {
   const [activeTab, setActiveTab] = useState<'aerospace' | 'mechanical'>('aerospace');
@@ -14,6 +15,10 @@ export default function TemplatesPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [previewModal, setPreviewModal] = useState<{ isOpen: boolean; template: AerospaceTemplates | MechanicalTemplates | null }>({
+    isOpen: false,
+    template: null,
+  });
 
   useEffect(() => {
     const loadTemplates = async () => {
@@ -53,6 +58,10 @@ export default function TemplatesPage() {
     }
   };
 
+  const handleOpen3DPreview = (template: AerospaceTemplates | MechanicalTemplates) => {
+    setPreviewModal({ isOpen: true, template });
+  };
+
   const handleDownload = (url: string | undefined) => {
     if (url) {
       const a = document.createElement('a');
@@ -61,6 +70,20 @@ export default function TemplatesPage() {
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
+    }
+  };
+
+  const handleDownloadSTL = () => {
+    if (previewModal.template?.templateFileUrl) {
+      const url = previewModal.template.templateFileUrl.replace(/\.[^.]+$/, '.stl');
+      handleDownload(url);
+    }
+  };
+
+  const handleDownloadSTEP = () => {
+    if (previewModal.template?.templateFileUrl) {
+      const url = previewModal.template.templateFileUrl.replace(/\.[^.]+$/, '.step');
+      handleDownload(url);
     }
   };
 
@@ -170,16 +193,16 @@ export default function TemplatesPage() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: index * 0.1 }}
-                  className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow overflow-hidden"
+                  className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow overflow-hidden group"
                 >
                   {template.previewImage && (
-                    <div className="relative h-48 bg-slate-100 overflow-hidden cursor-pointer" onClick={() => handlePreview(template.previewImage)}>
+                    <div className="relative h-48 bg-slate-100 overflow-hidden cursor-pointer group/img" onClick={() => handlePreview(template.previewImage)}>
                       <Image
                         src={template.previewImage}
                         alt={template.title || 'Template'}
                         width={400}
                         height={300}
-                        className="w-full h-full object-cover hover:scale-105 transition-transform"
+                        className="w-full h-full object-cover group-hover/img:scale-105 transition-transform"
                       />
                     </div>
                   )}
@@ -197,18 +220,18 @@ export default function TemplatesPage() {
                     </p>
                     <div className="flex gap-2">
                       <button 
-                        onClick={() => handlePreview(template.previewImage)}
-                        className="flex-1 flex items-center justify-center gap-2 bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors font-paragraph text-sm font-semibold"
+                        onClick={() => handleOpen3DPreview(template)}
+                        className="flex-1 flex items-center justify-center gap-2 bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors font-paragraph text-sm font-semibold group/btn"
                       >
-                        <Eye className="w-4 h-4" />
-                        Preview
+                        <Eye className="w-4 h-4 group-hover/btn:scale-110 transition-transform" />
+                        View 3D
                       </button>
                       {template.templateFileUrl && (
                         <button 
                           onClick={() => handleDownload(template.templateFileUrl)}
-                          className="flex-1 flex items-center justify-center gap-2 bg-slate-200 text-slate-700 py-2 rounded-lg hover:bg-slate-300 transition-colors font-paragraph text-sm font-semibold"
+                          className="flex-1 flex items-center justify-center gap-2 bg-slate-200 text-slate-700 py-2 rounded-lg hover:bg-slate-300 transition-colors font-paragraph text-sm font-semibold group/btn"
                         >
-                          <Download className="w-4 h-4" />
+                          <Download className="w-4 h-4 group-hover/btn:scale-110 transition-transform" />
                           Download
                         </button>
                       )}
@@ -224,6 +247,17 @@ export default function TemplatesPage() {
           )}
         </motion.div>
       </main>
+
+      {/* 3D Preview Modal */}
+      <Preview3DModal
+        isOpen={previewModal.isOpen}
+        onClose={() => setPreviewModal({ isOpen: false, template: null })}
+        title={previewModal.template?.title || 'Template Preview'}
+        description={previewModal.template?.description}
+        onDownloadSTL={handleDownloadSTL}
+        onDownloadSTEP={handleDownloadSTEP}
+        geometryType={activeTab === 'aerospace' ? 'cone' : 'box'}
+      />
 
       <Footer />
     </div>
