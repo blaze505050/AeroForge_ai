@@ -62,6 +62,22 @@ export default function Header() {
             >
               Architecture
             </Link>
+            <Link 
+              to="/templates" 
+              className={`font-paragraph text-base transition-colors duration-200 ${
+                isActive('/templates') ? 'text-primary font-semibold' : 'text-foreground hover:text-primary'
+              }`}
+            >
+              Templates
+            </Link>
+            <Link 
+              to="/cfd-datasets" 
+              className={`font-paragraph text-base transition-colors duration-200 ${
+                isActive('/cfd-datasets') ? 'text-primary font-semibold' : 'text-foreground hover:text-primary'
+              }`}
+            >
+              CFD Datasets
+            </Link>
           </div>
         </nav>
       </div>

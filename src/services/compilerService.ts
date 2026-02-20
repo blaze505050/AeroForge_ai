@@ -1,6 +1,7 @@
 /**
- * AeroForge Compiler Service v1.0
+ * AeroForge Compiler Service v2.0
  * Deterministic Feature DSL Generation with Strict Validation
+ * FIXED: Accurate cube and bolt generation
  * 
  * DESIGN PRINCIPLES:
  * - No implicit geometry
@@ -110,7 +111,7 @@ export async function compileDesign(request: CompilerRequest): Promise<CompilerR
 
 /**
  * Parse natural language input into typed features
- * ENHANCED: Better dimension parsing and feature detection
+ * FIXED: Accurate cube and bolt detection
  */
 function parseNaturalLanguageToFeatures(input: string, units: string): Feature[] {
   const features: Feature[] = [];
@@ -120,10 +121,62 @@ function parseNaturalLanguageToFeatures(input: string, units: string): Feature[]
   // Extract all dimensions with units
   const dimensions = extractDimensions(input, units);
 
+  // CRITICAL FIX: Detect CUBE specifically (equal dimensions)
+  if (lowerInput.includes('cube')) {
+    const cubeDim = dimensions[0] || { value: 50, unit: units as any };
+    features.push({
+      id: `feature_${featureIndex++}`,
+      name: 'cube',
+      type: 'PAD',
+      padProfile: 'RECTANGULAR',
+      padWidth: cubeDim,
+      padLength: cubeDim,
+      padHeight: cubeDim,
+      description: 'Perfect cube with equal dimensions',
+    });
+    return features;
+  }
+
+  // CRITICAL FIX: Detect BOLT specifically (single cylinder, NOT holes)
+  if (lowerInput.includes('bolt') && !lowerInput.includes('hole')) {
+    const boltDiameter = dimensions[0] || { value: 10, unit: units as any };
+    const boltLength = dimensions[1] || { value: 50, unit: units as any };
+    
+    // Single bolt shaft
+    features.push({
+      id: `feature_${featureIndex++}`,
+      name: 'bolt_shaft',
+      type: 'PAD',
+      padProfile: 'CIRCULAR',
+      padWidth: boltDiameter,
+      padHeight: boltLength,
+      description: 'Single bolt shaft with precise cylindrical geometry',
+    });
+    
+    // Add bolt head if specified
+    if (lowerInput.includes('head')) {
+      const headDiameter = { value: (boltDiameter.value || 10) * 1.5, unit: boltDiameter.unit };
+      const headHeight = { value: (boltDiameter.value || 10) * 0.7, unit: boltDiameter.unit };
+      features.push({
+        id: `feature_${featureIndex++}`,
+        name: 'bolt_head',
+        type: 'PAD',
+        padProfile: 'CIRCULAR',
+        padWidth: headDiameter,
+        padHeight: headHeight,
+        coordinate: {
+          x: { value: 0, unit: units as any },
+          y: { value: (boltLength.value || 50) / 2 + (headHeight.value || 7) / 2, unit: units as any },
+          z: { value: 0, unit: units as any },
+        },
+        description: 'Bolt head with standard proportions',
+      });
+    }
+    return features;
+  }
+
   // Detect mounting bracket specifically
   if (lowerInput.includes('bracket') && (lowerInput.includes('mount') || lowerInput.includes('support'))) {
-    // Create a more complex mounting bracket structure
-    
     // Base plate
     features.push({
       id: `feature_${featureIndex++}`,
@@ -214,9 +267,9 @@ function parseNaturalLanguageToFeatures(input: string, units: string): Feature[]
     });
   }
 
-  // Enhanced hole detection
-  if (lowerInput.includes('hole') || lowerInput.includes('bolt') || lowerInput.includes('screw')) {
-    const holeMatches = input.match(/(\d+)\s*(?:x\s*)?(?:bolt|hole|screw)/gi) || [];
+  // Enhanced hole detection - only add if NOT a bolt
+  if ((lowerInput.includes('hole') || lowerInput.includes('screw')) && !lowerInput.includes('bolt')) {
+    const holeMatches = input.match(/(\d+)\s*(?:x\s*)?(?:hole|screw)/gi) || [];
     const holeCount = holeMatches.length > 0 ? parseInt(holeMatches[0]) : 2;
     const holeDiameter = dimensions.find((d, i) => i > 0 && d.value < 25) || { value: 8, unit: units as any };
     const spacing = dimensions.find((d, i) => i > 1 && d.value > 25) || { value: 60, unit: units as any };
@@ -235,7 +288,7 @@ function parseNaturalLanguageToFeatures(input: string, units: string): Feature[]
         holeDiameter,
         holeDepth: 'THROUGH',
         holeType: 'STRAIGHT',
-        description: `Precision bolt hole ${i + 1}`,
+        description: `Precision hole ${i + 1}`,
       });
     }
   }
