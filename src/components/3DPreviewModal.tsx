@@ -75,9 +75,9 @@ export default function Preview3DModal({
     scene.fog = new THREE.Fog(0x0a0e27, 1000, 2000);
     sceneRef.current = scene;
 
-    // Camera setup
-    const width = containerRef.current.clientWidth;
-    const height = containerRef.current.clientHeight;
+    // Camera setup - use correct container dimensions
+    const width = targetContainer.clientWidth;
+    const height = targetContainer.clientHeight;
     const camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 5000);
     camera.position.set(150, 150, 150);
     camera.lookAt(0, 0, 0);

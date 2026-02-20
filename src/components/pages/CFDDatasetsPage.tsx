@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Download, Eye, Filter, Search, Database, ChevronDown, Grid3x3, Layers, Zap, Gauge, Upload } from 'lucide-react';
+import { Download, Eye, Filter, Search, Database, ChevronDown, Grid3x3, Layers, Zap, Gauge, Upload, Star, TrendingUp, Clock, FileText, Code } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { BaseCrudService } from '@/integrations';
@@ -347,6 +347,32 @@ export default function CFDDatasetsPage() {
             )}
           </section>
 
+          {/* Quick Stats Section */}
+          <section className="mt-16 grid grid-cols-1 md:grid-cols-4 gap-4">
+            {[
+              { icon: <Database className="w-6 h-6" />, label: 'Total Datasets', value: filteredDatasets.length, color: 'from-blue-600 to-cyan-600' },
+              { icon: <TrendingUp className="w-6 h-6" />, label: 'Categories', value: categories.length, color: 'from-purple-600 to-pink-600' },
+              { icon: <Zap className="w-6 h-6" />, label: 'Simulation Types', value: '3+', color: 'from-orange-600 to-red-600' },
+              { icon: <Star className="w-6 h-6" />, label: 'Quality', value: 'Premium', color: 'from-green-600 to-emerald-600' },
+            ].map((stat, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: i * 0.1 }}
+                className={`bg-gradient-to-br ${stat.color} rounded-lg p-6 border border-white/10 shadow-lg`}
+              >
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="font-paragraph text-white/80 text-sm mb-1">{stat.label}</p>
+                    <p className="font-heading text-3xl font-bold text-white">{stat.value}</p>
+                  </div>
+                  <div className="text-white/40">{stat.icon}</div>
+                </div>
+              </motion.div>
+            ))}
+          </section>
+
           {/* Best Practices Section */}
           <section className="mt-16 bg-gradient-to-r from-blue-600/20 to-cyan-600/20 rounded-2xl p-8 border border-blue-500/30">
             <h2 className="font-heading text-2xl font-bold text-white mb-6">
@@ -357,24 +383,37 @@ export default function CFDDatasetsPage() {
                 {
                   title: 'Mesh Quality',
                   tips: ['Maintain aspect ratios', 'Refine near walls', 'Check skewness metrics'],
+                  icon: <Grid3x3 className="w-5 h-5" />,
                 },
                 {
                   title: 'Convergence',
                   tips: ['Monitor residuals', 'Use appropriate tolerances', 'Check solution stability'],
+                  icon: <TrendingUp className="w-5 h-5" />,
                 },
                 {
                   title: 'Validation',
                   tips: ['Compare with experimental data', 'Perform grid independence study', 'Check physical reasonableness'],
+                  icon: <FileText className="w-5 h-5" />,
                 },
                 {
                   title: 'Performance',
                   tips: ['Use parallel computing', 'Optimize solver settings', 'Monitor computational time'],
+                  icon: <Zap className="w-5 h-5" />,
                 },
               ].map((practice, i) => (
-                <div key={i} className="bg-slate-800/50 rounded-lg p-4 border border-slate-700">
-                  <h3 className="font-heading text-lg font-bold text-white mb-3">
-                    {practice.title}
-                  </h3>
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, x: i % 2 === 0 ? -20 : 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.5, delay: i * 0.1 }}
+                  className="bg-slate-800/50 rounded-lg p-4 border border-slate-700 hover:border-blue-500/50 transition-colors"
+                >
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="text-blue-400">{practice.icon}</div>
+                    <h3 className="font-heading text-lg font-bold text-white">
+                      {practice.title}
+                    </h3>
+                  </div>
                   <ul className="space-y-2">
                     {practice.tips.map((tip, j) => (
                       <li key={j} className="font-paragraph text-sm text-slate-300 flex items-start">
@@ -383,7 +422,60 @@ export default function CFDDatasetsPage() {
                       </li>
                     ))}
                   </ul>
-                </div>
+                </motion.div>
+              ))}
+            </div>
+          </section>
+
+          {/* Resources Section */}
+          <section className="mt-16">
+            <h2 className="font-heading text-3xl font-bold text-white mb-8">
+              Learning Resources
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {[
+                {
+                  title: 'Getting Started',
+                  description: 'Learn the fundamentals of CFD simulation and mesh generation',
+                  icon: <Code className="w-8 h-8" />,
+                  items: ['Basic concepts', 'Software setup', 'First simulation'],
+                },
+                {
+                  title: 'Advanced Techniques',
+                  description: 'Master complex CFD scenarios and optimization methods',
+                  icon: <Zap className="w-8 h-8" />,
+                  items: ['Turbulence modeling', 'Multiphase flow', 'Optimization'],
+                },
+                {
+                  title: 'Case Studies',
+                  description: 'Real-world applications and industry examples',
+                  icon: <TrendingUp className="w-8 h-8" />,
+                  items: ['Aerospace', 'Automotive', 'Energy'],
+                },
+              ].map((resource, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: i * 0.1 }}
+                  className="bg-slate-800 rounded-lg p-6 border border-slate-700 hover:border-cyan-500/50 transition-all hover:shadow-lg hover:shadow-cyan-500/20"
+                >
+                  <div className="text-cyan-400 mb-4">{resource.icon}</div>
+                  <h3 className="font-heading text-xl font-bold text-white mb-2">
+                    {resource.title}
+                  </h3>
+                  <p className="font-paragraph text-slate-400 text-sm mb-4">
+                    {resource.description}
+                  </p>
+                  <ul className="space-y-2">
+                    {resource.items.map((item, j) => (
+                      <li key={j} className="font-paragraph text-sm text-slate-300 flex items-center gap-2">
+                        <span className="w-1.5 h-1.5 rounded-full bg-cyan-400" />
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                </motion.div>
               ))}
             </div>
           </section>
