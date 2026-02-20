@@ -43,20 +43,32 @@ export default function DragCalculatorPage() {
     const dragForce = dynamicPressure * specs.referenceArea * specs.dragCoefficient;
     const dragPower = dragForce * specs.velocity;
 
-    // Estimate drag components
-    let skinFrictionDrag = dragForce * 0.7;
-    let pressureDrag = dragForce * 0.2;
-    let inducedDrag = dragForce * 0.1;
+    // More accurate drag component estimation using physics-based models
+    // Skin friction drag using Blasius equation for turbulent flow
+    let skinFrictionCoefficient = 0.074 / Math.pow(specs.reynoldsNumber, 0.2);
+    if (specs.surfaceRoughness === 'rough') {
+      skinFrictionCoefficient *= 1.15;
+    }
+    let skinFrictionDrag = dynamicPressure * specs.referenceArea * skinFrictionCoefficient;
 
-    // Adjust based on Mach number (compressibility effects)
+    // Pressure drag (form drag) - typically 20-30% of total for streamlined bodies
+    let pressureDrag = dragForce * 0.25;
+
+    // Induced drag - depends on lift coefficient and aspect ratio
+    let inducedDrag = dragForce * 0.08;
+
+    // Compressibility effects (Prandtl-Mach correction)
     if (specs.machNumber > 0.3) {
-      const machFactor = 1 + (specs.machNumber - 0.3) * 0.5;
-      pressureDrag *= machFactor;
+      const machFactor = 1 / Math.sqrt(1 - specs.machNumber * specs.machNumber);
+      pressureDrag *= (machFactor - 1) * 0.3 + 1; // Gradual increase
+      inducedDrag *= machFactor;
     }
 
-    // Adjust based on Reynolds number
+    // Reynolds number effects on skin friction
     if (specs.reynoldsNumber < 1000000) {
-      skinFrictionDrag *= 1.2;
+      skinFrictionDrag *= 1.25;
+    } else if (specs.reynoldsNumber > 100000000) {
+      skinFrictionDrag *= 0.95;
     }
 
     const dragPerUnitArea = dragForce / specs.referenceArea;

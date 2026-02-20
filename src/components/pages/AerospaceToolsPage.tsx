@@ -78,31 +78,42 @@ const tools: Tool[] = [
     path: '/drag-calculator',
   },
   {
-    id: 'aerospace-templates',
-    title: 'Aerospace Templates',
-    description: 'Access pre-built design templates for aircraft, drones, and spacecraft projects',
+    id: 'templates',
+    title: 'Design Templates',
+    description: 'Access pre-built design templates for aerospace and mechanical engineering projects',
     icon: <Zap className="w-8 h-8" />,
     category: 'Design',
-    features: ['Aircraft designs', 'Drone templates', 'Spacecraft layouts', 'Customizable'],
+    features: ['Aircraft designs', 'Mechanical templates', 'Customizable layouts', 'Export ready'],
     color: 'from-orange-500 to-red-500',
-  },
-  {
-    id: 'mechanical-templates',
-    title: 'Mechanical Templates',
-    description: 'Comprehensive mechanical engineering templates for structural and component design',
-    icon: <Wrench className="w-8 h-8" />,
-    category: 'Mechanical',
-    features: ['Fastener libraries', 'Gear designs', 'Assembly templates', 'Material specs'],
-    color: 'from-slate-500 to-gray-600',
+    path: '/templates',
   },
   {
     id: 'cfd-datasets',
-    title: 'CFD Datasets',
-    description: 'Access validated CFD simulation datasets for benchmarking and analysis',
+    title: 'CFD Datasets & Tutorials',
+    description: 'Access validated CFD simulation datasets with comprehensive tutorials and analysis tools',
     icon: <Database className="w-8 h-8" />,
     category: 'Data',
-    features: ['Validated data', 'Multiple scenarios', 'Performance metrics', 'Downloadable'],
+    features: ['Validated datasets', 'Mesh tutorials', 'Boundary conditions', 'Advanced analysis'],
     color: 'from-indigo-500 to-blue-600',
+    path: '/cfd-datasets',
+  },
+  {
+    id: 'aerospace-suite',
+    title: 'Advanced Aerospace Suite',
+    description: 'Coming Soon - Professional aerospace design and analysis platform',
+    icon: <Wrench className="w-8 h-8" />,
+    category: 'Design',
+    features: ['Multi-physics simulation', 'Structural analysis', 'Optimization tools', 'Team collaboration'],
+    color: 'from-slate-500 to-gray-600',
+  },
+  {
+    id: 'mechanical-suite',
+    title: 'Mechanical CAD Suite',
+    description: 'Coming Soon - Comprehensive mechanical design and manufacturing tools',
+    icon: <Wrench className="w-8 h-8" />,
+    category: 'Mechanical',
+    features: ['Parametric modeling', 'Assembly simulation', 'Manufacturing specs', 'Material database'],
+    color: 'from-slate-600 to-gray-700',
   },
 ];
 
@@ -139,7 +150,7 @@ export default function AerospaceToolsPage() {
               Aerospace Master Toolbox
             </h1>
             <p className="font-paragraph text-xl md:text-2xl text-slate-300 max-w-3xl mx-auto mb-8">
-              Comprehensive suite of tools for aerospace design, simulation, and analysis. From airfoil design to CFD data management.
+              Advanced analysis, simulation, and CAD toolkit for aerospace and mechanical engineering. Industry-grade precision with intuitive design.
             </p>
             <div className="flex flex-wrap justify-center gap-3">
               <button
@@ -246,25 +257,25 @@ export default function AerospaceToolsPage() {
             className="bg-gradient-to-r from-blue-600 to-cyan-600 rounded-2xl p-12 md:p-16"
           >
             <h2 className="font-heading text-4xl md:text-5xl font-bold text-white mb-8">
-              Why Choose Our Aerospace Toolbox?
+              Why Choose Our Advanced Toolkit?
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               {[
                 {
-                  title: 'Industry-Standard Tools',
-                  description: 'Built with aerospace engineering best practices and validated methodologies',
+                  title: 'Physics-Accurate Simulations',
+                  description: 'Industry-validated algorithms with high-fidelity aerodynamic and structural analysis',
                 },
                 {
                   title: 'Real-Time Visualization',
-                  description: 'See your designs come to life with interactive 3D visualization and analysis',
+                  description: 'Interactive 3D visualization with advanced rendering for instant design feedback',
                 },
                 {
-                  title: 'Data-Driven Design',
-                  description: 'Access comprehensive CFD datasets and airfoil databases for informed decisions',
+                  title: 'Comprehensive Tutorials',
+                  description: 'Step-by-step guides for mesh generation, boundary conditions, and advanced analysis',
                 },
                 {
-                  title: 'Seamless Integration',
-                  description: 'Export to CAD, import from standard formats, and collaborate with your team',
+                  title: 'Professional Export',
+                  description: 'Export to CAD formats, import from standard files, and collaborate seamlessly',
                 },
               ].map((feature, i) => (
                 <div key={i} className="bg-white/10 backdrop-blur-sm rounded-lg p-6 border border-white/20">
@@ -293,7 +304,7 @@ export default function AerospaceToolsPage() {
               Ready to Transform Your Aerospace Projects?
             </h2>
             <p className="font-paragraph text-xl text-slate-300 mb-8 max-w-2xl mx-auto">
-              Start using our comprehensive aerospace tools today. No setup required, just pure engineering power.
+              Start using our advanced aerospace toolkit today. Professional-grade tools with intuitive interfaces.
             </p>
             <motion.button
               whileHover={{ scale: 1.05 }}

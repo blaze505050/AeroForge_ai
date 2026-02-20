@@ -47,6 +47,23 @@ export default function TemplatesPage() {
     return matchesSearch && matchesCategory;
   });
 
+  const handlePreview = (previewImage: string | undefined) => {
+    if (previewImage) {
+      window.open(previewImage, '_blank');
+    }
+  };
+
+  const handleDownload = (url: string | undefined) => {
+    if (url) {
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = url.split('/').pop() || 'template';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
       <Header />
@@ -156,13 +173,13 @@ export default function TemplatesPage() {
                   className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow overflow-hidden"
                 >
                   {template.previewImage && (
-                    <div className="relative h-48 bg-slate-100 overflow-hidden">
+                    <div className="relative h-48 bg-slate-100 overflow-hidden cursor-pointer" onClick={() => handlePreview(template.previewImage)}>
                       <Image
                         src={template.previewImage}
                         alt={template.title || 'Template'}
                         width={400}
                         height={300}
-                        className="w-full h-full object-cover"
+                        className="w-full h-full object-cover hover:scale-105 transition-transform"
                       />
                     </div>
                   )}
@@ -179,12 +196,18 @@ export default function TemplatesPage() {
                       {template.description}
                     </p>
                     <div className="flex gap-2">
-                      <button className="flex-1 flex items-center justify-center gap-2 bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors font-paragraph text-sm font-semibold">
+                      <button 
+                        onClick={() => handlePreview(template.previewImage)}
+                        className="flex-1 flex items-center justify-center gap-2 bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors font-paragraph text-sm font-semibold"
+                      >
                         <Eye className="w-4 h-4" />
                         Preview
                       </button>
                       {template.templateFileUrl && (
-                        <button className="flex-1 flex items-center justify-center gap-2 bg-slate-200 text-slate-700 py-2 rounded-lg hover:bg-slate-300 transition-colors font-paragraph text-sm font-semibold">
+                        <button 
+                          onClick={() => handleDownload(template.templateFileUrl)}
+                          className="flex-1 flex items-center justify-center gap-2 bg-slate-200 text-slate-700 py-2 rounded-lg hover:bg-slate-300 transition-colors font-paragraph text-sm font-semibold"
+                        >
                           <Download className="w-4 h-4" />
                           Download
                         </button>

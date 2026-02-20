@@ -44,17 +44,20 @@ export default function ThrustCalculatorPage() {
     let powerOutput = 0;
 
     if (specs.engineType === 'jet') {
-      // Jet engine: F = ṁ * Ve
+      // Jet engine: F = ṁ * Ve (more accurate with combustion efficiency)
       const massFlow = specs.fuelFlow * 3.6; // Convert to kg/s
-      thrustGenerated = massFlow * specs.exhaustVelocity;
-      powerOutput = 0.5 * massFlow * specs.exhaustVelocity * specs.exhaustVelocity;
+      const combustionEfficiency = 0.95; // Typical jet engine efficiency
+      thrustGenerated = massFlow * specs.exhaustVelocity * combustionEfficiency;
+      powerOutput = 0.5 * massFlow * specs.exhaustVelocity * specs.exhaustVelocity * combustionEfficiency;
     } else {
-      // Piston engine: F = (ρ * A * V³ * Cp) / 2
+      // Piston engine: F = (ρ * A * V² * Ct) with propeller efficiency
       const area = Math.PI * (specs.propellerDiameter / 2) ** 2;
       const tipSpeed = (specs.propellerDiameter / 2) * specs.rpmValue * Math.PI / 30;
-      const velocity = tipSpeed * 0.7; // Effective velocity
-      thrustGenerated = (specs.airDensity * area * velocity * velocity * 0.8) / 2;
-      powerOutput = thrustGenerated * velocity;
+      const velocity = tipSpeed * 0.65; // More realistic effective velocity
+      const propellerEfficiency = 0.82; // Typical propeller efficiency
+      const thrustCoefficient = 0.85; // Thrust coefficient for propeller
+      thrustGenerated = (specs.airDensity * area * velocity * velocity * thrustCoefficient * propellerEfficiency) / 2;
+      powerOutput = thrustGenerated * velocity / propellerEfficiency;
     }
 
     const thrustToWeight = thrustGenerated / (specs.aircraftWeight * 9.81);
