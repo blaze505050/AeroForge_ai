@@ -78,6 +78,14 @@ export default function Header() {
             >
               CFD Datasets
             </Link>
+            <Link 
+              to="/robotics-templates" 
+              className={`font-paragraph text-base transition-colors duration-200 ${
+                isActive('/robotics-templates') ? 'text-primary font-semibold' : 'text-foreground hover:text-primary'
+              }`}
+            >
+              Robotics
+            </Link>
           </div>
         </nav>
       </div>

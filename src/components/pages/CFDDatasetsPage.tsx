@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Download, Eye, Filter, Search, Database, ChevronDown, Grid3x3, Layers, Zap, Gauge } from 'lucide-react';
+import { Download, Eye, Filter, Search, Database, ChevronDown, Grid3x3, Layers, Zap, Gauge, Upload } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { BaseCrudService } from '@/integrations';
@@ -304,6 +304,15 @@ export default function CFDDatasetsPage() {
                                 <span className="truncate">{param.trim()}</span>
                               </div>
                             ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {dataset.modelFile && (
+                        <div className="mb-4 p-3 bg-slate-900 rounded border border-slate-700">
+                          <div className="flex items-center gap-2 text-slate-300">
+                            <Upload className="w-4 h-4 text-blue-400" />
+                            <span className="text-xs">3D Model Available</span>
                           </div>
                         </div>
                       )}

@@ -18,6 +18,7 @@ import ThrustCalculatorPage from '@/components/pages/ThrustCalculatorPage';
 import DragCalculatorPage from '@/components/pages/DragCalculatorPage';
 import TemplatesPage from '@/components/pages/TemplatesPage';
 import CFDDatasetsPage from '@/components/pages/CFDDatasetsPage';
+import RoboticsTemplatesPage from '@/components/pages/RoboticsTemplatesPage';
 
 // Layout component that includes ScrollToTop
 function Layout() {
@@ -145,6 +146,13 @@ const router = createBrowserRouter([
         element: <CFDDatasetsPage />,
         routeMetadata: {
           pageIdentifier: 'cfd-datasets',
+        },
+      },
+      {
+        path: "robotics-templates",
+        element: <RoboticsTemplatesPage />,
+        routeMetadata: {
+          pageIdentifier: 'robotics-templates',
         },
       },
       {

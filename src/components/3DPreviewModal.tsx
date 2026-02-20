@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import * as THREE from 'three';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Download, RotateCcw, Maximize2, Minimize2, Lightbulb, Zap, Eye, Grid3x3, Layers } from 'lucide-react';
+import { X, Download, RotateCcw, Maximize2, Minimize2, Lightbulb, Zap, Eye, Grid3x3, Layers, Upload, FileUp } from 'lucide-react';
 
 interface Preview3DModalProps {
   isOpen: boolean;
@@ -38,11 +38,36 @@ export default function Preview3DModal({
   const [isAutoRotating, setIsAutoRotating] = useState(true);
   const [showGrid, setShowGrid] = useState(true);
   const [fps, setFps] = useState(60);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [uploadedFile, setUploadedFile] = useState<string | null>(null);
+  const fullscreenContainerRef = useRef<HTMLDivElement>(null);
   const fpsCounterRef = useRef({ frames: 0, lastTime: Date.now() });
   const autoRotateRef = useRef(true);
 
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const url = event.target?.result as string;
+        setUploadedFile(url);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleDownloadScreenshot = () => {
+    if (rendererRef.current) {
+      const link = document.createElement('a');
+      link.href = rendererRef.current.domElement.toDataURL('image/png');
+      link.download = `3d-preview-${Date.now()}.png`;
+      link.click();
+    }
+  };
+
   useEffect(() => {
-    if (!isOpen || !containerRef.current) return;
+    const targetContainer = isFullscreen ? fullscreenContainerRef.current : containerRef.current;
+    if (!isOpen || !targetContainer) return;
 
     // Scene setup
     const scene = new THREE.Scene();
@@ -59,14 +84,21 @@ export default function Preview3DModal({
     cameraRef.current = camera;
 
     // Renderer setup
-    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    const renderer = new THREE.WebGLRenderer({ 
+      antialias: true, 
+      alpha: true,
+      precision: 'highp',
+      powerPreference: 'high-performance'
+    });
     renderer.setSize(width, height);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFShadowShadowMap;
+    renderer.shadowMap.resolution = 2048;
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    containerRef.current.appendChild(renderer.domElement);
+    renderer.toneMappingExposure = 1;
+    targetContainer.appendChild(renderer.domElement);
     rendererRef.current = renderer;
 
     // Lighting setup
@@ -232,9 +264,10 @@ export default function Preview3DModal({
 
     // Handle resize
     const handleResize = () => {
-      if (!containerRef.current) return;
-      const newWidth = containerRef.current.clientWidth;
-      const newHeight = containerRef.current.clientHeight;
+      const resizeContainer = isFullscreen ? fullscreenContainerRef.current : containerRef.current;
+      if (!resizeContainer) return;
+      const newWidth = resizeContainer.clientWidth;
+      const newHeight = resizeContainer.clientHeight;
       camera.aspect = newWidth / newHeight;
       camera.updateProjectionMatrix();
       renderer.setSize(newWidth, newHeight);
@@ -244,9 +277,9 @@ export default function Preview3DModal({
 
     return () => {
       window.removeEventListener('resize', handleResize);
-      containerRef.current?.removeChild(renderer.domElement);
+      targetContainer?.removeChild(renderer.domElement);
     };
-  }, [isOpen, geometryType]);
+  }, [isOpen, geometryType, isFullscreen]);
 
   const handleResetView = () => {
     if (cameraRef.current) {
@@ -307,43 +340,220 @@ export default function Preview3DModal({
   return (
     <AnimatePresence>
       {isOpen && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4"
-          onClick={onClose}
-        >
-          <motion.div
-            initial={{ scale: 0.9, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0.9, opacity: 0 }}
-            onClick={(e) => e.stopPropagation()}
-            className="bg-slate-900 rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] flex flex-col border border-slate-700"
-          >
-            {/* Header */}
-            <div className="flex items-center justify-between p-6 border-b border-slate-700">
-              <div className="flex-1">
-                <h2 className="font-heading text-2xl font-bold text-white">{title}</h2>
-                {description && (
-                  <p className="font-paragraph text-slate-400 text-sm mt-1">{description}</p>
-                )}
-              </div>
-              <button
-                onClick={onClose}
-                className="p-2 hover:bg-slate-800 rounded-lg transition-colors"
+        <>
+          {/* Normal Modal */}
+          {!isFullscreen && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+              onClick={onClose}
+            >
+              <motion.div
+                initial={{ scale: 0.9, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.9, opacity: 0 }}
+                onClick={(e) => e.stopPropagation()}
+                className="bg-slate-900 rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] flex flex-col border border-slate-700"
               >
-                <X className="w-6 h-6 text-slate-400" />
-              </button>
-            </div>
+                {/* Header */}
+                <div className="flex items-center justify-between p-6 border-b border-slate-700">
+                  <div className="flex-1">
+                    <h2 className="font-heading text-2xl font-bold text-white">{title}</h2>
+                    {description && (
+                      <p className="font-paragraph text-slate-400 text-sm mt-1">{description}</p>
+                    )}
+                  </div>
+                  <button
+                    onClick={onClose}
+                    className="p-2 hover:bg-slate-800 rounded-lg transition-colors"
+                  >
+                    <X className="w-6 h-6 text-slate-400" />
+                  </button>
+                </div>
 
-            {/* 3D Viewer */}
-            <div className="flex-1 relative overflow-hidden">
-              <div ref={containerRef} className="w-full h-full" />
+                {/* 3D Viewer */}
+                <div className="flex-1 relative overflow-hidden">
+                  <div ref={containerRef} className="w-full h-full" />
 
-              {/* Controls */}
-              <div className="absolute top-4 right-4 flex gap-2 z-20 flex-wrap justify-end max-w-xs">
-                {/* Lighting Mode */}
+                  {/* Controls */}
+                  <div className="absolute top-4 right-4 flex gap-2 z-20 flex-wrap justify-end max-w-xs">
+                    {/* Lighting Mode */}
+                    <div className="flex gap-1 bg-slate-800/80 backdrop-blur p-1 rounded-lg">
+                      <motion.button
+                        whileHover={{ scale: 1.1 }}
+                        whileTap={{ scale: 0.95 }}
+                        onClick={() => changeLightingMode('studio')}
+                        className={`p-2 rounded transition-all ${
+                          lightingMode === 'studio'
+                            ? 'bg-cyan-500 text-white'
+                            : 'bg-slate-700 text-cyan-300 hover:bg-slate-600'
+                        }`}
+                        title="Studio lighting"
+                      >
+                        <Lightbulb className="w-4 h-4" />
+                      </motion.button>
+                      <motion.button
+                        whileHover={{ scale: 1.1 }}
+                        whileTap={{ scale: 0.95 }}
+                        onClick={() => changeLightingMode('dramatic')}
+                        className={`p-2 rounded transition-all ${
+                          lightingMode === 'dramatic'
+                            ? 'bg-pink-500 text-white'
+                            : 'bg-slate-700 text-cyan-300 hover:bg-slate-600'
+                        }`}
+                        title="Dramatic lighting"
+                      >
+                        <Zap className="w-4 h-4" />
+                      </motion.button>
+                      <motion.button
+                        whileHover={{ scale: 1.1 }}
+                        whileTap={{ scale: 0.95 }}
+                        onClick={() => changeLightingMode('soft')}
+                        className={`p-2 rounded transition-all ${
+                          lightingMode === 'soft'
+                            ? 'bg-yellow-500 text-white'
+                            : 'bg-slate-700 text-cyan-300 hover:bg-slate-600'
+                        }`}
+                        title="Soft lighting"
+                      >
+                        <Eye className="w-4 h-4" />
+                      </motion.button>
+                    </div>
+
+                    {/* Standard Controls */}
+                    <motion.button
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.95 }}
+                      onClick={toggleAutoRotate}
+                      className={`p-2 rounded-lg shadow transition-all ${
+                        isAutoRotating
+                          ? 'bg-cyan-500 text-white'
+                          : 'bg-slate-800 text-cyan-300 hover:bg-slate-700'
+                      }`}
+                      title="Toggle auto-rotate"
+                    >
+                      <motion.div
+                        animate={{ rotate: isAutoRotating ? 360 : 0 }}
+                        transition={{ duration: 4, repeat: isAutoRotating ? Infinity : 0, ease: 'linear' }}
+                        className="w-5 h-5"
+                      >
+                        <RotateCcw className="w-5 h-5" />
+                      </motion.div>
+                    </motion.button>
+                    <motion.button
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.95 }}
+                      onClick={handleResetView}
+                      className="p-2 bg-slate-800 text-cyan-300 rounded-lg shadow hover:bg-slate-700 transition-all"
+                      title="Reset view"
+                    >
+                      <RotateCcw className="w-5 h-5" />
+                    </motion.button>
+                    <motion.button
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.95 }}
+                      onClick={handleDownloadScreenshot}
+                      className="p-2 bg-slate-800 text-cyan-300 rounded-lg shadow hover:bg-slate-700 transition-all"
+                      title="Download screenshot"
+                    >
+                      <Download className="w-5 h-5" />
+                    </motion.button>
+                    <motion.button
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.95 }}
+                      onClick={() => setIsFullscreen(true)}
+                      className="p-2 bg-slate-800 text-cyan-300 rounded-lg shadow hover:bg-slate-700 transition-all"
+                      title="Fullscreen"
+                    >
+                      <Maximize2 className="w-5 h-5" />
+                    </motion.button>
+                  </div>
+
+                  {/* Info Overlay */}
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="absolute bottom-4 left-4 bg-slate-800/90 backdrop-blur px-4 py-3 rounded-lg shadow border border-cyan-500/20 text-xs font-paragraph text-cyan-300 z-20"
+                  >
+                    <div className="flex items-center gap-2 mb-2">
+                      <Zap className="w-4 h-4 text-pink-500" />
+                      <span>FPS: {fps}</span>
+                    </div>
+                    <div>🖱 Drag to rotate • Scroll to zoom</div>
+                    {simulationData && (
+                      <div className="mt-2 text-cyan-400/70 space-y-1">
+                        {simulationData.meshDensity && (
+                          <div>📊 Mesh Density: {simulationData.meshDensity}</div>
+                        )}
+                        {simulationData.reynoldsNumber && (
+                          <div>Re: {simulationData.reynoldsNumber}</div>
+                        )}
+                        {simulationData.machNumber && (
+                          <div>M: {simulationData.machNumber}</div>
+                        )}
+                      </div>
+                    )}
+                  </motion.div>
+                </div>
+
+                {/* Footer with Download Options */}
+                <div className="border-t border-slate-700 p-6 bg-slate-800/50">
+                  <div className="flex gap-3 justify-between items-center">
+                    <label className="flex items-center gap-2 px-4 py-2 rounded-lg bg-slate-700 text-slate-200 hover:bg-slate-600 transition-colors font-paragraph font-semibold cursor-pointer">
+                      <Upload className="w-4 h-4" />
+                      Upload 3D Model
+                      <input
+                        type="file"
+                        accept=".stl,.obj,.gltf,.glb"
+                        onChange={handleFileUpload}
+                        className="hidden"
+                      />
+                    </label>
+                    <div className="flex gap-3">
+                      <button
+                        onClick={onClose}
+                        className="px-4 py-2 rounded-lg bg-slate-700 text-slate-200 hover:bg-slate-600 transition-colors font-paragraph font-semibold"
+                      >
+                        Close
+                      </button>
+                      {onDownloadSTL && (
+                        <button
+                          onClick={onDownloadSTL}
+                          className="flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors font-paragraph font-semibold"
+                        >
+                          <Download className="w-4 h-4" />
+                          Download STL
+                        </button>
+                      )}
+                      {onDownloadSTEP && (
+                        <button
+                          onClick={onDownloadSTEP}
+                          className="flex items-center gap-2 px-4 py-2 rounded-lg bg-cyan-600 text-white hover:bg-cyan-700 transition-colors font-paragraph font-semibold"
+                        >
+                          <Download className="w-4 h-4" />
+                          Download STEP
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            </motion.div>
+          )}
+
+          {/* Fullscreen View */}
+          {isFullscreen && (
+            <motion.div
+              ref={fullscreenContainerRef}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 z-50 bg-slate-900 flex flex-col"
+            >
+              {/* Fullscreen Controls */}
+              <div className="absolute top-4 right-4 flex gap-2 z-20 flex-wrap justify-end">
                 <div className="flex gap-1 bg-slate-800/80 backdrop-blur p-1 rounded-lg">
                   <motion.button
                     whileHover={{ scale: 1.1 }}
@@ -382,8 +592,6 @@ export default function Preview3DModal({
                     <Eye className="w-4 h-4" />
                   </motion.button>
                 </div>
-
-                {/* Standard Controls */}
                 <motion.button
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.95 }}
@@ -410,9 +618,25 @@ export default function Preview3DModal({
                 >
                   <RotateCcw className="w-5 h-5" />
                 </motion.button>
+                <motion.button
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={handleDownloadScreenshot}
+                  className="p-2 bg-slate-800 text-cyan-300 rounded-lg shadow hover:bg-slate-700 transition-all"
+                >
+                  <Download className="w-5 h-5" />
+                </motion.button>
+                <motion.button
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => setIsFullscreen(false)}
+                  className="p-2 bg-slate-800 text-cyan-300 rounded-lg shadow hover:bg-slate-700 transition-all"
+                >
+                  <Minimize2 className="w-5 h-5" />
+                </motion.button>
               </div>
 
-              {/* Info Overlay */}
+              {/* Fullscreen Info */}
               <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -423,53 +647,10 @@ export default function Preview3DModal({
                   <span>FPS: {fps}</span>
                 </div>
                 <div>🖱 Drag to rotate • Scroll to zoom</div>
-                {simulationData && (
-                  <div className="mt-2 text-cyan-400/70 space-y-1">
-                    {simulationData.meshDensity && (
-                      <div>📊 Mesh Density: {simulationData.meshDensity}</div>
-                    )}
-                    {simulationData.reynoldsNumber && (
-                      <div>Re: {simulationData.reynoldsNumber}</div>
-                    )}
-                    {simulationData.machNumber && (
-                      <div>M: {simulationData.machNumber}</div>
-                    )}
-                  </div>
-                )}
               </motion.div>
-            </div>
-
-            {/* Footer with Download Options */}
-            <div className="border-t border-slate-700 p-6 bg-slate-800/50">
-              <div className="flex gap-3 justify-end">
-                <button
-                  onClick={onClose}
-                  className="px-4 py-2 rounded-lg bg-slate-700 text-slate-200 hover:bg-slate-600 transition-colors font-paragraph font-semibold"
-                >
-                  Close
-                </button>
-                {onDownloadSTL && (
-                  <button
-                    onClick={onDownloadSTL}
-                    className="flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors font-paragraph font-semibold"
-                  >
-                    <Download className="w-4 h-4" />
-                    Download STL
-                  </button>
-                )}
-                {onDownloadSTEP && (
-                  <button
-                    onClick={onDownloadSTEP}
-                    className="flex items-center gap-2 px-4 py-2 rounded-lg bg-cyan-600 text-white hover:bg-cyan-700 transition-colors font-paragraph font-semibold"
-                  >
-                    <Download className="w-4 h-4" />
-                    Download STEP
-                  </button>
-                )}
-              </div>
-            </div>
-          </motion.div>
-        </motion.div>
+            </motion.div>
+          )}
+        </>
       )}
     </AnimatePresence>
   );

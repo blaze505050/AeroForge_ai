@@ -101,6 +101,8 @@ export interface CFDDatasets {
   _updatedDate?: Date;
   /** @wixFieldType text */
   datasetName?: string;
+  /** @wixFieldType url */
+  modelFile?: string;
   /** @wixFieldType text */
   description?: string;
   /** @wixFieldType text */
@@ -153,4 +155,25 @@ export interface MechanicalTemplates {
   previewImage?: string;
   /** @wixFieldType text */
   version?: string;
+}
+
+
+/**
+ * Collection ID: roboticstemplates
+ * Interface for RoboticsTemplates
+ */
+export interface RoboticsTemplates {
+  _id: string;
+  _createdDate?: Date;
+  _updatedDate?: Date;
+  /** @wixFieldType text */
+  title?: string;
+  /** @wixFieldType text */
+  description?: string;
+  /** @wixFieldType text */
+  category?: string;
+  /** @wixFieldType url */
+  templateFileUrl?: string;
+  /** @wixFieldType image - Contains image URL, render with <Image> component, NOT as text */
+  previewImage?: string;
 }
