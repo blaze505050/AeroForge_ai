@@ -48,6 +48,29 @@ export interface AirfoilProfiles {
 
 
 /**
+ * Collection ID: aisuggestions
+ * Interface for AISuggestions
+ */
+export interface AISuggestions {
+  _id: string;
+  _createdDate?: Date;
+  _updatedDate?: Date;
+  /** @wixFieldType text */
+  suggestionText?: string;
+  /** @wixFieldType number */
+  confidenceScore?: number;
+  /** @wixFieldType number */
+  relevanceScore?: number;
+  /** @wixFieldType text */
+  contextDescription?: string;
+  /** @wixFieldType text */
+  suggestionType?: string;
+  /** @wixFieldType datetime */
+  generatedTimestamp?: Date | string;
+}
+
+
+/**
  * Collection ID: antigoals
  * Interface for AntiGoals
  */
@@ -88,6 +111,31 @@ export interface ArchitecturePrinciples {
   diagramText?: string;
   /** @wixFieldType text */
   relatedAntiGoals?: string;
+}
+
+
+/**
+ * Collection ID: cadprojects
+ * Interface for CADProjects
+ */
+export interface CADProjects {
+  _id: string;
+  _createdDate?: Date;
+  _updatedDate?: Date;
+  /** @wixFieldType text */
+  projectTitle?: string;
+  /** @wixFieldType text */
+  description?: string;
+  /** @wixFieldType text */
+  status?: string;
+  /** @wixFieldType text */
+  owner?: string;
+  /** @wixFieldType image - Contains image URL, render with <Image> component, NOT as text */
+  thumbnail?: string;
+  /** @wixFieldType datetime */
+  creationDate?: Date | string;
+  /** @wixFieldType datetime */
+  lastModifiedDate?: Date | string;
 }
 
 
@@ -136,6 +184,27 @@ export interface CorePhilosophy {
 
 
 /**
+ * Collection ID: designversions
+ * Interface for DesignVersions
+ */
+export interface DesignVersions {
+  _id: string;
+  _createdDate?: Date;
+  _updatedDate?: Date;
+  /** @wixFieldType text */
+  versionNumber?: string;
+  /** @wixFieldType text */
+  versionName?: string;
+  /** @wixFieldType text */
+  changeLog?: string;
+  /** @wixFieldType datetime */
+  creationTimestamp?: Date | string;
+  /** @wixFieldType text */
+  status?: string;
+}
+
+
+/**
  * Collection ID: mechanicaltemplates
  * Interface for MechanicalTemplates
  */
@@ -176,4 +245,29 @@ export interface RoboticsTemplates {
   templateFileUrl?: string;
   /** @wixFieldType image - Contains image URL, render with <Image> component, NOT as text */
   previewImage?: string;
+}
+
+
+/**
+ * Collection ID: simulations
+ * Interface for Simulations
+ */
+export interface Simulations {
+  _id: string;
+  _createdDate?: Date;
+  _updatedDate?: Date;
+  /** @wixFieldType text */
+  simulationName?: string;
+  /** @wixFieldType text */
+  simulationType?: string;
+  /** @wixFieldType text */
+  inputParameters?: string;
+  /** @wixFieldType text */
+  resultSummary?: string;
+  /** @wixFieldType boolean */
+  successStatus?: boolean;
+  /** @wixFieldType datetime */
+  simulationDate?: Date | string;
+  /** @wixFieldType image - Contains image URL, render with <Image> component, NOT as text */
+  visualizations?: string;
 }

@@ -20,6 +20,8 @@ import TemplatesPage from '@/components/pages/TemplatesPage';
 import CFDDatasetsPage from '@/components/pages/CFDDatasetsPage';
 import RoboticsTemplatesPage from '@/components/pages/RoboticsTemplatesPage';
 import AboutToolsPage from '@/components/pages/AboutToolsPage';
+import CADSystemPage from '@/components/pages/CADSystemPage';
+import CADEditorPage from '@/components/pages/CADEditorPage';
 
 // Layout component that includes ScrollToTop
 function Layout() {
@@ -161,6 +163,20 @@ const router = createBrowserRouter([
         element: <AboutToolsPage />,
         routeMetadata: {
           pageIdentifier: 'about-tools',
+        },
+      },
+      {
+        path: "cad-system",
+        element: <CADSystemPage />,
+        routeMetadata: {
+          pageIdentifier: 'cad-system',
+        },
+      },
+      {
+        path: "cad-editor",
+        element: <CADEditorPage />,
+        routeMetadata: {
+          pageIdentifier: 'cad-editor',
         },
       },
       {

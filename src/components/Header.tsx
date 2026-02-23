@@ -94,6 +94,22 @@ export default function Header() {
             >
               About Tools
             </Link>
+            <Link 
+              to="/cad-system" 
+              className={`font-paragraph text-base transition-colors duration-200 ${
+                isActive('/cad-system') ? 'text-aerospace-blue font-semibold' : 'text-foreground hover:text-aerospace-blue'
+              }`}
+            >
+              CAD System
+            </Link>
+            <Link 
+              to="/cad-editor" 
+              className={`font-paragraph text-base transition-colors duration-200 ${
+                isActive('/cad-editor') ? 'text-aerospace-blue font-semibold' : 'text-foreground hover:text-aerospace-blue'
+              }`}
+            >
+              CAD Editor
+            </Link>
           </div>
         </nav>
       </div>
