@@ -132,19 +132,19 @@ export default function CFDDatasetsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex flex-col">
       <Header />
 
-      <main className="w-full max-w-[120rem] mx-auto px-4 py-12">
+      <main className="w-full max-w-[120rem] mx-auto px-4 md:px-6 lg:px-8 py-8 md:py-12 flex-1">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
         >
-          <h1 className="font-heading text-4xl md:text-5xl font-bold text-white mb-2">
+          <h1 className="font-heading text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-2">
             CFD Datasets & Tutorials
           </h1>
-          <p className="font-paragraph text-slate-400 mb-12">
+          <p className="font-paragraph text-sm md:text-base text-slate-400 mb-8 md:mb-12">
             High-quality computational fluid dynamics datasets with comprehensive tutorials for mesh generation, boundary conditions, and advanced analysis
           </p>
 
@@ -164,23 +164,23 @@ export default function CFDDatasetsPage() {
                 >
                   <button
                     onClick={() => setExpandedTutorial(expandedTutorial === index ? null : index)}
-                    className="w-full p-6 flex items-center justify-between hover:bg-slate-750 transition-colors"
+                    className="w-full p-4 md:p-6 flex items-center justify-between hover:bg-slate-750 transition-colors"
                   >
-                    <div className="flex items-center gap-4 text-left flex-1">
-                      <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center text-white flex-shrink-0">
+                    <div className="flex items-center gap-3 md:gap-4 text-left flex-1 min-w-0">
+                      <div className="w-10 h-10 md:w-12 md:h-12 rounded-lg bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center text-white flex-shrink-0">
                         {step.icon}
                       </div>
-                      <div>
-                        <h3 className="font-heading text-xl font-bold text-white">
+                      <div className="min-w-0">
+                        <h3 className="font-heading text-base md:text-lg lg:text-xl font-bold text-white">
                           {step.title}
                         </h3>
-                        <p className="font-paragraph text-slate-400 text-sm">
+                        <p className="font-paragraph text-xs md:text-sm text-slate-400 line-clamp-1">
                           {step.description}
                         </p>
                       </div>
                     </div>
                     <ChevronDown 
-                      className={`w-5 h-5 text-slate-400 transition-transform ${expandedTutorial === index ? 'rotate-180' : ''}`}
+                      className={`w-5 h-5 text-slate-400 transition-transform flex-shrink-0 ml-2 ${expandedTutorial === index ? 'rotate-180' : ''}`}
                     />
                   </button>
                   
@@ -192,10 +192,10 @@ export default function CFDDatasetsPage() {
                       transition={{ duration: 0.3 }}
                       className="border-t border-slate-700 bg-slate-900/50 p-6"
                     >
-                      <ul className="space-y-3">
+                      <ul className="space-y-2 md:space-y-3">
                         {step.details.map((detail, i) => (
-                          <li key={i} className="font-paragraph text-slate-300 flex items-start">
-                            <span className="inline-block w-2 h-2 rounded-full bg-blue-400 mr-3 mt-2 flex-shrink-0" />
+                          <li key={i} className="font-paragraph text-xs md:text-sm text-slate-300 flex items-start">
+                            <span className="inline-block w-2 h-2 rounded-full bg-blue-400 mr-2 md:mr-3 mt-1.5 md:mt-2 flex-shrink-0" />
                             {detail}
                           </li>
                         ))}
@@ -214,7 +214,7 @@ export default function CFDDatasetsPage() {
             </h2>
 
             {/* Search and Filter */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4 mb-6 md:mb-8">
               <div className="relative">
                 <Search className="absolute left-3 top-3 w-5 h-5 text-slate-500" />
                 <input
@@ -222,25 +222,25 @@ export default function CFDDatasetsPage() {
                   placeholder="Search datasets..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 border border-slate-700 rounded-lg bg-slate-800 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full pl-10 pr-4 py-2 border border-slate-700 rounded-lg bg-slate-800 text-white text-sm md:text-base focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
               <div className="flex gap-2 flex-wrap">
                 <button
                   onClick={() => setSelectedCategory(null)}
-                  className={`px-4 py-2 rounded-lg font-paragraph text-sm transition-colors ${
+                  className={`px-3 md:px-4 py-2 rounded-lg font-paragraph text-xs md:text-sm transition-colors ${
                     selectedCategory === null
                       ? 'bg-blue-600 text-white'
                       : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
                   }`}
                 >
-                  All Categories
+                  All
                 </button>
                 {categories.map(cat => (
                   <button
                     key={cat}
                     onClick={() => setSelectedCategory(cat)}
-                    className={`px-4 py-2 rounded-lg font-paragraph text-sm transition-colors ${
+                    className={`px-3 md:px-4 py-2 rounded-lg font-paragraph text-xs md:text-sm transition-colors whitespace-nowrap ${
                       selectedCategory === cat
                         ? 'bg-blue-600 text-white'
                         : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
@@ -254,7 +254,7 @@ export default function CFDDatasetsPage() {
 
             {/* Datasets Grid */}
             {isLoading ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
                 {[...Array(6)].map((_, i) => (
                   <div key={i} className="bg-slate-700 rounded-lg h-64 animate-pulse" />
                 ))}
@@ -264,7 +264,7 @@ export default function CFDDatasetsPage() {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.5 }}
-                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+                className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6"
               >
                 {filteredDatasets.map((dataset, index) => (
                   <motion.div
@@ -277,30 +277,30 @@ export default function CFDDatasetsPage() {
                     {/* Gradient Background */}
                     <div className="absolute inset-0 bg-gradient-to-br from-blue-600/10 to-cyan-600/10 opacity-0 group-hover:opacity-100 transition-opacity" />
                     
-                    <div className="p-6 relative z-10">
-                      <div className="flex items-start justify-between mb-3">
-                        <div className="flex items-center gap-2">
-                          <Database className="w-5 h-5 text-blue-400" />
-                          <h3 className="font-heading text-lg font-bold text-white">
+                    <div className="p-4 md:p-6 relative z-10">
+                      <div className="flex items-start justify-between mb-3 gap-2">
+                        <div className="flex items-center gap-2 min-w-0">
+                          <Database className="w-4 h-4 md:w-5 md:h-5 text-blue-400 flex-shrink-0" />
+                          <h3 className="font-heading text-base md:text-lg font-bold text-white truncate">
                             {dataset.datasetName}
                           </h3>
                         </div>
-                        <span className="bg-blue-500/20 text-blue-300 text-xs font-semibold px-2 py-1 rounded">
+                        <span className="bg-blue-500/20 text-blue-300 text-xs font-semibold px-2 py-1 rounded flex-shrink-0">
                           {dataset.category}
                         </span>
                       </div>
                       
-                      <p className="font-paragraph text-sm text-slate-400 mb-4 line-clamp-2">
+                      <p className="font-paragraph text-xs md:text-sm text-slate-400 mb-4 line-clamp-2">
                         {dataset.description}
                       </p>
 
                       {dataset.simulationParameters && (
-                        <div className="mb-4 p-3 bg-slate-900 rounded border border-slate-700">
+                        <div className="mb-4 p-2 md:p-3 bg-slate-900 rounded border border-slate-700">
                           <p className="font-paragraph text-xs text-slate-500 mb-2">Simulation Parameters:</p>
                           <div className="grid grid-cols-2 gap-2 text-xs">
                             {dataset.simulationParameters.split(',').map((param, i) => (
-                              <div key={i} className="flex items-center gap-1 text-slate-300">
-                                <Gauge className="w-3 h-3 text-cyan-400" />
+                              <div key={i} className="flex items-center gap-1 text-slate-300 min-w-0">
+                                <Gauge className="w-3 h-3 text-cyan-400 flex-shrink-0" />
                                 <span className="truncate">{param.trim()}</span>
                               </div>
                             ))}
@@ -309,18 +309,18 @@ export default function CFDDatasetsPage() {
                       )}
 
                       {dataset.modelFile && (
-                        <div className="mb-4 p-3 bg-slate-900 rounded border border-slate-700">
+                        <div className="mb-4 p-2 md:p-3 bg-slate-900 rounded border border-slate-700">
                           <div className="flex items-center gap-2 text-slate-300">
-                            <Upload className="w-4 h-4 text-blue-400" />
+                            <Upload className="w-3 h-3 md:w-4 md:h-4 text-blue-400 flex-shrink-0" />
                             <span className="text-xs">3D Model Available</span>
                           </div>
                         </div>
                       )}
 
-                      <div className="flex gap-2">
+                      <div className="flex gap-2 flex-col sm:flex-row">
                         <button 
                           onClick={() => handlePreview(dataset)}
-                          className="flex-1 flex items-center justify-center gap-2 bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors font-paragraph text-sm font-semibold group/btn"
+                          className="flex-1 flex items-center justify-center gap-2 bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors font-paragraph text-xs md:text-sm font-semibold group/btn"
                         >
                           <Eye className="w-4 h-4 group-hover/btn:scale-110 transition-transform" />
                           Preview 3D
@@ -328,7 +328,7 @@ export default function CFDDatasetsPage() {
                         {dataset.dataDownloadUrl && (
                           <button 
                             onClick={() => handleDownload(dataset.dataDownloadUrl)}
-                            className="flex-1 flex items-center justify-center gap-2 bg-slate-700 text-slate-200 py-2 rounded-lg hover:bg-slate-600 transition-colors font-paragraph text-sm font-semibold group/btn"
+                            className="flex-1 flex items-center justify-center gap-2 bg-slate-700 text-slate-200 py-2 rounded-lg hover:bg-slate-600 transition-colors font-paragraph text-xs md:text-sm font-semibold group/btn"
                           >
                             <Download className="w-4 h-4 group-hover/btn:scale-110 transition-transform" />
                             Download
@@ -374,11 +374,11 @@ export default function CFDDatasetsPage() {
           </section>
 
           {/* Best Practices Section */}
-          <section className="mt-16 bg-gradient-to-r from-blue-600/20 to-cyan-600/20 rounded-2xl p-8 border border-blue-500/30">
-            <h2 className="font-heading text-2xl font-bold text-white mb-6">
+          <section className="mt-12 md:mt-16 bg-gradient-to-r from-blue-600/20 to-cyan-600/20 rounded-2xl p-6 md:p-8 border border-blue-500/30">
+            <h2 className="font-heading text-xl md:text-2xl font-bold text-white mb-6">
               CFD Best Practices
             </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
               {[
                 {
                   title: 'Mesh Quality',
@@ -410,13 +410,13 @@ export default function CFDDatasetsPage() {
                 >
                   <div className="flex items-center gap-3 mb-3">
                     <div className="text-blue-400">{practice.icon}</div>
-                    <h3 className="font-heading text-lg font-bold text-white">
+                    <h3 className="font-heading text-base md:text-lg font-bold text-white">
                       {practice.title}
                     </h3>
                   </div>
                   <ul className="space-y-2">
                     {practice.tips.map((tip, j) => (
-                      <li key={j} className="font-paragraph text-sm text-slate-300 flex items-start">
+                      <li key={j} className="font-paragraph text-xs md:text-sm text-slate-300 flex items-start">
                         <span className="inline-block w-1.5 h-1.5 rounded-full bg-blue-400 mr-2 mt-1.5 flex-shrink-0" />
                         {tip}
                       </li>
@@ -428,28 +428,28 @@ export default function CFDDatasetsPage() {
           </section>
 
           {/* Resources Section */}
-          <section className="mt-16">
-            <h2 className="font-heading text-3xl font-bold text-white mb-8">
+          <section className="mt-12 md:mt-16">
+            <h2 className="font-heading text-2xl md:text-3xl font-bold text-white mb-6 md:mb-8">
               Learning Resources
             </h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
               {[
                 {
                   title: 'Getting Started',
                   description: 'Learn the fundamentals of CFD simulation and mesh generation',
-                  icon: <Code className="w-8 h-8" />,
+                  icon: <Code className="w-6 h-6 md:w-8 md:h-8" />,
                   items: ['Basic concepts', 'Software setup', 'First simulation'],
                 },
                 {
                   title: 'Advanced Techniques',
                   description: 'Master complex CFD scenarios and optimization methods',
-                  icon: <Zap className="w-8 h-8" />,
+                  icon: <Zap className="w-6 h-6 md:w-8 md:h-8" />,
                   items: ['Turbulence modeling', 'Multiphase flow', 'Optimization'],
                 },
                 {
                   title: 'Case Studies',
                   description: 'Real-world applications and industry examples',
-                  icon: <TrendingUp className="w-8 h-8" />,
+                  icon: <TrendingUp className="w-6 h-6 md:w-8 md:h-8" />,
                   items: ['Aerospace', 'Automotive', 'Energy'],
                 },
               ].map((resource, i) => (
@@ -458,19 +458,19 @@ export default function CFDDatasetsPage() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: i * 0.1 }}
-                  className="bg-slate-800 rounded-lg p-6 border border-slate-700 hover:border-cyan-500/50 transition-all hover:shadow-lg hover:shadow-cyan-500/20"
+                  className="bg-slate-800 rounded-lg p-4 md:p-6 border border-slate-700 hover:border-cyan-500/50 transition-all hover:shadow-lg hover:shadow-cyan-500/20"
                 >
                   <div className="text-cyan-400 mb-4">{resource.icon}</div>
-                  <h3 className="font-heading text-xl font-bold text-white mb-2">
+                  <h3 className="font-heading text-lg md:text-xl font-bold text-white mb-2">
                     {resource.title}
                   </h3>
-                  <p className="font-paragraph text-slate-400 text-sm mb-4">
+                  <p className="font-paragraph text-xs md:text-sm text-slate-400 mb-4">
                     {resource.description}
                   </p>
                   <ul className="space-y-2">
                     {resource.items.map((item, j) => (
-                      <li key={j} className="font-paragraph text-sm text-slate-300 flex items-center gap-2">
-                        <span className="w-1.5 h-1.5 rounded-full bg-cyan-400" />
+                      <li key={j} className="font-paragraph text-xs md:text-sm text-slate-300 flex items-center gap-2">
+                        <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 flex-shrink-0" />
                         {item}
                       </li>
                     ))}
