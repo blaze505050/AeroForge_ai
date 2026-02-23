@@ -19,6 +19,7 @@ import DragCalculatorPage from '@/components/pages/DragCalculatorPage';
 import TemplatesPage from '@/components/pages/TemplatesPage';
 import CFDDatasetsPage from '@/components/pages/CFDDatasetsPage';
 import RoboticsTemplatesPage from '@/components/pages/RoboticsTemplatesPage';
+import AboutToolsPage from '@/components/pages/AboutToolsPage';
 
 // Layout component that includes ScrollToTop
 function Layout() {
@@ -153,6 +154,13 @@ const router = createBrowserRouter([
         element: <RoboticsTemplatesPage />,
         routeMetadata: {
           pageIdentifier: 'robotics-templates',
+        },
+      },
+      {
+        path: "about-tools",
+        element: <AboutToolsPage />,
+        routeMetadata: {
+          pageIdentifier: 'about-tools',
         },
       },
       {

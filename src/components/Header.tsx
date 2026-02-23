@@ -6,10 +6,10 @@ export default function Header() {
   const isActive = (path: string) => location.pathname === path || (path === '/compiler' && location.pathname === '/compiler-classic');
   
   return (
-    <header className="w-full border-b border-secondary/20">
+    <header className="w-full border-b border-secondary/20 bg-primary">
       <div className="max-w-[120rem] mx-auto px-[8%] py-6">
         <nav className="flex items-center justify-between">
-          <Link to="/" className="font-heading text-2xl font-bold text-primary">
+          <Link to="/" className="font-heading text-2xl font-bold text-aerospace-blue">
             AeroForge AI
           </Link>
           
@@ -17,7 +17,7 @@ export default function Header() {
             <Link 
               to="/" 
               className={`font-paragraph text-base transition-colors duration-200 ${
-                isActive('/') ? 'text-primary font-semibold' : 'text-foreground hover:text-primary'
+                isActive('/') ? 'text-aerospace-blue font-semibold' : 'text-foreground hover:text-aerospace-blue'
               }`}
             >
               Home
@@ -25,7 +25,7 @@ export default function Header() {
             <Link 
               to="/aerospace-tools" 
               className={`font-paragraph text-base transition-colors duration-200 ${
-                isActive('/aerospace-tools') ? 'text-primary font-semibold' : 'text-foreground hover:text-primary'
+                isActive('/aerospace-tools') ? 'text-aerospace-blue font-semibold' : 'text-foreground hover:text-aerospace-blue'
               }`}
             >
               Aerospace Tools
@@ -33,7 +33,7 @@ export default function Header() {
             <Link 
               to="/compiler" 
               className={`font-paragraph text-base transition-colors duration-200 ${
-                isActive('/compiler') ? 'text-primary font-semibold' : 'text-foreground hover:text-primary'
+                isActive('/compiler') ? 'text-aerospace-blue font-semibold' : 'text-foreground hover:text-aerospace-blue'
               }`}
             >
               Compiler
@@ -41,7 +41,7 @@ export default function Header() {
             <Link 
               to="/dsl-docs" 
               className={`font-paragraph text-base transition-colors duration-200 ${
-                isActive('/dsl-docs') ? 'text-primary font-semibold' : 'text-foreground hover:text-primary'
+                isActive('/dsl-docs') ? 'text-aerospace-blue font-semibold' : 'text-foreground hover:text-aerospace-blue'
               }`}
             >
               DSL Docs
@@ -49,7 +49,7 @@ export default function Header() {
             <Link 
               to="/api" 
               className={`font-paragraph text-base transition-colors duration-200 ${
-                isActive('/api') ? 'text-primary font-semibold' : 'text-foreground hover:text-primary'
+                isActive('/api') ? 'text-aerospace-blue font-semibold' : 'text-foreground hover:text-aerospace-blue'
               }`}
             >
               API
@@ -57,7 +57,7 @@ export default function Header() {
             <Link 
               to="/architecture" 
               className={`font-paragraph text-base transition-colors duration-200 ${
-                isActive('/architecture') ? 'text-primary font-semibold' : 'text-foreground hover:text-primary'
+                isActive('/architecture') ? 'text-aerospace-blue font-semibold' : 'text-foreground hover:text-aerospace-blue'
               }`}
             >
               Architecture
@@ -65,7 +65,7 @@ export default function Header() {
             <Link 
               to="/templates" 
               className={`font-paragraph text-base transition-colors duration-200 ${
-                isActive('/templates') ? 'text-primary font-semibold' : 'text-foreground hover:text-primary'
+                isActive('/templates') ? 'text-aerospace-blue font-semibold' : 'text-foreground hover:text-aerospace-blue'
               }`}
             >
               Templates
@@ -73,7 +73,7 @@ export default function Header() {
             <Link 
               to="/cfd-datasets" 
               className={`font-paragraph text-base transition-colors duration-200 ${
-                isActive('/cfd-datasets') ? 'text-primary font-semibold' : 'text-foreground hover:text-primary'
+                isActive('/cfd-datasets') ? 'text-aerospace-blue font-semibold' : 'text-foreground hover:text-aerospace-blue'
               }`}
             >
               CFD Datasets
@@ -81,10 +81,18 @@ export default function Header() {
             <Link 
               to="/robotics-templates" 
               className={`font-paragraph text-base transition-colors duration-200 ${
-                isActive('/robotics-templates') ? 'text-primary font-semibold' : 'text-foreground hover:text-primary'
+                isActive('/robotics-templates') ? 'text-aerospace-blue font-semibold' : 'text-foreground hover:text-aerospace-blue'
               }`}
             >
               Robotics
+            </Link>
+            <Link 
+              to="/about-tools" 
+              className={`font-paragraph text-base transition-colors duration-200 ${
+                isActive('/about-tools') ? 'text-aerospace-blue font-semibold' : 'text-foreground hover:text-aerospace-blue'
+              }`}
+            >
+              About Tools
             </Link>
           </div>
         </nav>
