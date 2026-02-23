@@ -65,6 +65,11 @@ export default function Viewer3D({ dsl, isLoading = false }: Viewer3DProps) {
     const targetContainer = isFullscreen ? fullscreenContainerRef.current : containerRef.current;
     if (!targetContainer) return;
 
+    // Ensure container has dimensions
+    if (targetContainer.clientWidth === 0 || targetContainer.clientHeight === 0) {
+      return;
+    }
+
     // Scene setup with fog for depth perception
     const scene = new THREE.Scene();
     scene.background = new THREE.Color(0x0a0e27);
@@ -80,12 +85,20 @@ export default function Viewer3D({ dsl, isLoading = false }: Viewer3DProps) {
     cameraRef.current = camera;
 
     // Renderer setup with advanced settings
-    const renderer = new THREE.WebGLRenderer({ 
-      antialias: true, 
-      alpha: true,
-      precision: 'highp',
-      powerPreference: 'high-performance'
-    });
+    let renderer: THREE.WebGLRenderer;
+    try {
+      renderer = new THREE.WebGLRenderer({ 
+        antialias: true, 
+        alpha: true,
+        precision: 'highp',
+        powerPreference: 'high-performance',
+        failIfMajorPerformanceCaveat: false
+      });
+    } catch (e) {
+      console.error('WebGL initialization failed:', e);
+      return;
+    }
+    
     renderer.setSize(width, height);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.shadowMap.enabled = true;
@@ -94,6 +107,11 @@ export default function Viewer3D({ dsl, isLoading = false }: Viewer3DProps) {
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
     renderer.toneMappingExposure = 1;
+    
+    // Clear container before appending
+    while (targetContainer.firstChild) {
+      targetContainer.removeChild(targetContainer.firstChild);
+    }
     targetContainer.appendChild(renderer.domElement);
     rendererRef.current = renderer;
 

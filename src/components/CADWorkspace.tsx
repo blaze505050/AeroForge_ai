@@ -40,11 +40,97 @@ export default function CADWorkspace({ projectId, projectName }: CADWorkspacePro
   };
 
   const handleExport = () => {
+    if (!canvasRef.current) return;
     const link = document.createElement('a');
-    link.href = '#';
-    link.download = `${projectName}.step`;
+    link.href = canvasRef.current.toDataURL('image/png');
+    link.download = `${projectName}-preview.png`;
     link.click();
   };
+
+  // Initialize canvas rendering
+  React.useEffect(() => {
+    if (!canvasRef.current) return;
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    // Set canvas size
+    canvas.width = canvas.offsetWidth;
+    canvas.height = canvas.offsetHeight;
+
+    // Draw a simple 3D-like representation
+    const drawFrame = () => {
+      ctx.fillStyle = 'rgba(15, 23, 42, 0.8)';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // Draw grid
+      ctx.strokeStyle = 'rgba(10, 165, 225, 0.1)';
+      ctx.lineWidth = 1;
+      for (let i = 0; i < canvas.width; i += 50) {
+        ctx.beginPath();
+        ctx.moveTo(i, 0);
+        ctx.lineTo(i, canvas.height);
+        ctx.stroke();
+      }
+      for (let i = 0; i < canvas.height; i += 50) {
+        ctx.beginPath();
+        ctx.moveTo(0, i);
+        ctx.lineTo(canvas.width, i);
+        ctx.stroke();
+      }
+
+      // Draw rotating cube wireframe
+      const time = Date.now() * 0.001;
+      const centerX = canvas.width / 2;
+      const centerY = canvas.height / 2;
+      const size = 60;
+
+      // Simple 3D cube rotation
+      const angle = time * 0.5;
+      const cos = Math.cos(angle);
+      const sin = Math.sin(angle);
+
+      ctx.strokeStyle = 'rgba(10, 165, 225, 0.8)';
+      ctx.lineWidth = 2;
+
+      // Draw cube edges
+      const vertices = [
+        [-size, -size, -size],
+        [size, -size, -size],
+        [size, size, -size],
+        [-size, size, -size],
+        [-size, -size, size],
+        [size, -size, size],
+        [size, size, size],
+        [-size, size, size],
+      ];
+
+      const rotated = vertices.map(([x, y, z]) => {
+        const x2 = x * cos - z * sin;
+        const z2 = x * sin + z * cos;
+        return [x2, y, z2];
+      });
+
+      const edges = [
+        [0, 1], [1, 2], [2, 3], [3, 0],
+        [4, 5], [5, 6], [6, 7], [7, 4],
+        [0, 4], [1, 5], [2, 6], [3, 7],
+      ];
+
+      edges.forEach(([a, b]) => {
+        const p1 = rotated[a];
+        const p2 = rotated[b];
+        ctx.beginPath();
+        ctx.moveTo(centerX + p1[0], centerY + p1[1]);
+        ctx.lineTo(centerX + p2[0], centerY + p2[1]);
+        ctx.stroke();
+      });
+
+      requestAnimationFrame(drawFrame);
+    };
+
+    drawFrame();
+  }, []);
 
   const handleRotate = (axis: 'x' | 'y' | 'z', direction: number) => {
     setRotation(prev => ({

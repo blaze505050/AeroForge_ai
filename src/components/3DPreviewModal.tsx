@@ -84,12 +84,20 @@ export default function Preview3DModal({
     cameraRef.current = camera;
 
     // Renderer setup
-    const renderer = new THREE.WebGLRenderer({ 
-      antialias: true, 
-      alpha: true,
-      precision: 'highp',
-      powerPreference: 'high-performance'
-    });
+    let renderer: THREE.WebGLRenderer;
+    try {
+      renderer = new THREE.WebGLRenderer({ 
+        antialias: true, 
+        alpha: true,
+        precision: 'highp',
+        powerPreference: 'high-performance',
+        failIfMajorPerformanceCaveat: false
+      });
+    } catch (e) {
+      console.error('WebGL initialization failed:', e);
+      return;
+    }
+    
     renderer.setSize(width, height);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.shadowMap.enabled = true;
@@ -98,6 +106,11 @@ export default function Preview3DModal({
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
     renderer.toneMappingExposure = 1;
+    
+    // Clear container before appending
+    while (targetContainer.firstChild) {
+      targetContainer.removeChild(targetContainer.firstChild);
+    }
     targetContainer.appendChild(renderer.domElement);
     rendererRef.current = renderer;
 

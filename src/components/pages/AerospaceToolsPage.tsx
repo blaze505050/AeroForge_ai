@@ -100,11 +100,12 @@ const tools: Tool[] = [
   {
     id: 'aerospace-suite',
     title: 'Advanced Aerospace Suite',
-    description: 'Coming Soon - Professional aerospace design and analysis platform',
+    description: 'Professional aerospace design and analysis platform with multi-physics simulation and AI optimization',
     icon: <Wrench className="w-8 h-8" />,
     category: 'Design',
     features: ['Multi-physics simulation', 'Structural analysis', 'Optimization tools', 'Team collaboration'],
-    color: 'from-slate-500 to-gray-600',
+    color: 'from-purple-500 to-pink-500',
+    path: '/advanced-aerospace-suite',
   },
   {
     id: 'mechanical-suite',

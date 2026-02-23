@@ -22,6 +22,7 @@ import RoboticsTemplatesPage from '@/components/pages/RoboticsTemplatesPage';
 import AboutToolsPage from '@/components/pages/AboutToolsPage';
 import CADSystemPage from '@/components/pages/CADSystemPage';
 import CADEditorPage from '@/components/pages/CADEditorPage';
+import AdvancedAerospaceSuitePage from '@/components/pages/AdvancedAerospaceSuitePage';
 
 // Layout component that includes ScrollToTop
 function Layout() {
@@ -177,6 +178,13 @@ const router = createBrowserRouter([
         element: <CADEditorPage />,
         routeMetadata: {
           pageIdentifier: 'cad-editor',
+        },
+      },
+      {
+        path: "advanced-aerospace-suite",
+        element: <AdvancedAerospaceSuitePage />,
+        routeMetadata: {
+          pageIdentifier: 'advanced-aerospace-suite',
         },
       },
       {
