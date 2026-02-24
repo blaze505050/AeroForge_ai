@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
-import { Play, Pause, RotateCcw, Download, Settings, TrendingUp, Zap, Wind } from 'lucide-react';
+import { Play, Pause, RotateCcw, Download, Settings, TrendingUp, Zap, Wind, Video } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import CFDVisualization from '@/components/CFDVisualization';
@@ -37,6 +37,10 @@ export default function CFDSimulatorPage() {
 
   const [visualizationType, setVisualizationType] = useState<'velocity' | 'pressure' | 'turbulence' | 'streamlines'>('velocity');
   const [showAdvanced, setShowAdvanced] = useState(false);
+  const [isRecordingVideo, setIsRecordingVideo] = useState(false);
+  const [videoFrames, setVideoFrames] = useState<Blob[]>([]);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
 
   const handleRunSimulation = async () => {
     setState(prev => ({ ...prev, isRunning: true, convergence: 0, results: null, convergenceHistory: [] }));
@@ -144,6 +148,54 @@ ${state.convergenceHistory.map(h => `${h.iteration},${h.residual.toExponential(4
     a.download = `cfd_results_${new Date().getTime()}.csv`;
     a.click();
     window.URL.revokeObjectURL(url);
+  };
+
+  const handleDownloadVideo = async () => {
+    if (videoFrames.length === 0) return;
+
+    try {
+      // Create a canvas for video encoding
+      const canvas = document.createElement('canvas');
+      canvas.width = 1280;
+      canvas.height = 720;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+
+      // Create MediaRecorder with WebM codec
+      const stream = canvas.captureStream(30);
+      const mediaRecorder = new MediaRecorder(stream, {
+        mimeType: 'video/webm;codecs=vp9',
+        videoBitsPerSecond: 5000000
+      });
+
+      const chunks: Blob[] = [];
+      mediaRecorder.ondataavailable = (e) => chunks.push(e.data);
+      mediaRecorder.onstop = () => {
+        const blob = new Blob(chunks, { type: 'video/webm' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `cfd_simulation_${new Date().getTime()}.webm`;
+        a.click();
+        window.URL.revokeObjectURL(url);
+      };
+
+      mediaRecorder.start();
+
+      // Draw frames to canvas
+      for (let i = 0; i < videoFrames.length; i++) {
+        const img = new Image();
+        img.onload = () => {
+          ctx.drawImage(img, 0, 0);
+          if (i === videoFrames.length - 1) {
+            mediaRecorder.stop();
+          }
+        };
+        img.src = URL.createObjectURL(videoFrames[i]);
+      }
+    } catch (error) {
+      console.error('Video download failed:', error);
+    }
   };
 
   return (

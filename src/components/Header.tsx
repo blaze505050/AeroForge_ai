@@ -10,17 +10,14 @@ export default function Header() {
   
   const navLinks = [
     { path: '/', label: 'Home' },
+    { path: '/mechanical-cad-suite', label: 'CAD Suite' },
+    { path: '/cfd-simulator', label: 'CFD Solver' },
     { path: '/aerospace-tools', label: 'Aerospace Tools' },
     { path: '/compiler', label: 'Compiler' },
-    { path: '/dsl-docs', label: 'DSL Docs' },
-    { path: '/api', label: 'API' },
-    { path: '/architecture', label: 'Architecture' },
     { path: '/templates', label: 'Templates' },
     { path: '/cfd-datasets', label: 'CFD Datasets' },
     { path: '/robotics-templates', label: 'Robotics' },
-    { path: '/about-tools', label: 'About Tools' },
-    { path: '/cad-system', label: 'CAD System' },
-    { path: '/cad-editor', label: 'CAD Editor' },
+    { path: '/about-tools', label: 'Documentation' },
   ];
   
   return (
