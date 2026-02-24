@@ -11,6 +11,7 @@ export default function Header() {
   const navLinks = [
     { path: '/', label: 'Home' },
     { path: '/mechanical-cad-suite', label: 'CAD Suite' },
+    { path: '/advanced-cfd', label: 'Advanced CFD' },
     { path: '/cfd-simulator', label: 'CFD Solver' },
     { path: '/aerospace-tools', label: 'Aerospace Tools' },
     { path: '/compiler', label: 'Compiler' },

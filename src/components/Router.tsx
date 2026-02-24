@@ -24,6 +24,7 @@ import CADSystemPage from '@/components/pages/CADSystemPage';
 import CADEditorPage from '@/components/pages/CADEditorPage';
 import AdvancedAerospaceSuitePage from '@/components/pages/AdvancedAerospaceSuitePage';
 import MechanicalCADSuitePage from '@/components/pages/MechanicalCADSuitePage';
+import AdvancedCFDPage from '@/components/pages/AdvancedCFDPage';
 
 // Layout component that includes ScrollToTop
 function Layout() {
@@ -193,6 +194,13 @@ const router = createBrowserRouter([
         element: <MechanicalCADSuitePage />,
         routeMetadata: {
           pageIdentifier: 'mechanical-cad-suite',
+        },
+      },
+      {
+        path: "advanced-cfd",
+        element: <AdvancedCFDPage />,
+        routeMetadata: {
+          pageIdentifier: 'advanced-cfd',
         },
       },
       {
