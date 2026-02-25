@@ -25,6 +25,7 @@ import CADEditorPage from '@/components/pages/CADEditorPage';
 import AdvancedAerospaceSuitePage from '@/components/pages/AdvancedAerospaceSuitePage';
 import MechanicalCADSuitePage from '@/components/pages/MechanicalCADSuitePage';
 import AdvancedCFDPage from '@/components/pages/AdvancedCFDPage';
+import AdvancedTurbulenceModelingPage from '@/components/pages/AdvancedTurbulenceModelingPage';
 
 // Layout component that includes ScrollToTop
 function Layout() {
@@ -201,6 +202,13 @@ const router = createBrowserRouter([
         element: <AdvancedCFDPage />,
         routeMetadata: {
           pageIdentifier: 'advanced-cfd',
+        },
+      },
+      {
+        path: "advanced-turbulence-modeling",
+        element: <AdvancedTurbulenceModelingPage />,
+        routeMetadata: {
+          pageIdentifier: 'advanced-turbulence-modeling',
         },
       },
       {
