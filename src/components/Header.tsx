@@ -14,6 +14,7 @@ export default function Header() {
     { path: '/advanced-cfd', label: 'Advanced CFD' },
     { path: '/advanced-turbulence-modeling', label: 'Turbulence' },
     { path: '/multi-objective-optimization', label: 'MOO' },
+    { path: '/batch-processing', label: 'Batch Processing' },
     { path: '/cfd-simulator', label: 'CFD Solver' },
     { path: '/aerospace-tools', label: 'Aerospace Tools' },
     { path: '/compiler', label: 'Compiler' },

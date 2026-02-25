@@ -42,6 +42,7 @@ import {
 } from 'recharts';
 import { BaseCrudService } from '@/integrations';
 import AdvancedParetoVisualizer from '@/components/AdvancedParetoVisualizer';
+import ParetoFrontVisualization from '@/components/ParetoFrontVisualization';
 
 interface OptimizationState {
   isRunning: boolean;
@@ -263,12 +264,12 @@ Spread Metric,${state.results.statistics.spreadMetric.toFixed(6)}`;
           </div>
 
           {/* Tab Navigation */}
-          <div className="flex gap-2 mb-8 border-b border-slate-700">
-            {(['setup', 'pareto', 'analysis'] as const).map((tab) => (
+          <div className="flex gap-2 mb-8 border-b border-slate-700 overflow-x-auto">
+            {(['setup', 'pareto', 'analysis', 'advanced'] as const).map((tab) => (
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
-                className={`px-6 py-3 font-paragraph font-semibold transition-colors ${
+                className={`px-6 py-3 font-paragraph font-semibold transition-colors whitespace-nowrap ${
                   activeTab === tab
                     ? 'text-blue-400 border-b-2 border-blue-400'
                     : 'text-slate-400 hover:text-white'
@@ -277,6 +278,7 @@ Spread Metric,${state.results.statistics.spreadMetric.toFixed(6)}`;
                 {tab === 'setup' && 'Setup'}
                 {tab === 'pareto' && 'Pareto Front'}
                 {tab === 'analysis' && 'Analysis'}
+                {tab === 'advanced' && 'Advanced Viz'}
               </button>
             ))}
           </div>
@@ -589,161 +591,58 @@ Spread Metric,${state.results.statistics.spreadMetric.toFixed(6)}`;
                     label: 'Pareto Front Size',
                     value: state.results.paretoFront.length,
                     icon: Target,
+                    color: 'blue',
                   },
                   {
                     label: 'Best Fitness',
                     value: state.results.statistics.bestFitness.toFixed(4),
                     icon: Zap,
+                    color: 'green',
                   },
                   {
                     label: 'Diversity',
                     value: state.results.statistics.diversity.toFixed(2),
                     icon: Grid3x3,
+                    color: 'purple',
                   },
                   {
                     label: 'Spread',
                     value: state.results.statistics.spreadMetric.toFixed(4),
                     icon: Maximize2,
+                    color: 'orange',
                   },
                 ].map((stat, idx) => {
                   const Icon = stat.icon;
+                  const colorMap: Record<string, string> = {
+                    blue: 'from-blue-900/20 to-blue-800/10',
+                    green: 'from-green-900/20 to-green-800/10',
+                    purple: 'from-purple-900/20 to-purple-800/10',
+                    orange: 'from-orange-900/20 to-orange-800/10',
+                  };
                   return (
                     <motion.div
                       key={idx}
                       initial={{ opacity: 0, scale: 0.9 }}
                       animate={{ opacity: 1, scale: 1 }}
                       transition={{ delay: idx * 0.1 }}
-                      className="bg-slate-800 rounded-xl p-6 border border-slate-700"
+                      className={`bg-gradient-to-br ${colorMap[stat.color]} rounded-xl p-6 border border-slate-700 backdrop-blur-sm`}
                     >
                       <div className="flex items-center justify-between mb-2">
                         <span className="font-paragraph text-sm text-slate-400">{stat.label}</span>
-                        <Icon className="w-5 h-5 text-blue-400" />
+                        <Icon className={`w-5 h-5 text-${stat.color}-400`} />
                       </div>
-                      <p className="font-heading text-3xl font-bold text-white">{stat.value}</p>
+                      <p className={`font-heading text-3xl font-bold text-${stat.color}-300`}>{stat.value}</p>
                     </motion.div>
                   );
                 })}
               </motion.div>
 
-              {/* Pareto Front 2D Visualization */}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1 }}
-                className="bg-slate-800 rounded-xl p-6 border border-slate-700"
-              >
-                <h3 className="font-heading text-lg font-bold text-white mb-4 flex items-center gap-2">
-                  <BarChart3 className="w-5 h-5" />
-                  Pareto Front: Drag vs Lift
-                </h3>
-                <ResponsiveContainer width="100%" height={400}>
-                  <ScatterChart margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
-                    <XAxis
-                      dataKey="drag"
-                      type="number"
-                      stroke="#94a3b8"
-                      label={{ value: 'Drag Coefficient', position: 'insideBottomRight', offset: -5 }}
-                    />
-                    <YAxis
-                      dataKey="lift"
-                      stroke="#94a3b8"
-                      label={{ value: 'Lift Coefficient', angle: -90, position: 'insideLeft' }}
-                    />
-                    <Tooltip
-                      contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #475569' }}
-                      cursor={{ strokeDasharray: '3 3' }}
-                    />
-                    <Scatter
-                      name="Pareto Front"
-                      data={paretoScatterData}
-                      fill="#0EA5E9"
-                      fillOpacity={0.8}
-                    />
-                  </ScatterChart>
-                </ResponsiveContainer>
-              </motion.div>
-
-              {/* Weight vs Efficiency */}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2 }}
-                className="bg-slate-800 rounded-xl p-6 border border-slate-700"
-              >
-                <h3 className="font-heading text-lg font-bold text-white mb-4 flex items-center gap-2">
-                  <LineChartIcon className="w-5 h-5" />
-                  Pareto Front: Weight vs Efficiency
-                </h3>
-                <ResponsiveContainer width="100%" height={400}>
-                  <ScatterChart margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
-                    <XAxis
-                      dataKey="weight"
-                      type="number"
-                      stroke="#94a3b8"
-                      label={{ value: 'Weight (kg)', position: 'insideBottomRight', offset: -5 }}
-                    />
-                    <YAxis
-                      dataKey="efficiency"
-                      stroke="#94a3b8"
-                      label={{ value: 'Efficiency (L/D)', angle: -90, position: 'insideLeft' }}
-                    />
-                    <Tooltip
-                      contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #475569' }}
-                      cursor={{ strokeDasharray: '3 3' }}
-                    />
-                    <Scatter
-                      name="Pareto Front"
-                      data={paretoScatterData}
-                      fill="#10B981"
-                      fillOpacity={0.8}
-                    />
-                  </ScatterChart>
-                </ResponsiveContainer>
-              </motion.div>
-
-              {/* Convergence History */}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.3 }}
-                className="bg-slate-800 rounded-xl p-6 border border-slate-700"
-              >
-                <h3 className="font-heading text-lg font-bold text-white mb-4 flex items-center gap-2">
-                  <TrendingUp className="w-5 h-5" />
-                  Hypervolume Convergence
-                </h3>
-                <ResponsiveContainer width="100%" height={350}>
-                  <AreaChart data={state.results.convergenceHistory}>
-                    <defs>
-                      <linearGradient id="hvGradient" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="#0EA5E9" stopOpacity={0.8} />
-                        <stop offset="95%" stopColor="#0EA5E9" stopOpacity={0} />
-                      </linearGradient>
-                    </defs>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
-                    <XAxis
-                      dataKey="generation"
-                      stroke="#94a3b8"
-                      label={{ value: 'Generation', position: 'insideBottomRight', offset: -5 }}
-                    />
-                    <YAxis
-                      stroke="#94a3b8"
-                      label={{ value: 'Hypervolume', angle: -90, position: 'insideLeft' }}
-                    />
-                    <Tooltip
-                      contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #475569' }}
-                    />
-                    <Area
-                      type="monotone"
-                      dataKey="hypervolume"
-                      stroke="#0EA5E9"
-                      fill="url(#hvGradient)"
-                    />
-                  </AreaChart>
-                </ResponsiveContainer>
-              </motion.div>
+              {/* Pareto Front Visualization Component */}
+              <ParetoFrontVisualization
+                paretoFront={state.results.paretoFront}
+                convergenceHistory={state.results.convergenceHistory}
+                statistics={state.results.statistics}
+              />
 
               {/* Pareto Front Solutions Table */}
               <motion.div
@@ -924,6 +823,15 @@ Spread Metric,${state.results.statistics.spreadMetric.toFixed(6)}`;
                 </div>
               </div>
             </div>
+          )}
+
+          {/* Advanced Visualization Tab */}
+          {activeTab === 'advanced' && state.results && (
+            <AdvancedParetoVisualizer
+              paretoFront={state.results.paretoFront}
+              statistics={state.results.statistics}
+              convergenceHistory={state.results.convergenceHistory}
+            />
           )}
 
           {/* Empty State */}

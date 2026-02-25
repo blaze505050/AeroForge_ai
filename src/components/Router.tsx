@@ -27,6 +27,7 @@ import MechanicalCADSuitePage from '@/components/pages/MechanicalCADSuitePage';
 import AdvancedCFDPage from '@/components/pages/AdvancedCFDPage';
 import AdvancedTurbulenceModelingPage from '@/components/pages/AdvancedTurbulenceModelingPage';
 import MultiObjectiveOptimizationPage from '@/components/pages/MultiObjectiveOptimizationPage';
+import BatchProcessingPage from '@/components/pages/BatchProcessingPage';
 
 // Layout component that includes ScrollToTop
 function Layout() {
@@ -217,6 +218,13 @@ const router = createBrowserRouter([
         element: <MultiObjectiveOptimizationPage />,
         routeMetadata: {
           pageIdentifier: 'multi-objective-optimization',
+        },
+      },
+      {
+        path: "batch-processing",
+        element: <BatchProcessingPage />,
+        routeMetadata: {
+          pageIdentifier: 'batch-processing',
         },
       },
       {
