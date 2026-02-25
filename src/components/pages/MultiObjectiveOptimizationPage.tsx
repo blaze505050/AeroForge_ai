@@ -41,6 +41,7 @@ import {
   Area,
 } from 'recharts';
 import { BaseCrudService } from '@/integrations';
+import AdvancedParetoVisualizer from '@/components/AdvancedParetoVisualizer';
 
 interface OptimizationState {
   isRunning: boolean;
