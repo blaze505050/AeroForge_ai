@@ -13,6 +13,10 @@ import {
   TrendingUp,
   FileJson,
   FileText,
+  Settings,
+  BarChart3,
+  Layers,
+  Activity,
 } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -24,6 +28,8 @@ import {
   BatchJob,
   BatchJobItem,
   BatchOperationType,
+  ParametricStudyConfig,
+  ParameterDefinition,
 } from '@/services/batchProcessingService';
 
 const OPERATION_TYPES: { type: BatchOperationType; label: string; color: string; icon: React.ReactNode }[] = [
@@ -33,15 +39,21 @@ const OPERATION_TYPES: { type: BatchOperationType; label: string; color: string;
   { type: 'analysis', label: 'Analysis', color: 'bg-orange-500', icon: '📊' },
   { type: 'conversion', label: 'Conversion', color: 'bg-cyan-500', icon: '🔄' },
   { type: 'validation', label: 'Validation', color: 'bg-red-500', icon: '✓' },
+  { type: 'parametric-study', label: 'Parametric Study', color: 'bg-indigo-500', icon: '🔬' },
 ];
 
 export default function BatchProcessingPage() {
   const [jobs, setJobs] = useState<BatchJob[]>([]);
   const [selectedJob, setSelectedJob] = useState<BatchJob | null>(null);
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showParametricModal, setShowParametricModal] = useState(false);
   const [selectedOperation, setSelectedOperation] = useState<BatchOperationType>('export');
   const [itemCount, setItemCount] = useState(10);
   const [jobName, setJobName] = useState('');
+  const [enableParametricStudy, setEnableParametricStudy] = useState(false);
+  const [parametricParams, setParametricParams] = useState<ParameterDefinition[]>([
+    { name: 'thickness', type: 'range', min: 1, max: 10, steps: 5 },
+  ]);
   const [statistics, setStatistics] = useState<any>(null);
   const updateIntervalRef = useRef<NodeJS.Timeout>();
 
@@ -52,6 +64,9 @@ export default function BatchProcessingPage() {
       maxItemsPerBatch: 100,
       timeoutPerItem: 300000,
       retryAttempts: 3,
+      queueStrategy: 'adaptive',
+      enablePersistence: true,
+      enableMetrics: true,
     });
   }, []);
 
@@ -91,18 +106,31 @@ export default function BatchProcessingPage() {
       name: `Design ${i + 1}`,
     }));
 
+    let parametricConfig: ParametricStudyConfig | undefined;
+    if (enableParametricStudy) {
+      parametricConfig = {
+        parameters: parametricParams,
+        baselineParameters: {},
+        aggregationMethod: 'mean',
+      };
+    }
+
     const job = batchProcessingService.createBatchJob(
       jobName,
       selectedOperation,
       items,
       { priority: 'normal' },
-      'normal'
+      'normal',
+      parametricConfig,
+      { tags: ['user-created'], description: `${selectedOperation} batch job` }
     );
 
     setSelectedJob(job);
     setShowCreateModal(false);
+    setShowParametricModal(false);
     setJobName('');
     setItemCount(10);
+    setEnableParametricStudy(false);
   };
 
   const handlePauseResume = (jobId: string) => {
@@ -183,7 +211,7 @@ export default function BatchProcessingPage() {
         >
           <h1 className="font-heading text-5xl font-bold mb-4">Batch Processing</h1>
           <p className="text-secondary-foreground text-lg max-w-2xl">
-            Process multiple designs simultaneously with professional-grade queue management, progress tracking, and result persistence.
+            Industry-professional batch processing with parametric studies, adaptive queuing, result aggregation, and comprehensive analytics.
           </p>
         </motion.div>
 
@@ -193,7 +221,7 @@ export default function BatchProcessingPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8"
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-8"
           >
             <Card className="bg-primary/50 border-secondary/30 p-6">
               <div className="flex items-center justify-between">
@@ -211,7 +239,7 @@ export default function BatchProcessingPage() {
                   <p className="text-secondary-foreground text-sm mb-2">Active Jobs</p>
                   <p className="text-3xl font-bold text-aerospace-accent">{statistics.activeJobs}</p>
                 </div>
-                <Play className="w-8 h-8 text-aerospace-accent opacity-50" />
+                <Activity className="w-8 h-8 text-aerospace-accent opacity-50" />
               </div>
             </Card>
 
@@ -232,6 +260,17 @@ export default function BatchProcessingPage() {
                   <p className="text-3xl font-bold text-aerospace-warning">{statistics.totalItemsProcessed}</p>
                 </div>
                 <TrendingUp className="w-8 h-8 text-aerospace-warning opacity-50" />
+              </div>
+            </Card>
+
+            <Card className="bg-primary/50 border-secondary/30 p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-secondary-foreground text-sm mb-2">Throughput</p>
+                  <p className="text-3xl font-bold text-aerospace-accent">{statistics.totalThroughput.toFixed(1)}</p>
+                  <p className="text-xs text-secondary-foreground">items/sec</p>
+                </div>
+                <BarChart3 className="w-8 h-8 text-aerospace-accent opacity-50" />
               </div>
             </Card>
           </motion.div>
@@ -284,6 +323,11 @@ export default function BatchProcessingPage() {
                         <span className={`text-sm font-semibold ${getStatusColor(job.status)}`}>
                           {job.status.toUpperCase()}
                         </span>
+                        {job.parametricStudyConfig && (
+                          <span className="text-xs bg-indigo-500/20 text-indigo-300 px-2 py-1 rounded">
+                            Parametric Study
+                          </span>
+                        )}
                       </div>
                       <p className="text-secondary-foreground text-sm">
                         {job.completedItems} / {job.totalItems} items processed
@@ -410,7 +454,7 @@ export default function BatchProcessingPage() {
               </div>
 
               {/* Items Grid */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
                 {selectedJob.items.map((item) => (
                   <motion.div
                     key={item.id}
@@ -462,6 +506,12 @@ export default function BatchProcessingPage() {
                             <span className="font-semibold">{(item.duration / 1000).toFixed(2)}s</span>
                           </div>
                         )}
+                        {item.retryCount !== undefined && item.retryCount > 0 && (
+                          <div className="flex justify-between">
+                            <span className="text-secondary-foreground">Retries:</span>
+                            <span className="font-semibold">{item.retryCount}</span>
+                          </div>
+                        )}
                         {item.error && (
                           <div className="flex justify-between">
                             <span className="text-secondary-foreground">Error:</span>
@@ -496,7 +546,7 @@ export default function BatchProcessingPage() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.2 }}
-                  className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-4"
+                  className="mt-8 grid grid-cols-1 md:grid-cols-4 gap-4 mb-8"
                 >
                   <Card className="bg-primary/50 border-secondary/30 p-6">
                     <p className="text-secondary-foreground text-sm mb-2">Successful</p>
@@ -511,11 +561,64 @@ export default function BatchProcessingPage() {
                     </p>
                   </Card>
                   <Card className="bg-primary/50 border-secondary/30 p-6">
-                    <p className="text-secondary-foreground text-sm mb-2">Avg Processing Time</p>
+                    <p className="text-secondary-foreground text-sm mb-2">Success Rate</p>
+                    <p className="text-3xl font-bold text-aerospace-success">
+                      {selectedJob.results.successRate?.toFixed(1)}%
+                    </p>
+                  </Card>
+                  <Card className="bg-primary/50 border-secondary/30 p-6">
+                    <p className="text-secondary-foreground text-sm mb-2">Avg Time</p>
                     <p className="text-3xl font-bold text-aerospace-blue">
                       {(selectedJob.results.averageProcessingTime / 1000).toFixed(2)}s
                     </p>
                   </Card>
+                </motion.div>
+              )}
+
+              {/* Aggregated Results for Parametric Studies */}
+              {selectedJob.aggregatedResults && selectedJob.aggregatedResults.length > 0 && (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.3 }}
+                  className="mt-8"
+                >
+                  <h3 className="font-heading text-2xl font-bold mb-4 flex items-center gap-2">
+                    <Layers className="w-6 h-6" />
+                    Aggregated Results
+                  </h3>
+                  <div className="space-y-4">
+                    {selectedJob.aggregatedResults.map((result, idx) => (
+                      <Card key={idx} className="bg-primary/50 border-secondary/30 p-6">
+                        <div className="mb-4">
+                          <p className="text-sm font-semibold text-aerospace-blue mb-2">Parameter Set:</p>
+                          <div className="flex flex-wrap gap-2">
+                            {Object.entries(result.parameterSet).map(([key, value]) => (
+                              <span key={key} className="text-xs bg-secondary/30 px-2 py-1 rounded">
+                                {key}: {String(value)}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                          <div>
+                            <p className="text-secondary-foreground text-xs mb-1">Items</p>
+                            <p className="font-semibold">{result.itemCount}</p>
+                          </div>
+                          <div>
+                            <p className="text-secondary-foreground text-xs mb-1">Success Rate</p>
+                            <p className="font-semibold text-aerospace-success">{result.successRate.toFixed(1)}%</p>
+                          </div>
+                          {Object.entries(result.metrics).map(([key, value]) => (
+                            <div key={key}>
+                              <p className="text-secondary-foreground text-xs mb-1 capitalize">{key}</p>
+                              <p className="font-semibold">{typeof value === 'number' ? value.toFixed(2) : value}</p>
+                            </div>
+                          ))}
+                        </div>
+                      </Card>
+                    ))}
+                  </div>
                 </motion.div>
               )}
             </motion.div>
@@ -538,7 +641,7 @@ export default function BatchProcessingPage() {
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
               onClick={(e) => e.stopPropagation()}
-              className="bg-primary border border-secondary/30 rounded-lg p-8 max-w-md w-full"
+              className="bg-primary border border-secondary/30 rounded-lg p-8 max-w-2xl w-full max-h-[90vh] overflow-y-auto"
             >
               <h3 className="font-heading text-2xl font-bold mb-6">Create Batch Job</h3>
 
@@ -556,7 +659,7 @@ export default function BatchProcessingPage() {
 
                 <div>
                   <label className="block text-sm font-semibold mb-2">Operation Type</label>
-                  <div className="grid grid-cols-2 gap-2">
+                  <div className="grid grid-cols-3 gap-2">
                     {OPERATION_TYPES.map((op) => (
                       <button
                         key={op.type}
@@ -585,6 +688,90 @@ export default function BatchProcessingPage() {
                     className="w-full bg-primary/50 border border-secondary/30 rounded px-3 py-2 text-foreground focus:outline-none focus:border-aerospace-blue"
                   />
                 </div>
+
+                <div className="border-t border-secondary/20 pt-4">
+                  <label className="flex items-center gap-3 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={enableParametricStudy}
+                      onChange={(e) => setEnableParametricStudy(e.target.checked)}
+                      className="w-4 h-4"
+                    />
+                    <span className="text-sm font-semibold">Enable Parametric Study</span>
+                  </label>
+                </div>
+
+                {enableParametricStudy && (
+                  <div className="bg-secondary/10 p-4 rounded space-y-3">
+                    <p className="text-sm text-secondary-foreground">Configure parametric parameters:</p>
+                    {parametricParams.map((param, idx) => (
+                      <div key={idx} className="space-y-2 p-3 bg-primary/50 rounded">
+                        <input
+                          type="text"
+                          value={param.name}
+                          onChange={(e) => {
+                            const newParams = [...parametricParams];
+                            newParams[idx].name = e.target.value;
+                            setParametricParams(newParams);
+                          }}
+                          placeholder="Parameter name"
+                          className="w-full bg-primary/50 border border-secondary/30 rounded px-2 py-1 text-sm text-foreground focus:outline-none focus:border-aerospace-blue"
+                        />
+                        <select
+                          value={param.type}
+                          onChange={(e) => {
+                            const newParams = [...parametricParams];
+                            newParams[idx].type = e.target.value as any;
+                            setParametricParams(newParams);
+                          }}
+                          className="w-full bg-primary/50 border border-secondary/30 rounded px-2 py-1 text-sm text-foreground focus:outline-none focus:border-aerospace-blue"
+                        >
+                          <option value="range">Range</option>
+                          <option value="list">List</option>
+                          <option value="logarithmic">Logarithmic</option>
+                          <option value="geometric">Geometric</option>
+                        </select>
+                        {param.type === 'range' && (
+                          <div className="grid grid-cols-3 gap-2">
+                            <input
+                              type="number"
+                              value={param.min || 0}
+                              onChange={(e) => {
+                                const newParams = [...parametricParams];
+                                newParams[idx].min = parseFloat(e.target.value);
+                                setParametricParams(newParams);
+                              }}
+                              placeholder="Min"
+                              className="bg-primary/50 border border-secondary/30 rounded px-2 py-1 text-sm text-foreground focus:outline-none focus:border-aerospace-blue"
+                            />
+                            <input
+                              type="number"
+                              value={param.max || 10}
+                              onChange={(e) => {
+                                const newParams = [...parametricParams];
+                                newParams[idx].max = parseFloat(e.target.value);
+                                setParametricParams(newParams);
+                              }}
+                              placeholder="Max"
+                              className="bg-primary/50 border border-secondary/30 rounded px-2 py-1 text-sm text-foreground focus:outline-none focus:border-aerospace-blue"
+                            />
+                            <input
+                              type="number"
+                              value={param.steps || 5}
+                              onChange={(e) => {
+                                const newParams = [...parametricParams];
+                                newParams[idx].steps = parseInt(e.target.value);
+                                setParametricParams(newParams);
+                              }}
+                              placeholder="Steps"
+                              className="bg-primary/50 border border-secondary/30 rounded px-2 py-1 text-sm text-foreground focus:outline-none focus:border-aerospace-blue"
+                            />
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
 
               <div className="flex gap-3">
