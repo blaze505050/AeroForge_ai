@@ -28,6 +28,10 @@ import AdvancedCFDPage from '@/components/pages/AdvancedCFDPage';
 import AdvancedTurbulenceModelingPage from '@/components/pages/AdvancedTurbulenceModelingPage';
 import MultiObjectiveOptimizationPage from '@/components/pages/MultiObjectiveOptimizationPage';
 import BatchProcessingPage from '@/components/pages/BatchProcessingPage';
+import ResearchHubPage from '@/components/pages/ResearchHubPage';
+import KnowledgeBasePage from '@/components/pages/KnowledgeBasePage';
+import CertificationsPage from '@/components/pages/CertificationsPage';
+import CaseStudiesPage from '@/components/pages/CaseStudiesPage';
 
 // Layout component that includes ScrollToTop
 function Layout() {
@@ -225,6 +229,34 @@ const router = createBrowserRouter([
         element: <BatchProcessingPage />,
         routeMetadata: {
           pageIdentifier: 'batch-processing',
+        },
+      },
+      {
+        path: "research-hub",
+        element: <ResearchHubPage />,
+        routeMetadata: {
+          pageIdentifier: 'research-hub',
+        },
+      },
+      {
+        path: "knowledge-base",
+        element: <KnowledgeBasePage />,
+        routeMetadata: {
+          pageIdentifier: 'knowledge-base',
+        },
+      },
+      {
+        path: "certifications",
+        element: <CertificationsPage />,
+        routeMetadata: {
+          pageIdentifier: 'certifications',
+        },
+      },
+      {
+        path: "case-studies",
+        element: <CaseStudiesPage />,
+        routeMetadata: {
+          pageIdentifier: 'case-studies',
         },
       },
       {

@@ -22,6 +22,8 @@ export default function Header() {
     {
       category: 'Research',
       links: [
+        { path: '/research-hub', label: 'Research Hub' },
+        { path: '/knowledge-base', label: 'Knowledge Base' },
         { path: '/advanced-turbulence-modeling', label: 'Turbulence Modeling' },
         { path: '/multi-objective-optimization', label: 'Multi-Objective Optimization' },
         { path: '/batch-processing', label: 'Batch Processing' },
@@ -40,6 +42,8 @@ export default function Header() {
     {
       category: 'Enterprise',
       links: [
+        { path: '/certifications', label: 'Certifications' },
+        { path: '/case-studies', label: 'Case Studies' },
         { path: '/architecture', label: 'Architecture' },
         { path: '/api', label: 'API Reference' },
         { path: '/dsl-docs', label: 'DSL Documentation' },

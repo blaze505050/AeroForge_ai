@@ -140,6 +140,62 @@ export interface CADProjects {
 
 
 /**
+ * Collection ID: casestudies
+ * Interface for CaseStudies
+ */
+export interface CaseStudies {
+  _id: string;
+  _createdDate?: Date;
+  _updatedDate?: Date;
+  /** @wixFieldType text */
+  projectName?: string;
+  /** @wixFieldType text */
+  clientName?: string;
+  /** @wixFieldType text */
+  industrySector?: string;
+  /** @wixFieldType text */
+  projectOverview?: string;
+  /** @wixFieldType text */
+  keyChallenge?: string;
+  /** @wixFieldType text */
+  solutionImplemented?: string;
+  /** @wixFieldType number */
+  performanceImprovement?: number;
+  /** @wixFieldType number */
+  costReduction?: number;
+  /** @wixFieldType image - Contains image URL, render with <Image> component, NOT as text */
+  mainProjectImage?: string;
+  /** @wixFieldType image - Contains image URL, render with <Image> component, NOT as text */
+  beforeImage?: string;
+  /** @wixFieldType image - Contains image URL, render with <Image> component, NOT as text */
+  afterImage?: string;
+}
+
+
+/**
+ * Collection ID: certifications
+ * Interface for Certifications
+ */
+export interface Certifications {
+  _id: string;
+  _createdDate?: Date;
+  _updatedDate?: Date;
+  /** @wixFieldType text */
+  certificationName?: string;
+  /** @wixFieldType text */
+  description?: string;
+  /** @wixFieldType text */
+  complianceStandard?: string;
+  /** @wixFieldType text */
+  status?: string;
+  /** @wixFieldType date */
+  expiryDate?: Date | string;
+  /** @wixFieldType url */
+  auditTrailLink?: string;
+}
+
+
+/**
  * Collection ID: cfddatasets
  * Interface for CFDDatasets
  */
@@ -205,6 +261,37 @@ export interface DesignVersions {
 
 
 /**
+ * Collection ID: knowledgebasearticles
+ * Interface for KnowledgeBaseArticles
+ */
+export interface KnowledgeBaseArticles {
+  _id: string;
+  _createdDate?: Date;
+  _updatedDate?: Date;
+  /** @wixFieldType text */
+  title?: string;
+  /** @wixFieldType text */
+  summary?: string;
+  /** @wixFieldType text */
+  content?: string;
+  /** @wixFieldType text */
+  category?: string;
+  /** @wixFieldType text */
+  subcategory?: string;
+  /** @wixFieldType text */
+  difficultyLevel?: string;
+  /** @wixFieldType date */
+  publicationDate?: Date | string;
+  /** @wixFieldType text */
+  author?: string;
+  /** @wixFieldType image - Contains image URL, render with <Image> component, NOT as text */
+  mainImage?: string;
+  /** @wixFieldType text */
+  relatedTopics?: string;
+}
+
+
+/**
  * Collection ID: mechanicaltemplates
  * Interface for MechanicalTemplates
  */
@@ -224,6 +311,33 @@ export interface MechanicalTemplates {
   previewImage?: string;
   /** @wixFieldType text */
   version?: string;
+}
+
+
+/**
+ * Collection ID: researchpapers
+ * Interface for ResearchPapers
+ */
+export interface ResearchPapers {
+  _id: string;
+  _createdDate?: Date;
+  _updatedDate?: Date;
+  /** @wixFieldType text */
+  title?: string;
+  /** @wixFieldType text */
+  abstract?: string;
+  /** @wixFieldType text */
+  authors?: string;
+  /** @wixFieldType text */
+  arxivId?: string;
+  /** @wixFieldType text */
+  ieeeId?: string;
+  /** @wixFieldType url */
+  pdfUrl?: string;
+  /** @wixFieldType text */
+  researchTopic?: string;
+  /** @wixFieldType date */
+  publicationDate?: Date | string;
 }
 
 
