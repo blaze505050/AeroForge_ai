@@ -1,18 +1,18 @@
-// Professional Homepage - Phase 2
+// Revolutionary Enterprise Homepage
 import React, { useRef, useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, useScroll, useInView } from 'framer-motion';
-import { CheckCircle2, Layers, ShieldCheck, Cpu, Terminal, XCircle, ChevronRight, BookOpen, Zap, Code2, Database, Lightbulb, ArrowRight } from 'lucide-react';
+import { CheckCircle2, Layers, ShieldCheck, Cpu, Terminal, XCircle, ChevronRight, BookOpen, Zap, Code2, Database, Lightbulb, ArrowRight, Rocket, Sparkles, Award, TrendingUp, Brain } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Image } from '@/components/ui/image';
 import { BaseCrudService } from '@/integrations';
-import { CaseStudies, KnowledgeBaseArticles } from '@/entities';
+import { CaseStudies, KnowledgeBaseArticles, ResearchPapers } from '@/entities';
 
 const HERO_DATA = {
-  headline: "Precision CAD from Intent",
-  subtext: "Enterprise-grade parametric design compiler with aerospace-certified determinism. Transform design intent into validated, manufacturing-ready geometry.",
-  cta: "Start Designing"
+  headline: "Revolutionary Parametric Design",
+  subtext: "The world's first deterministic AI-powered CAD compiler. Transform natural language design intent into aerospace-certified, manufacturing-ready geometry with zero ambiguity.",
+  cta: "Launch Compiler"
 };
 
 const PHILOSOPHY_DATA = [
@@ -84,17 +84,20 @@ export default function HomePage() {
   
   const [caseStudies, setCaseStudies] = useState<CaseStudies[]>([]);
   const [articles, setArticles] = useState<KnowledgeBaseArticles[]>([]);
+  const [papers, setPapers] = useState<ResearchPapers[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const loadContent = async () => {
       try {
-        const [studiesResult, articlesResult] = await Promise.all([
+        const [studiesResult, articlesResult, papersResult] = await Promise.all([
           BaseCrudService.getAll<CaseStudies>('casestudies', [], { limit: 3 }),
-          BaseCrudService.getAll<KnowledgeBaseArticles>('knowledgebasearticles', [], { limit: 3 })
+          BaseCrudService.getAll<KnowledgeBaseArticles>('knowledgebasearticles', [], { limit: 3 }),
+          BaseCrudService.getAll<ResearchPapers>('researchpapers', [], { limit: 3 })
         ]);
         setCaseStudies(studiesResult.items);
         setArticles(articlesResult.items);
+        setPapers(papersResult.items);
       } catch (error) {
         console.error('Error loading content:', error);
       } finally {
@@ -110,24 +113,28 @@ export default function HomePage() {
 
       <main className="flex-1 w-full flex flex-col">
         
-        {/* HERO SECTION */}
-        <section className="relative w-full min-h-screen flex flex-col justify-center border-b border-secondary/20 bg-aerospace-dark">
+        {/* REVOLUTIONARY HERO SECTION */}
+        <section className="relative w-full min-h-screen flex flex-col justify-center border-b border-secondary/20 bg-aerospace-dark overflow-hidden">
           <GridBackground />
           
+          {/* Animated background elements */}
+          <div className="absolute top-20 right-10 w-96 h-96 bg-aerospace-blue/5 rounded-full blur-3xl animate-pulse" />
+          <div className="absolute bottom-20 left-10 w-96 h-96 bg-aerospace-accent/5 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
+          
           <div className="w-full max-w-[120rem] mx-auto px-6 md:px-12 lg:px-16 relative z-10 pt-32 pb-20">
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-24 items-end">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-24 items-center">
               
-              {/* Left Column: Typography */}
-              <div className="lg:col-span-8 flex flex-col gap-8">
+              {/* Left Column: Revolutionary Messaging */}
+              <div className="lg:col-span-7 flex flex-col gap-8">
                 <motion.div 
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, ease: "easeOut" }}
                   className="flex items-center gap-3"
                 >
-                  <div className="w-3 h-3 bg-aerospace-blue" />
-                  <span className="font-mono text-xs uppercase tracking-[0.2em] text-secondary-foreground/70">
-                    System Ready • v1.0.4
+                  <Rocket className="w-5 h-5 text-aerospace-blue" />
+                  <span className="font-mono text-xs uppercase tracking-[0.2em] text-aerospace-blue">
+                    Next Generation • Enterprise AI
                   </span>
                 </motion.div>
 
@@ -135,31 +142,56 @@ export default function HomePage() {
                   initial={{ opacity: 0, y: 40 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.8, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
-                  className="font-heading text-5xl md:text-7xl lg:text-8xl font-bold leading-[0.95] tracking-tight text-aerospace-blue"
+                  className="font-heading text-5xl md:text-7xl lg:text-8xl font-bold leading-[0.95] tracking-tight"
                 >
-                  Natural Language <br />
-                  <span className="text-secondary-foreground/40">→</span> Deterministic <br />
-                  Parametric CAD
+                  <span className="text-aerospace-blue">Deterministic</span> <br />
+                  <span className="text-foreground">AI-Powered CAD</span> <br />
+                  <span className="text-aerospace-accent">Compiler</span>
                 </motion.h1>
 
                 <motion.p 
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
-                  transition={{ duration: 0.8, delay: 0.4 }}
-                  className="font-paragraph text-xl md:text-2xl text-foreground/80 max-w-2xl leading-relaxed border-l-2 border-aerospace-blue/30 pl-6"
+                  transition={{ duration: 0.8, delay: 0.3 }}
+                  className="font-paragraph text-xl md:text-2xl text-foreground/80 max-w-3xl leading-relaxed border-l-4 border-aerospace-blue pl-8"
                 >
                   {HERO_DATA.subtext}
                 </motion.p>
+
+                {/* Key differentiators */}
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: 0.4 }}
+                  className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4"
+                >
+                  {[
+                    { icon: Sparkles, label: "100% Deterministic", desc: "Identical results, every time" },
+                    { icon: ShieldCheck, label: "Aerospace Certified", desc: "Manufacturing-ready" },
+                    { icon: Zap, label: "Instant Compilation", desc: "Real-time geometry" }
+                  ].map((item, idx) => {
+                    const Icon = item.icon;
+                    return (
+                      <div key={idx} className="flex items-start gap-3 p-4 bg-primary/40 border border-aerospace-blue/20 rounded-lg hover:border-aerospace-blue/50 transition-colors">
+                        <Icon className="w-5 h-5 text-aerospace-blue shrink-0 mt-1" />
+                        <div>
+                          <p className="font-mono text-xs text-aerospace-blue uppercase tracking-wider">{item.label}</p>
+                          <p className="font-paragraph text-sm text-foreground/70">{item.desc}</p>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </motion.div>
 
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: 0.6 }}
-                  className="pt-8 flex gap-4"
+                  className="pt-8 flex flex-col sm:flex-row gap-4"
                 >
                   <Link 
                     to="/compiler"
-                    className="group relative inline-flex items-center justify-center px-8 py-4 bg-aerospace-blue text-white font-mono text-sm uppercase tracking-wider hover:bg-aerospace-accent transition-colors duration-300 rounded-lg shadow-lg hover:shadow-xl"
+                    className="group relative inline-flex items-center justify-center px-10 py-5 bg-aerospace-blue text-white font-mono text-sm uppercase tracking-wider hover:bg-aerospace-accent transition-all duration-300 rounded-lg shadow-xl hover:shadow-2xl hover:-translate-y-1"
                   >
                     <span className="relative z-10 flex items-center gap-2">
                       {HERO_DATA.cta}
@@ -167,44 +199,145 @@ export default function HomePage() {
                     </span>
                   </Link>
                   <Link 
-                    to="/compiler-classic"
-                    className="group relative inline-flex items-center justify-center px-8 py-4 bg-transparent border border-aerospace-blue text-aerospace-blue font-mono text-sm uppercase tracking-wider hover:bg-aerospace-blue hover:text-white transition-colors duration-300 rounded-lg"
+                    to="/about-tools"
+                    className="group relative inline-flex items-center justify-center px-10 py-5 bg-transparent border-2 border-aerospace-blue text-aerospace-blue font-mono text-sm uppercase tracking-wider hover:bg-aerospace-blue hover:text-white transition-all duration-300 rounded-lg"
                   >
                     <span className="relative z-10 flex items-center gap-2">
-                      Classic View
+                      Explore Tools
                       <ChevronRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
                     </span>
                   </Link>
                 </motion.div>
               </div>
 
-              {/* Right Column: Technical Visual */}
-              <div className="lg:col-span-4 hidden lg:flex flex-col justify-end items-end opacity-60">
-                <div className="w-full aspect-square border border-aerospace-blue/30 relative p-4 flex flex-col justify-between bg-aerospace-dark/50 backdrop-blur-sm rounded-lg">
+              {/* Right Column: Visual Showcase */}
+              <div className="lg:col-span-5 hidden lg:flex flex-col justify-center items-center">
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.9, y: 40 }}
+                  animate={{ opacity: 1, scale: 1, y: 0 }}
+                  transition={{ duration: 0.8, delay: 0.3 }}
+                  className="w-full aspect-square border-2 border-aerospace-blue/30 relative p-6 flex flex-col justify-between bg-gradient-to-br from-aerospace-blue/10 to-aerospace-accent/10 backdrop-blur-sm rounded-xl hover:border-aerospace-blue/60 transition-all duration-300"
+                >
                   <div className="flex justify-between items-start">
-                    <Terminal className="w-6 h-6 text-aerospace-blue/60" />
-                    <span className="font-mono text-[10px] text-aerospace-blue/40">AERO_FORGE_KERNEL</span>
-                  </div>
-                  <div className="space-y-2 font-mono text-xs text-aerospace-blue/60">
-                    <div className="flex justify-between border-b border-aerospace-blue/10 pb-1">
-                      <span>STATUS</span>
-                      <span className="text-aerospace-success">ONLINE</span>
+                    <div className="flex items-center gap-2">
+                      <div className="w-3 h-3 bg-aerospace-success rounded-full animate-pulse" />
+                      <span className="font-mono text-xs text-aerospace-blue/80">SYSTEM ACTIVE</span>
                     </div>
-                    <div className="flex justify-between border-b border-aerospace-blue/10 pb-1">
+                    <Terminal className="w-6 h-6 text-aerospace-blue/60" />
+                  </div>
+                  
+                  <div className="space-y-4 font-mono text-xs text-aerospace-blue/70">
+                    <div className="flex justify-between border-b border-aerospace-blue/20 pb-2">
+                      <span>COMPILATION MODE</span>
+                      <span className="text-aerospace-success">DETERMINISTIC</span>
+                    </div>
+                    <div className="flex justify-between border-b border-aerospace-blue/20 pb-2">
+                      <span>VALIDATION LEVEL</span>
+                      <span className="text-aerospace-accent">AEROSPACE</span>
+                    </div>
+                    <div className="flex justify-between border-b border-aerospace-blue/20 pb-2">
                       <span>LATENCY</span>
                       <span>12ms</span>
                     </div>
-                    <div className="flex justify-between border-b border-aerospace-blue/10 pb-1">
-                      <span>MODE</span>
-                      <span>STRICT</span>
-                    </div>
-                    <div className="flex justify-between pt-2">
-                      <span>BUILD</span>
-                      <span>STABLE</span>
+                    <div className="flex justify-between">
+                      <span>AUDIT TRAIL</span>
+                      <span className="text-aerospace-blue">ENABLED</span>
                     </div>
                   </div>
-                </div>
+
+                  <div className="text-center space-y-2 pt-4 border-t border-aerospace-blue/20">
+                    <p className="font-mono text-xs text-foreground/40">v1.0.4 • Production Ready</p>
+                    <p className="font-mono text-xs text-aerospace-blue/60">Zero Ambiguity • Full Traceability</p>
+                  </div>
+                </motion.div>
               </div>
+            </div>
+          </div>
+        </section>
+
+        {/* WHY WE'RE SPECIAL SECTION */}
+        <section className="w-full py-32 bg-primary border-t border-secondary/20 relative overflow-hidden">
+          <div className="absolute inset-0 opacity-5 pointer-events-none">
+            <GridBackground />
+          </div>
+          
+          <div className="w-full max-w-[120rem] mx-auto px-6 md:px-12 lg:px-16 relative z-10">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+              viewport={{ once: true }}
+              className="text-center mb-20"
+            >
+              <div className="flex items-center justify-center gap-3 mb-4">
+                <Award className="w-6 h-6 text-aerospace-blue" />
+                <span className="font-mono text-sm uppercase tracking-widest text-aerospace-blue">Industry Leadership</span>
+              </div>
+              <h2 className="font-heading text-4xl md:text-5xl font-bold text-foreground mb-6">
+                Why We're Revolutionary
+              </h2>
+              <p className="font-paragraph text-xl text-secondary-foreground max-w-3xl mx-auto">
+                We've fundamentally reimagined how engineers design. No approximations. No black boxes. Pure deterministic precision.
+              </p>
+            </motion.div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {[
+                {
+                  icon: Brain,
+                  title: "AI That Understands Intent",
+                  desc: "Our cloud reasoning layer interprets natural language design specifications with aerospace-grade precision, not guesses."
+                },
+                {
+                  icon: Sparkles,
+                  title: "Zero Ambiguity Guarantee",
+                  desc: "Every compilation produces identical results. No probabilistic methods. No randomness. Pure deterministic execution."
+                },
+                {
+                  icon: ShieldCheck,
+                  title: "Manufacturing Certified",
+                  desc: "Outputs validated against aerospace standards, DFM rules, and manufacturing constraints before delivery."
+                },
+                {
+                  icon: Database,
+                  title: "Complete Traceability",
+                  desc: "Full audit trails for every design decision. Compliance-ready. Verification-ready. Enterprise-ready."
+                },
+                {
+                  icon: TrendingUp,
+                  title: "Performance Proven",
+                  desc: "Real-world case studies show 40%+ performance improvements and significant cost reductions across industries."
+                },
+                {
+                  icon: Terminal,
+                  title: "Enterprise Integration",
+                  desc: "Seamless API-first architecture integrates with your existing CAD systems, PLM platforms, and workflows."
+                }
+              ].map((item, idx) => {
+                const Icon = item.icon;
+                return (
+                  <motion.div
+                    key={idx}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6, delay: idx * 0.1 }}
+                    viewport={{ once: true }}
+                    className="group relative bg-aerospace-dark/50 border border-secondary/20 rounded-lg p-8 hover:border-aerospace-blue/50 transition-all duration-300"
+                  >
+                    <div className="flex items-start gap-4 mb-4">
+                      <div className="p-3 bg-aerospace-blue/10 rounded-lg group-hover:bg-aerospace-blue/20 transition-colors">
+                        <Icon className="w-6 h-6 text-aerospace-blue" />
+                      </div>
+                    </div>
+                    <h3 className="font-heading text-xl font-bold text-foreground mb-3">
+                      {item.title}
+                    </h3>
+                    <p className="font-paragraph text-foreground/70">
+                      {item.desc}
+                    </p>
+                  </motion.div>
+                );
+              })}
             </div>
           </div>
         </section>
@@ -303,48 +436,84 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* TOOLS CTA SECTION */}
-        <section className="w-full py-20 bg-primary border-t border-secondary/20">
+        {/* RESEARCH PAPERS SECTION */}
+        <section className="w-full py-32 bg-primary border-t border-secondary/20">
           <div className="w-full max-w-[120rem] mx-auto px-6 md:px-12 lg:px-16">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
               viewport={{ once: true }}
-              className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center"
+              className="mb-16"
             >
-              <div className="space-y-6">
-                <div className="flex items-center gap-3">
-                  <BookOpen className="w-6 h-6 text-aerospace-blue" />
-                  <span className="font-mono text-sm uppercase tracking-widest text-aerospace-blue">Documentation</span>
-                </div>
-                <h2 className="font-heading text-4xl md:text-5xl font-bold text-foreground">
-                  Explore All Tools
-                </h2>
-                <p className="font-paragraph text-lg text-secondary-foreground max-w-xl">
-                  Learn about each aerospace calculator, simulator, and design tool. Understand the physics models, controls, and outputs.
-                </p>
-                <Link
-                  to="/about-tools"
-                  className="inline-flex items-center justify-center px-8 py-3 bg-aerospace-blue text-white font-semibold rounded-lg hover:bg-aerospace-accent transition-colors duration-300 gap-2 w-fit"
-                >
-                  View Tool Guide <ChevronRight className="w-4 h-4" />
-                </Link>
+              <div className="flex items-center gap-3 mb-4">
+                <BookOpen className="w-6 h-6 text-aerospace-blue" />
+                <span className="font-mono text-sm uppercase tracking-widest text-aerospace-blue">Research & Innovation</span>
               </div>
-              <div className="hidden lg:block relative h-96 bg-aerospace-dark/50 rounded-lg border border-aerospace-blue/20 overflow-hidden">
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="text-center space-y-4">
-                    <Terminal className="w-16 h-16 text-aerospace-blue/40 mx-auto" />
-                    <p className="font-mono text-sm text-foreground/40">Industry-Grade Tools</p>
-                  </div>
-                </div>
+              <h2 className="font-heading text-4xl md:text-5xl font-bold text-foreground mb-4">
+                Research Papers
+              </h2>
+              <p className="font-paragraph text-lg text-secondary-foreground max-w-2xl">
+                Peer-reviewed research and technical papers advancing the field of deterministic CAD compilation.
+              </p>
+            </motion.div>
+
+            {!isLoading && papers.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {papers.map((paper, idx) => (
+                  <motion.div
+                    key={paper._id}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6, delay: idx * 0.1 }}
+                    viewport={{ once: true }}
+                    className="group relative bg-aerospace-dark/50 border border-secondary/20 rounded-lg p-6 hover:border-aerospace-blue/50 transition-all duration-300 flex flex-col"
+                  >
+                    <div className="mb-4">
+                      <p className="font-mono text-xs text-aerospace-blue uppercase tracking-widest mb-2">
+                        {paper.researchTopic}
+                      </p>
+                      <h3 className="font-heading text-lg font-bold text-foreground group-hover:text-aerospace-blue transition-colors">
+                        {paper.title}
+                      </h3>
+                    </div>
+                    <p className="font-paragraph text-sm text-foreground/70 mb-4 flex-1">
+                      {paper.abstract}
+                    </p>
+                    <div className="flex items-center justify-between pt-4 border-t border-secondary/20">
+                      <span className="font-mono text-xs text-secondary-foreground">
+                        {paper.authors}
+                      </span>
+                      {paper.pdfUrl && (
+                        <a href={paper.pdfUrl} target="_blank" rel="noopener noreferrer" className="text-aerospace-blue hover:text-aerospace-accent transition-colors">
+                          <ArrowRight className="w-4 h-4" />
+                        </a>
+                      )}
+                    </div>
+                  </motion.div>
+                ))}
               </div>
+            ) : null}
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.3 }}
+              viewport={{ once: true }}
+              className="mt-12 text-center"
+            >
+              <Link
+                to="/research-hub"
+                className="inline-flex items-center justify-center px-8 py-3 bg-aerospace-blue text-white font-semibold rounded-lg hover:bg-aerospace-accent transition-colors duration-300 gap-2"
+              >
+                View All Research <ArrowRight className="w-4 h-4" />
+              </Link>
             </motion.div>
           </div>
         </section>
 
         {/* CASE STUDIES SECTION */}
-        <section className="w-full py-32 bg-primary border-t border-secondary/20">
+        <section className="w-full py-32 bg-aerospace-dark border-t border-secondary/20">
           <div className="w-full max-w-[120rem] mx-auto px-6 md:px-12 lg:px-16">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -374,7 +543,7 @@ export default function HomePage() {
                     whileInView={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.6, delay: idx * 0.1 }}
                     viewport={{ once: true }}
-                    className="group relative bg-aerospace-dark/50 border border-secondary/20 rounded-lg overflow-hidden hover:border-aerospace-blue/50 transition-all duration-300"
+                    className="group relative bg-primary/50 border border-secondary/20 rounded-lg overflow-hidden hover:border-aerospace-blue/50 transition-all duration-300 flex flex-col"
                   >
                     {study.mainProjectImage && (
                       <div className="relative h-48 overflow-hidden bg-secondary/10">
@@ -385,7 +554,7 @@ export default function HomePage() {
                         />
                       </div>
                     )}
-                    <div className="p-6 space-y-4">
+                    <div className="p-6 space-y-4 flex flex-col flex-1">
                       <div>
                         <p className="font-mono text-xs text-aerospace-blue uppercase tracking-widest mb-2">
                           {study.industrySector}
@@ -394,7 +563,7 @@ export default function HomePage() {
                           {study.projectName}
                         </h3>
                       </div>
-                      <p className="font-paragraph text-sm text-foreground/70">
+                      <p className="font-paragraph text-sm text-foreground/70 flex-1">
                         {study.projectOverview}
                       </p>
                       {(study.performanceImprovement || study.costReduction) && (
@@ -437,7 +606,7 @@ export default function HomePage() {
         </section>
 
         {/* KNOWLEDGE BASE SECTION */}
-        <section className="w-full py-32 bg-aerospace-dark border-t border-secondary/20">
+        <section className="w-full py-32 bg-primary border-t border-secondary/20">
           <div className="w-full max-w-[120rem] mx-auto px-6 md:px-12 lg:px-16">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -467,7 +636,7 @@ export default function HomePage() {
                     whileInView={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.6, delay: idx * 0.1 }}
                     viewport={{ once: true }}
-                    className="group relative bg-primary/50 border border-secondary/20 rounded-lg p-6 hover:border-aerospace-blue/50 transition-all duration-300"
+                    className="group relative bg-aerospace-dark/50 border border-secondary/20 rounded-lg p-6 hover:border-aerospace-blue/50 transition-all duration-300"
                   >
                     <div className="flex items-start justify-between mb-4">
                       <div className="flex-1">
@@ -512,7 +681,7 @@ export default function HomePage() {
         </section>
 
         {/* COMPILER HIGHLIGHT SECTION */}
-        <section className="w-full py-32 bg-primary border-t border-secondary/20 relative overflow-hidden">
+        <section className="w-full py-32 bg-aerospace-dark border-t border-secondary/20 relative overflow-hidden">
           <div className="absolute inset-0 opacity-5 pointer-events-none">
             <GridBackground />
           </div>
@@ -593,7 +762,7 @@ export default function HomePage() {
         </section>
 
         {/* FINAL CTA */}
-        <section className="w-full py-32 bg-aerospace-dark border-t border-secondary/20">
+        <section className="w-full py-32 bg-primary border-t border-secondary/20">
           <div className="w-full max-w-4xl mx-auto px-6 text-center">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -603,10 +772,10 @@ export default function HomePage() {
               className="space-y-8"
             >
               <h2 className="font-heading text-4xl md:text-5xl font-bold text-aerospace-blue">
-                Ready to Compile?
+                Ready to Revolutionize Your Design Process?
               </h2>
               <p className="font-paragraph text-xl text-foreground/70 max-w-2xl mx-auto">
-                Access the deterministic compiler interface. No registration required. Stateless execution.
+                Access the deterministic compiler interface. No registration required. Stateless execution. Enterprise-grade precision.
               </p>
               <Link 
                 to="/compiler"
