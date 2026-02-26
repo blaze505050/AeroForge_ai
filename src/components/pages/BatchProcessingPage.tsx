@@ -209,9 +209,9 @@ export default function BatchProcessingPage() {
           animate={{ opacity: 1, y: 0 }}
           className="mb-12"
         >
-          <h1 className="font-heading text-5xl font-bold mb-4">Batch Processing</h1>
+          <h1 className="font-heading text-5xl font-bold mb-4">Enterprise Batch Processing</h1>
           <p className="text-secondary-foreground text-lg max-w-2xl">
-            Industry-professional batch processing with parametric studies, adaptive queuing, result aggregation, and comprehensive analytics.
+            Production-Grade Batch Processing with Parametric Studies, Adaptive Queuing, Result Aggregation & Analytics.
           </p>
         </motion.div>
 

@@ -19,8 +19,8 @@ interface Tool {
 const tools: Tool[] = [
   {
     id: 'airfoil-designer',
-    title: 'Airfoil Designer',
-    description: 'Design and visualize custom airfoil profiles with real-time aerodynamic analysis',
+    title: 'Professional Airfoil Designer',
+    description: 'Enterprise-grade airfoil design and analysis with real-time aerodynamic validation',
     icon: <Wind className="w-8 h-8" />,
     category: 'Aerodynamics',
     features: ['Real-time visualization', 'NACA profile generation', 'Geometry optimization', 'Export to CAD'],
@@ -29,8 +29,8 @@ const tools: Tool[] = [
   },
   {
     id: 'airfoil-downloader',
-    title: 'Airfoil Data Downloader',
-    description: 'Download airfoil coordinates and performance data in CSV format using natural language prompts',
+    title: 'Airfoil Data Repository',
+    description: 'Access comprehensive airfoil database with performance data and natural language search',
     icon: <Download className="w-8 h-8" />,
     category: 'Data Management',
     features: ['Natural language search', 'CSV export', 'Batch download', 'Performance curves'],
@@ -39,8 +39,8 @@ const tools: Tool[] = [
   },
   {
     id: 'cfd-simulator',
-    title: 'CFD Simulator',
-    description: 'Run computational fluid dynamics simulations with pre-configured aerospace scenarios',
+    title: 'Enterprise CFD Solver',
+    description: 'Production-grade computational fluid dynamics with CAD integration and advanced monitoring',
     icon: <Cpu className="w-8 h-8" />,
     category: 'Simulation',
     features: ['Mesh generation', 'Solver configuration', 'Results visualization', 'Data export'],
@@ -49,8 +49,8 @@ const tools: Tool[] = [
   },
   {
     id: 'wing-calculator',
-    title: 'Wing Calculator',
-    description: 'Calculate wing performance metrics and aerodynamic characteristics instantly',
+    title: 'Professional Wing Calculator',
+    description: 'Advanced wing performance analysis and aerodynamic characteristic computation',
     icon: <Calculator className="w-8 h-8" />,
     category: 'Calculations',
     features: ['Wing span calculation', 'Performance metrics', 'Speed analysis', 'CSV export'],
@@ -59,8 +59,8 @@ const tools: Tool[] = [
   },
   {
     id: 'thrust-calculator',
-    title: 'Thrust Calculator',
-    description: 'Calculate engine thrust and performance metrics for jet and piston engines',
+    title: 'Enterprise Thrust Calculator',
+    description: 'Comprehensive engine thrust and performance analysis for jet and piston engines',
     icon: <Zap className="w-8 h-8" />,
     category: 'Calculations',
     features: ['Jet engine analysis', 'Piston engine analysis', 'Power output', 'Fuel consumption'],
@@ -69,8 +69,8 @@ const tools: Tool[] = [
   },
   {
     id: 'drag-calculator',
-    title: 'Drag Calculator',
-    description: 'Analyze aerodynamic drag forces and components for aircraft design',
+    title: 'Professional Drag Analysis',
+    description: 'Production-grade aerodynamic drag analysis with component breakdown and optimization',
     icon: <Wind className="w-8 h-8" />,
     category: 'Calculations',
     features: ['Drag components', 'Compressibility effects', 'Performance analysis', 'CSV export'],
@@ -79,8 +79,8 @@ const tools: Tool[] = [
   },
   {
     id: 'templates',
-    title: 'Design Templates',
-    description: 'Access pre-built design templates for aerospace and mechanical engineering projects',
+    title: 'Professional Design Templates',
+    description: 'Production-ready design templates for aerospace and mechanical engineering',
     icon: <Zap className="w-8 h-8" />,
     category: 'Design',
     features: ['Aircraft designs', 'Mechanical templates', 'Customizable layouts', 'Export ready'],
@@ -89,8 +89,8 @@ const tools: Tool[] = [
   },
   {
     id: 'cfd-datasets',
-    title: 'CFD Datasets & Tutorials',
-    description: 'Access validated CFD simulation datasets with comprehensive tutorials and analysis tools',
+    title: 'Validated CFD Datasets',
+    description: 'Comprehensive CFD simulation datasets with tutorials and boundary condition specifications',
     icon: <Database className="w-8 h-8" />,
     category: 'Data',
     features: ['Validated datasets', 'Mesh tutorials', 'Boundary conditions', 'Advanced analysis'],
@@ -99,8 +99,8 @@ const tools: Tool[] = [
   },
   {
     id: 'aerospace-suite',
-    title: 'Advanced Aerospace Suite',
-    description: 'Professional aerospace design and analysis platform with multi-physics simulation and AI optimization',
+    title: 'Enterprise Aerospace Suite',
+    description: 'Integrated aerospace design platform with multi-physics simulation and AI-powered optimization',
     icon: <Wrench className="w-8 h-8" />,
     category: 'Design',
     features: ['Multi-physics simulation', 'Structural analysis', 'Optimization tools', 'Team collaboration'],
@@ -109,12 +109,13 @@ const tools: Tool[] = [
   },
   {
     id: 'mechanical-suite',
-    title: 'Mechanical CAD Suite',
-    description: 'Coming Soon - Comprehensive mechanical design and manufacturing tools',
+    title: 'Enterprise Mechanical CAD Suite',
+    description: 'Production-grade mechanical design with parametric modeling and manufacturing integration',
     icon: <Wrench className="w-8 h-8" />,
     category: 'Mechanical',
     features: ['Parametric modeling', 'Assembly simulation', 'Manufacturing specs', 'Material database'],
     color: 'from-slate-600 to-gray-700',
+    path: '/mechanical-cad-suite',
   },
 ];
 

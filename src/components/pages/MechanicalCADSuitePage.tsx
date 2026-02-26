@@ -133,10 +133,10 @@ export default function MechanicalCADSuitePage() {
           {/* Header */}
           <div className="mb-12">
             <h1 className="font-heading text-5xl md:text-6xl font-bold text-white mb-2">
-              Mechanical CAD Suite
+              Enterprise Mechanical CAD Suite
             </h1>
             <p className="font-paragraph text-lg text-slate-400 mb-6">
-              Unified Design → Compile → Analyze → Optimize Workflow
+              Production-Grade Parametric Design with Integrated Analysis & Optimization
             </p>
             <div className="flex flex-wrap gap-3">
               <span className="px-3 py-1 bg-blue-500/20 border border-blue-500/50 rounded-full text-sm text-blue-300">
