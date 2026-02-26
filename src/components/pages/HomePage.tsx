@@ -8,35 +8,35 @@ import Footer from '@/components/Footer';
 import { Image } from '@/components/ui/image';
 
 const HERO_DATA = {
-  headline: "Natural Language → Deterministic Parametric CAD",
-  subtext: "AeroForge AI is a compiler that converts mechanical design intent into validated, parametric feature plans for deterministic execution.",
-  cta: "Launch Compiler"
+  headline: "Precision CAD from Intent",
+  subtext: "Enterprise-grade parametric design compiler with aerospace-certified determinism. Transform design intent into validated, manufacturing-ready geometry.",
+  cta: "Start Designing"
 };
 
 const PHILOSOPHY_DATA = [
   { 
     title: "Deterministic Execution", 
-    desc: "Every JSON feature plan produces identical geometry when executed locally, ensuring repeatability and manufacturing safety.",
+    desc: "Every design produces identical geometry when executed, ensuring repeatability and manufacturing safety. No probabilistic methods.",
     icon: CheckCircle2
   },
   { 
-    title: "Separation of Concerns", 
-    desc: "Cloud reasoning generates validated JSON DSL. Local interpreters execute geometry. No mixing of intelligence and execution.",
-    icon: Layers
-  },
-  { 
-    title: "Schema-Enforced Validation", 
-    desc: "All outputs conform to strict Pydantic schemas with DFM rule checks before delivery.",
+    title: "Validation-First Design", 
+    desc: "All outputs validated against aerospace standards, DFM rules, and manufacturing constraints before delivery.",
     icon: ShieldCheck
   },
   { 
-    title: "Aerospace-Grade Reliability", 
-    desc: "No black-box geometry generation. No auto-repair heuristics. Explicit, traceable feature sequences only.",
+    title: "Transparent Architecture", 
+    desc: "No black-box geometry. Explicit, traceable design sequences with full audit trails for compliance and verification.",
+    icon: Layers
+  },
+  { 
+    title: "Manufacturing-Ready Output", 
+    desc: "Designs emerge production-ready with tolerance specifications, material properties, and assembly instructions.",
     icon: Cpu
   },
   { 
-    title: "Stateless Architecture", 
-    desc: "The frontend is replaceable infrastructure. All intelligence resides in the backend compiler.",
+    title: "Enterprise Integration", 
+    desc: "Seamless integration with CAD systems, PLM platforms, and manufacturing workflows. API-first architecture.",
     icon: Terminal
   }
 ];
