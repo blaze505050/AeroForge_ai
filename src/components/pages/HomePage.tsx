@@ -1,11 +1,13 @@
-// HPI 1.7-G - Phase 1 Enhanced
-import React, { useRef } from 'react';
+// Professional Homepage - Phase 2
+import React, { useRef, useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, useScroll, useInView } from 'framer-motion';
-import { CheckCircle2, Layers, ShieldCheck, Cpu, Terminal, XCircle, ChevronRight, BookOpen } from 'lucide-react';
+import { CheckCircle2, Layers, ShieldCheck, Cpu, Terminal, XCircle, ChevronRight, BookOpen, Zap, Code2, Database, Lightbulb, ArrowRight } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Image } from '@/components/ui/image';
+import { BaseCrudService } from '@/integrations';
+import { CaseStudies, KnowledgeBaseArticles } from '@/entities';
 
 const HERO_DATA = {
   headline: "Precision CAD from Intent",
@@ -79,6 +81,28 @@ export default function HomePage() {
     target: containerRef,
     offset: ["start start", "end end"]
   });
+  
+  const [caseStudies, setCaseStudies] = useState<CaseStudies[]>([]);
+  const [articles, setArticles] = useState<KnowledgeBaseArticles[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const loadContent = async () => {
+      try {
+        const [studiesResult, articlesResult] = await Promise.all([
+          BaseCrudService.getAll<CaseStudies>('casestudies', [], { limit: 3 }),
+          BaseCrudService.getAll<KnowledgeBaseArticles>('knowledgebasearticles', [], { limit: 3 })
+        ]);
+        setCaseStudies(studiesResult.items);
+        setArticles(articlesResult.items);
+      } catch (error) {
+        console.error('Error loading content:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    loadContent();
+  }, []);
 
   return (
     <div ref={containerRef} className="min-h-screen bg-aerospace-dark text-foreground font-paragraph selection:bg-aerospace-blue selection:text-white flex flex-col overflow-clip">
@@ -316,6 +340,255 @@ export default function HomePage() {
                 </div>
               </div>
             </motion.div>
+          </div>
+        </section>
+
+        {/* CASE STUDIES SECTION */}
+        <section className="w-full py-32 bg-primary border-t border-secondary/20">
+          <div className="w-full max-w-[120rem] mx-auto px-6 md:px-12 lg:px-16">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+              viewport={{ once: true }}
+              className="mb-16"
+            >
+              <div className="flex items-center gap-3 mb-4">
+                <Zap className="w-6 h-6 text-aerospace-blue" />
+                <span className="font-mono text-sm uppercase tracking-widest text-aerospace-blue">Real-World Impact</span>
+              </div>
+              <h2 className="font-heading text-4xl md:text-5xl font-bold text-foreground mb-4">
+                Case Studies
+              </h2>
+              <p className="font-paragraph text-lg text-secondary-foreground max-w-2xl">
+                See how AeroForge AI has transformed engineering workflows across industries.
+              </p>
+            </motion.div>
+
+            {!isLoading && caseStudies.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {caseStudies.map((study, idx) => (
+                  <motion.div
+                    key={study._id}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6, delay: idx * 0.1 }}
+                    viewport={{ once: true }}
+                    className="group relative bg-aerospace-dark/50 border border-secondary/20 rounded-lg overflow-hidden hover:border-aerospace-blue/50 transition-all duration-300"
+                  >
+                    {study.mainProjectImage && (
+                      <div className="relative h-48 overflow-hidden bg-secondary/10">
+                        <Image
+                          src={study.mainProjectImage}
+                          alt={study.projectName || 'Case study'}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                        />
+                      </div>
+                    )}
+                    <div className="p-6 space-y-4">
+                      <div>
+                        <p className="font-mono text-xs text-aerospace-blue uppercase tracking-widest mb-2">
+                          {study.industrySector}
+                        </p>
+                        <h3 className="font-heading text-xl font-bold text-foreground">
+                          {study.projectName}
+                        </h3>
+                      </div>
+                      <p className="font-paragraph text-sm text-foreground/70">
+                        {study.projectOverview}
+                      </p>
+                      {(study.performanceImprovement || study.costReduction) && (
+                        <div className="flex gap-4 pt-4 border-t border-secondary/20">
+                          {study.performanceImprovement && (
+                            <div>
+                              <p className="font-mono text-xs text-aerospace-success">Performance</p>
+                              <p className="font-heading text-lg font-bold text-foreground">+{study.performanceImprovement}%</p>
+                            </div>
+                          )}
+                          {study.costReduction && (
+                            <div>
+                              <p className="font-mono text-xs text-aerospace-accent">Cost Savings</p>
+                              <p className="font-heading text-lg font-bold text-foreground">${study.costReduction}k</p>
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            ) : null}
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.3 }}
+              viewport={{ once: true }}
+              className="mt-12 text-center"
+            >
+              <Link
+                to="/case-studies"
+                className="inline-flex items-center justify-center px-8 py-3 bg-aerospace-blue text-white font-semibold rounded-lg hover:bg-aerospace-accent transition-colors duration-300 gap-2"
+              >
+                View All Case Studies <ArrowRight className="w-4 h-4" />
+              </Link>
+            </motion.div>
+          </div>
+        </section>
+
+        {/* KNOWLEDGE BASE SECTION */}
+        <section className="w-full py-32 bg-aerospace-dark border-t border-secondary/20">
+          <div className="w-full max-w-[120rem] mx-auto px-6 md:px-12 lg:px-16">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+              viewport={{ once: true }}
+              className="mb-16"
+            >
+              <div className="flex items-center gap-3 mb-4">
+                <Lightbulb className="w-6 h-6 text-aerospace-blue" />
+                <span className="font-mono text-sm uppercase tracking-widest text-aerospace-blue">Learning Resources</span>
+              </div>
+              <h2 className="font-heading text-4xl md:text-5xl font-bold text-foreground mb-4">
+                Knowledge Base
+              </h2>
+              <p className="font-paragraph text-lg text-secondary-foreground max-w-2xl">
+                Comprehensive guides and technical documentation to master AeroForge AI.
+              </p>
+            </motion.div>
+
+            {!isLoading && articles.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {articles.map((article, idx) => (
+                  <motion.div
+                    key={article._id}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6, delay: idx * 0.1 }}
+                    viewport={{ once: true }}
+                    className="group relative bg-primary/50 border border-secondary/20 rounded-lg p-6 hover:border-aerospace-blue/50 transition-all duration-300"
+                  >
+                    <div className="flex items-start justify-between mb-4">
+                      <div className="flex-1">
+                        <p className="font-mono text-xs text-aerospace-blue uppercase tracking-widest mb-2">
+                          {article.category}
+                        </p>
+                        <h3 className="font-heading text-lg font-bold text-foreground group-hover:text-aerospace-blue transition-colors">
+                          {article.title}
+                        </h3>
+                      </div>
+                      <Code2 className="w-5 h-5 text-aerospace-blue/40 shrink-0 ml-2" />
+                    </div>
+                    <p className="font-paragraph text-sm text-foreground/70 mb-4 line-clamp-2">
+                      {article.summary}
+                    </p>
+                    <div className="flex items-center justify-between pt-4 border-t border-secondary/20">
+                      <span className="font-mono text-xs text-secondary-foreground">
+                        {article.difficultyLevel}
+                      </span>
+                      <ChevronRight className="w-4 h-4 text-aerospace-blue/40 group-hover:translate-x-1 transition-transform" />
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            ) : null}
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.3 }}
+              viewport={{ once: true }}
+              className="mt-12 text-center"
+            >
+              <Link
+                to="/knowledge-base"
+                className="inline-flex items-center justify-center px-8 py-3 bg-aerospace-blue text-white font-semibold rounded-lg hover:bg-aerospace-accent transition-colors duration-300 gap-2"
+              >
+                Explore Knowledge Base <ArrowRight className="w-4 h-4" />
+              </Link>
+            </motion.div>
+          </div>
+        </section>
+
+        {/* COMPILER HIGHLIGHT SECTION */}
+        <section className="w-full py-32 bg-primary border-t border-secondary/20 relative overflow-hidden">
+          <div className="absolute inset-0 opacity-5 pointer-events-none">
+            <GridBackground />
+          </div>
+          
+          <div className="w-full max-w-[120rem] mx-auto px-6 md:px-12 lg:px-16 relative z-10">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+              <motion.div
+                initial={{ opacity: 0, x: -40 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.6 }}
+                viewport={{ once: true }}
+                className="space-y-8"
+              >
+                <div>
+                  <div className="flex items-center gap-3 mb-4">
+                    <Terminal className="w-6 h-6 text-aerospace-blue" />
+                    <span className="font-mono text-sm uppercase tracking-widest text-aerospace-blue">Parametric Compiler</span>
+                  </div>
+                  <h2 className="font-heading text-4xl md:text-5xl font-bold text-foreground mb-4">
+                    From Intent to Geometry
+                  </h2>
+                  <p className="font-paragraph text-lg text-secondary-foreground">
+                    Transform natural language design intent into deterministic, manufacturing-ready parametric CAD geometry with aerospace-grade precision.
+                  </p>
+                </div>
+
+                <div className="space-y-4">
+                  {[
+                    { icon: CheckCircle2, text: 'Deterministic execution - identical results every time' },
+                    { icon: ShieldCheck, text: 'Aerospace-certified validation standards' },
+                    { icon: Database, text: 'Full audit trails and design history' },
+                    { icon: Cpu, text: 'Cloud reasoning + local computation' }
+                  ].map((item, idx) => {
+                    const Icon = item.icon;
+                    return (
+                      <div key={idx} className="flex items-center gap-3">
+                        <Icon className="w-5 h-5 text-aerospace-blue shrink-0" />
+                        <span className="font-paragraph text-foreground/80">{item.text}</span>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                <Link
+                  to="/compiler"
+                  className="inline-flex items-center justify-center px-10 py-4 bg-aerospace-blue text-white font-mono text-base uppercase tracking-wider hover:bg-aerospace-accent transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-1 rounded-lg w-fit"
+                >
+                  Launch Compiler <ChevronRight className="w-4 h-4 ml-2" />
+                </Link>
+              </motion.div>
+
+              <motion.div
+                initial={{ opacity: 0, x: 40 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.6 }}
+                viewport={{ once: true }}
+                className="relative h-96 hidden lg:block"
+              >
+                <div className="absolute inset-0 bg-gradient-to-br from-aerospace-blue/10 to-aerospace-accent/10 rounded-lg border border-aerospace-blue/20 overflow-hidden">
+                  <div className="absolute inset-0 flex flex-col items-center justify-center space-y-6 p-8">
+                    <div className="space-y-2 text-center">
+                      <div className="font-mono text-xs text-aerospace-blue/60 uppercase tracking-widest">Compiler Status</div>
+                      <div className="flex items-center justify-center gap-2">
+                        <div className="w-2 h-2 bg-aerospace-success rounded-full animate-pulse" />
+                        <span className="font-mono text-sm text-aerospace-success">Ready</span>
+                      </div>
+                    </div>
+                    <Terminal className="w-24 h-24 text-aerospace-blue/30" />
+                    <div className="space-y-1 text-center">
+                      <p className="font-mono text-xs text-foreground/40">v1.0.4 • Deterministic Mode</p>
+                      <p className="font-mono text-xs text-foreground/40">Zero Latency • Full Audit Trail</p>
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            </div>
           </div>
         </section>
 
