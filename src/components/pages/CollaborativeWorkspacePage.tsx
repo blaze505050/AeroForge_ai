@@ -23,11 +23,15 @@ import {
   Search,
   Zap,
   Layers,
+  Cpu,
+  Activity,
 } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { BaseCrudService } from '@/integrations';
-import { CADProjects, DesignVersions } from '@/entities';
+import { CADProjects, DesignVersions, Simulations } from '@/entities';
+import RealTimeSimulationViewer from '@/components/RealTimeSimulationViewer';
+import { realTimeSimulationService } from '@/services/realTimeSimulationService';
 
 interface TeamMember {
   id: string;
@@ -59,6 +63,14 @@ interface CollaborativeProject {
   lastModified: Date;
   status: 'active' | 'archived' | 'completed';
   comments: number;
+  simulationId?: string;
+}
+
+interface SimulationData {
+  id: string;
+  name: string;
+  type: string;
+  status: 'running' | 'completed' | 'error';
 }
 
 export default function CollaborativeWorkspacePage() {
@@ -70,15 +82,47 @@ export default function CollaborativeWorkspacePage() {
   const [filterStatus, setFilterStatus] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [showVersionHistory, setShowVersionHistory] = useState(false);
+  const [selectedSimulation, setSelectedSimulation] = useState<SimulationData | null>(null);
+  const [showSimulationViewer, setShowSimulationViewer] = useState(false);
+  const [simulations, setSimulations] = useState<SimulationData[]>([]);
 
   useEffect(() => {
     const loadProjects = async () => {
       setIsLoading(true);
       try {
-        const [cadResult, versionsResult] = await Promise.all([
+        const [cadResult, versionsResult, simulationsResult] = await Promise.all([
           BaseCrudService.getAll<CADProjects>('cadprojects'),
           BaseCrudService.getAll<DesignVersions>('designversions'),
+          BaseCrudService.getAll<Simulations>('simulations'),
         ]);
+
+        // Load simulations
+        const simulationsList: SimulationData[] = (simulationsResult.items || []).map(sim => ({
+          id: sim._id,
+          name: sim.simulationName || 'Untitled Simulation',
+          type: sim.simulationType || 'CFD',
+          status: sim.successStatus ? 'completed' : 'running',
+        }));
+        setSimulations(simulationsList);
+
+        // Register data sources for real-time simulation
+        realTimeSimulationService.registerDataSource({
+          id: 'nasa-api',
+          name: 'NASA Aerodynamic Database',
+          url: 'https://api.nasa.gov',
+          type: 'nasa-api',
+          updateInterval: 2000,
+          isActive: true,
+        });
+
+        realTimeSimulationService.registerDataSource({
+          id: 'openfoam-server',
+          name: 'OpenFOAM Simulation Server',
+          url: 'http://localhost:8080',
+          type: 'openfoam-server',
+          updateInterval: 1500,
+          isActive: true,
+        });
 
         const mockProjects: CollaborativeProject[] = (cadResult.items || []).map((proj, idx) => ({
           id: proj._id,
@@ -104,6 +148,7 @@ export default function CollaborativeWorkspacePage() {
           lastModified: proj.lastModifiedDate ? new Date(proj.lastModifiedDate) : new Date(),
           status: (['active', 'archived', 'completed'][idx % 3] as any),
           comments: Math.floor(Math.random() * 20),
+          simulationId: simulationsList[idx % simulationsList.length]?.id,
         }));
 
         setProjects(mockProjects);
@@ -364,6 +409,23 @@ export default function CollaborativeWorkspacePage() {
                     >
                       <GitBranch size={14} /> Versions
                     </motion.button>
+                    {project.simulationId && (
+                      <motion.button
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        onClick={e => {
+                          e.stopPropagation();
+                          const sim = simulations.find(s => s.id === project.simulationId);
+                          if (sim) {
+                            setSelectedSimulation(sim);
+                            setShowSimulationViewer(true);
+                          }
+                        }}
+                        className="flex-1 flex items-center justify-center gap-1 px-3 py-2 bg-aerospace-success/20 hover:bg-aerospace-success/30 text-aerospace-success rounded-lg text-sm font-medium transition-colors"
+                      >
+                        <Cpu size={14} /> Simulation
+                      </motion.button>
+                    )}
                     <motion.button
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
@@ -466,6 +528,31 @@ export default function CollaborativeWorkspacePage() {
                   </motion.div>
                 ))}
               </div>
+            </motion.div>
+          </motion.div>
+        )}
+
+        {/* Real-Time Simulation Viewer Modal */}
+        {showSimulationViewer && selectedSimulation && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 overflow-y-auto"
+            onClick={() => setShowSimulationViewer(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              onClick={e => e.stopPropagation()}
+              className="w-full max-w-4xl my-8"
+            >
+              <RealTimeSimulationViewer
+                sessionId={selectedSimulation.id}
+                dataSourceId="nasa-api"
+                onClose={() => setShowSimulationViewer(false)}
+              />
             </motion.div>
           </motion.div>
         )}
