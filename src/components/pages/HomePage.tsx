@@ -2,7 +2,7 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, useScroll, useInView } from 'framer-motion';
-import { CheckCircle2, Layers, ShieldCheck, Cpu, Terminal, XCircle, ChevronRight, BookOpen, Zap, Code2, Database, Lightbulb, ArrowRight, Rocket, Sparkles, Award, TrendingUp, Brain } from 'lucide-react';
+import { CheckCircle2, Layers, ShieldCheck, Cpu, Terminal, XCircle, ChevronRight, BookOpen, Zap, Code2, Database, Lightbulb, ArrowRight, Rocket, Sparkles, Award, TrendingUp, Brain, Wind, Users } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Image } from '@/components/ui/image';
@@ -509,6 +509,111 @@ export default function HomePage() {
                 View All Research <ArrowRight className="w-4 h-4" />
               </Link>
             </motion.div>
+          </div>
+        </section>
+
+        {/* ELITE SUITE SECTION */}
+        <section className="w-full py-32 bg-primary border-t border-secondary/20 relative overflow-hidden">
+          <div className="absolute inset-0 opacity-5 pointer-events-none">
+            <GridBackground />
+          </div>
+          <div className="w-full max-w-[120rem] mx-auto px-6 md:px-12 lg:px-16 relative z-10">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+              viewport={{ once: true }}
+              className="mb-16"
+            >
+              <div className="flex items-center gap-3 mb-4">
+                <Sparkles className="w-6 h-6 text-aerospace-accent" />
+                <span className="font-mono text-sm uppercase tracking-widest text-aerospace-accent">Revolutionary Features</span>
+              </div>
+              <h2 className="font-heading text-4xl md:text-5xl font-bold text-foreground mb-4">
+                Elite Suite
+              </h2>
+              <p className="font-paragraph text-lg text-secondary-foreground max-w-2xl">
+                Industry-leading tools for advanced aerospace engineering, research, and collaboration.
+              </p>
+            </motion.div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {[
+                {
+                  icon: TrendingUp,
+                  title: "Elite Multi-Objective Optimization",
+                  desc: "Revolutionary Pareto frontier analysis with NSGA-III algorithm for aerospace design optimization",
+                  path: "/elite-multi-objective-optimization",
+                  badge: "🏆 Elite"
+                },
+                {
+                  icon: Wind,
+                  title: "Turbulence Modeling Research Lab",
+                  desc: "Interactive comparison of advanced turbulence models with real-time convergence monitoring",
+                  path: "/turbulence-modeling-research-lab",
+                  badge: "🌪️ Lab"
+                },
+                {
+                  icon: Layers,
+                  title: "Aerospace Design Patterns Library",
+                  desc: "Professional wing, fuselage, and landing gear templates for rapid aerospace design",
+                  path: "/aerospace-design-patterns-library",
+                  badge: "📐 Library"
+                },
+                {
+                  icon: Brain,
+                  title: "AI Research Assistant",
+                  desc: "Intelligent optimization strategies and research paper discovery powered by AI",
+                  path: "/ai-research-assistant",
+                  badge: "🤖 AI"
+                },
+                {
+                  icon: Users,
+                  title: "Collaborative Workspace",
+                  desc: "Team projects, design versioning, and peer review for aerospace engineering",
+                  path: "/collaborative-workspace",
+                  badge: "👥 Team"
+                },
+                {
+                  icon: Rocket,
+                  title: "Advanced CFD Suite",
+                  desc: "Production-grade computational fluid dynamics with multi-physics coupling",
+                  path: "/advanced-cfd",
+                  badge: "⚡ Pro"
+                }
+              ].map((item, idx) => {
+                const Icon = item.icon;
+                return (
+                  <motion.div
+                    key={idx}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6, delay: idx * 0.1 }}
+                    viewport={{ once: true }}
+                    className="group relative bg-aerospace-dark/50 border border-secondary/20 rounded-lg p-6 hover:border-aerospace-accent/50 transition-all duration-300 flex flex-col"
+                  >
+                    <div className="absolute top-4 right-4 px-2 py-1 bg-aerospace-accent/20 text-aerospace-accent text-xs font-bold rounded">
+                      {item.badge}
+                    </div>
+                    <div className="p-3 bg-aerospace-accent/10 rounded-lg group-hover:bg-aerospace-accent/20 transition-colors w-fit mb-4">
+                      <Icon className="w-6 h-6 text-aerospace-accent" />
+                    </div>
+                    <h3 className="font-heading text-lg font-bold text-foreground group-hover:text-aerospace-accent transition-colors mb-2">
+                      {item.title}
+                    </h3>
+                    <p className="font-paragraph text-sm text-foreground/70 flex-1 mb-4">
+                      {item.desc}
+                    </p>
+                    <Link
+                      to={item.path}
+                      className="inline-flex items-center gap-2 text-aerospace-accent hover:text-aerospace-blue transition-colors font-semibold text-sm"
+                    >
+                      Explore <ArrowRight className="w-4 h-4" />
+                    </Link>
+                  </motion.div>
+                );
+              })}
+            </div>
           </div>
         </section>
 

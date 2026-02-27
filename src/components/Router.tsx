@@ -32,6 +32,11 @@ import ResearchHubPage from '@/components/pages/ResearchHubPage';
 import KnowledgeBasePage from '@/components/pages/KnowledgeBasePage';
 import CertificationsPage from '@/components/pages/CertificationsPage';
 import CaseStudiesPage from '@/components/pages/CaseStudiesPage';
+import EliteMultiObjectiveOptimizationPage from '@/components/pages/EliteMultiObjectiveOptimizationPage';
+import TurbulenceModelingResearchLabPage from '@/components/pages/TurbulenceModelingResearchLabPage';
+import AerospaceDesignPatternsLibraryPage from '@/components/pages/AerospaceDesignPatternsLibraryPage';
+import AIResearchAssistantPage from '@/components/pages/AIResearchAssistantPage';
+import CollaborativeWorkspacePage from '@/components/pages/CollaborativeWorkspacePage';
 
 // Layout component that includes ScrollToTop
 function Layout() {
@@ -257,6 +262,41 @@ const router = createBrowserRouter([
         element: <CaseStudiesPage />,
         routeMetadata: {
           pageIdentifier: 'case-studies',
+        },
+      },
+      {
+        path: "elite-multi-objective-optimization",
+        element: <EliteMultiObjectiveOptimizationPage />,
+        routeMetadata: {
+          pageIdentifier: 'elite-multi-objective-optimization',
+        },
+      },
+      {
+        path: "turbulence-modeling-research-lab",
+        element: <TurbulenceModelingResearchLabPage />,
+        routeMetadata: {
+          pageIdentifier: 'turbulence-modeling-research-lab',
+        },
+      },
+      {
+        path: "aerospace-design-patterns-library",
+        element: <AerospaceDesignPatternsLibraryPage />,
+        routeMetadata: {
+          pageIdentifier: 'aerospace-design-patterns-library',
+        },
+      },
+      {
+        path: "ai-research-assistant",
+        element: <AIResearchAssistantPage />,
+        routeMetadata: {
+          pageIdentifier: 'ai-research-assistant',
+        },
+      },
+      {
+        path: "collaborative-workspace",
+        element: <CollaborativeWorkspacePage />,
+        routeMetadata: {
+          pageIdentifier: 'collaborative-workspace',
         },
       },
       {

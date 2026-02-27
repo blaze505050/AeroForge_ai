@@ -11,6 +11,16 @@ export default function Header() {
   // Reorganized navigation with main categories
   const navLinks = [
     { 
+      category: 'Elite Suite',
+      links: [
+        { path: '/elite-multi-objective-optimization', label: '🏆 Elite Multi-Objective' },
+        { path: '/turbulence-modeling-research-lab', label: '🌪️ Turbulence Lab' },
+        { path: '/aerospace-design-patterns-library', label: '📐 Design Patterns' },
+        { path: '/ai-research-assistant', label: '🤖 AI Assistant' },
+        { path: '/collaborative-workspace', label: '👥 Collaboration' },
+      ]
+    },
+    { 
       category: 'Products',
       links: [
         { path: '/mechanical-cad-suite', label: 'Mechanical CAD Suite' },
