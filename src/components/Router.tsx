@@ -37,6 +37,7 @@ import TurbulenceModelingResearchLabPage from '@/components/pages/TurbulenceMode
 import AerospaceDesignPatternsLibraryPage from '@/components/pages/AerospaceDesignPatternsLibraryPage';
 import AIResearchAssistantPage from '@/components/pages/AIResearchAssistantPage';
 import CollaborativeWorkspacePage from '@/components/pages/CollaborativeWorkspacePage';
+import DigitalAerospaceResearchLabPage from '@/components/pages/DigitalAerospaceResearchLabPage';
 
 // Layout component that includes ScrollToTop
 function Layout() {
@@ -297,6 +298,13 @@ const router = createBrowserRouter([
         element: <CollaborativeWorkspacePage />,
         routeMetadata: {
           pageIdentifier: 'collaborative-workspace',
+        },
+      },
+      {
+        path: "digital-aerospace-research-lab",
+        element: <DigitalAerospaceResearchLabPage />,
+        routeMetadata: {
+          pageIdentifier: 'digital-aerospace-research-lab',
         },
       },
       {

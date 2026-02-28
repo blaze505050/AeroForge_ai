@@ -534,9 +534,15 @@ export default function HomePage() {
                 <span className="text-aerospace-accent">Simulation + AI Co-Pilot</span> <br />
                 Collaboration Platform
               </h2>
-              <p className="font-paragraph text-xl text-secondary-foreground max-w-3xl mx-auto">
+              <p className="font-paragraph text-xl text-secondary-foreground max-w-3xl mx-auto mb-8">
                 The MVP solves ONE high-value problem extremely well: enabling aerospace engineers to upload CAD, generate mesh, run CFD, optimize designs with AI, and collaborate in real-time—all in the cloud.
               </p>
+              <Link
+                to="/digital-aerospace-research-lab"
+                className="inline-flex items-center justify-center px-8 py-3 bg-aerospace-accent text-white font-semibold rounded-lg hover:bg-aerospace-blue transition-colors duration-300 gap-2"
+              >
+                Explore Digital Aerospace Research Lab <ArrowRight className="w-4 h-4" />
+              </Link>
             </motion.div>
 
             {/* 12 Core Laboratory Modules */}
@@ -571,96 +577,6 @@ export default function HomePage() {
                   capabilities: ["Massive parallel GPU & CPU scaling", "In-situ visualization", "Streaming slices"],
                   ai: ["ML-accelerated linear algebra", "Learned turbulence closure models"],
                   cloud: ["Kubernetes + Slurm hybrid", "NVMe scratch, Lustre/GPFS, cold store"]
-                },
-                {
-                  num: "1.4",
-                  title: "Structural Testing Labs (Virtual Testbeds)",
-                  icon: Rocket,
-                  subsystems: ["Virtual load frames & actuators", "Material nonlinearities", "Vibration & modal test rig"],
-                  tools: ["FEA solver integrations", "Digital strain gauge emulation"],
-                  capabilities: ["Multi-scale structural models", "Fatigue life prediction", "Mission spectrum analysis"],
-                  ai: ["Bayesian experimental planning", "Anomaly detection on modal response"],
-                  cloud: ["High-memory nodes for sparse solve"]
-                },
-                {
-                  num: "1.5",
-                  title: "Material Science Labs (Virtual Materials Foundry)",
-                  icon: Microscope,
-                  subsystems: ["Materials database", "Microscale/mesoscale simulation chains", "Manufacturing process simulation"],
-                  tools: ["DFT/MD toolchain connectors", "Microstructure image analysis"],
-                  capabilities: ["Additive manufacturing residual stress", "Creep & oxidation simulation", "Radiation damage"],
-                  ai: ["Generative materials discovery", "Predictive upscaling"],
-                  cloud: ["HPC instances for MD/DFT", "Data cataloging for provenance"]
-                },
-                {
-                  num: "1.6",
-                  title: "Combustion & Propulsion Labs (Virtual Engine Testbeds)",
-                  icon: Rocket,
-                  subsystems: ["Injector & chamber libraries", "Thermochemical kinetics engine", "Emissions & soot models", "Thrust stand emulation"],
-                  tools: ["0D/1D rocket cycle calculators", "Reaction network management"],
-                  capabilities: ["Detailed reacting flow LES/DNS", "Injector-atomization multi-phase", "Spray models"],
-                  ai: ["Neural surrogates for instability", "Active control policy search"],
-                  cloud: ["GPU clusters with low-latency interconnects", "Checkpoint & restart at scale"]
-                },
-                {
-                  num: "1.7",
-                  title: "Rocket Engine Test Simulation Environments",
-                  icon: Rocket,
-                  subsystems: ["Full-system engine cycle simulators", "Thermal/structural/propellant coupling", "Nozzle plume interactions"],
-                  tools: ["Propellant material libraries", "Turbomachinery blade element models", "Stage ignition scripts"],
-                  capabilities: ["Multi-physics transient", "Cavitation & LOX/GH2 plumbing", "Failure insertion testing"],
-                  ai: ["Rapid sensitivity analysis", "Autotuning of operating points"],
-                  cloud: ["Safety-isolated compute enclaves"]
-                },
-                {
-                  num: "1.8",
-                  title: "Satellite Integration Labs (Virtual Cleanrooms + AIT)",
-                  icon: Sparkles,
-                  subsystems: ["Payload mounting & compatibility", "EMI/EMC simulation rigs", "Vibration & shock test emulators", "RF/antenna pattern testbeds"],
-                  tools: ["Spacecraft bus & subsystem libraries", "Thermal modeling & scenario builders"],
-                  capabilities: ["End-to-end mission simulations", "Power & thermal management", "On-orbit operations"],
-                  ai: ["Automated trade-off engine", "Failure mode prediction"],
-                  cloud: ["Secure mission environments", "Deterministic simulation runtimes"]
-                },
-                {
-                  num: "1.9",
-                  title: "Thermal Vacuum Chambers (Virtual)",
-                  icon: Gauge,
-                  subsystems: ["Vacuum envelope models", "Radiative thermal network solver"],
-                  tools: ["Sun-angle & deep-space thermal builders"],
-                  capabilities: ["Thermal vacuum soak", "Bakeout & thermal balance test simulations"],
-                  ai: ["Intelligent test sequencing"],
-                  cloud: ["Time-series thermal logs", "Virtual instrumentation dashboards"]
-                },
-                {
-                  num: "1.10",
-                  title: "Avionics Labs (Virtual HW-in-the-loop & SW-in-the-loop)",
-                  icon: Code2,
-                  subsystems: ["Real-time RTOS emulators", "Hardware abstraction layers", "Sensor/actuator virtualization"],
-                  tools: ["MIL-STD connectors", "DO-178C compliance toolchains", "FPGA/SoC co-simulation"],
-                  capabilities: ["HW-in-the-loop over low-latency links", "Avionics bus emulation (ARINC, CAN)"],
-                  ai: ["ML summarizer for code coverage", "Safety-critical anomaly detection"],
-                  cloud: ["Deterministic low-latency streaming", "Edge compute for HIL"]
-                },
-                {
-                  num: "1.11",
-                  title: "Flight Control System Labs",
-                  icon: Brain,
-                  subsystems: ["GNC algorithm repository", "Monte-Carlo uncertainty injector", "Sensor fusion pipelines"],
-                  tools: ["Full aircraft dynamics solvers", "Hardware autopilot connectors"],
-                  capabilities: ["High-fidelity aero + structural + control closed-loop", "Failure injection & recovery validation"],
-                  ai: ["AI co-pilot for controller tuning", "Automated stability margin search"],
-                  cloud: ["GPU compute for RL training", "Rollout databases"]
-                },
-                {
-                  num: "1.12",
-                  title: "Orbital Mechanics & Re-entry Simulation Environments",
-                  icon: Globe,
-                  subsystems: ["Ephemeris & force models", "Atmospheric re-entry/ablation modules", "Guidance & intercept simulation"],
-                  tools: ["Mission planning UI", "Patched conics & full n-body solvers", "Monte-Carlo collision simulators"],
-                  capabilities: ["High-fidelity atmospheric entry physics", "Plasma sheath modeling", "Reusable vehicle entry & aero-thermal loads"],
-                  ai: ["Autonomous reentry trajectory optimizer"],
-                  cloud: ["Deterministic simulation pipelines", "Large ephemeris data stores"]
                 }
               ].map((lab, idx) => {
                 const Icon = lab.icon;
