@@ -539,6 +539,271 @@ export default function HomePage() {
               </p>
             </motion.div>
 
+            {/* 12 Core Laboratory Modules */}
+            <div className="space-y-12 mb-20">
+              {[
+                {
+                  num: "1.1",
+                  title: "Aerodynamics Labs (Virtual Wind Tunnels)",
+                  icon: Wind,
+                  subsystems: ["Test-case manager", "Virtual wind-tunnel types", "Model geometry manager", "Instrumentation emulator", "Unsteady data capture"],
+                  tools: ["Parametric CAD import/export", "Pre/postprocessing GUI & CLI", "Virtual sensors", "Time-series database"],
+                  capabilities: ["Subsonic/transonic/supersonic/hypersonic", "Coupled aeroelastic FSI", "Time-accurate unsteady simulations", "Aeroacoustics"],
+                  ai: ["ML-based inflow generation", "Surrogate models for lift/drag", "Active experiment suggestion"],
+                  cloud: ["GPU-backed auto-scaling", "Data lake for transient datasets", "Streaming telemetry bus"]
+                },
+                {
+                  num: "1.2",
+                  title: "Wind Tunnels (Subsonic/Supersonic/Hypersonic)",
+                  icon: Wind,
+                  subsystems: ["Mach-number control", "Nozzle configuration library", "Cryogenic/thermal control"],
+                  tools: ["Virtual calibration suites", "Plume & combustion couplers"],
+                  capabilities: ["Real-gas models", "High-temperature air chemistry", "Shock-boundary layer interaction"],
+                  ai: ["ML-based shock position prediction"],
+                  cloud: ["High memory instances", "Hybrid on-prem GPU bursting"]
+                },
+                {
+                  num: "1.3",
+                  title: "CFD Simulation Clusters (Enterprise CFD-as-a-Service)",
+                  icon: Gauge,
+                  subsystems: ["Multi-tenant job scheduler", "Solver catalog", "Mesh bank with AMR", "Checkpointing & time-travel debugging"],
+                  tools: ["Web IDE + Jupyter Lab", "REST & gRPC APIs", "Monitoring dashboards"],
+                  capabilities: ["Massive parallel GPU & CPU scaling", "In-situ visualization", "Streaming slices"],
+                  ai: ["ML-accelerated linear algebra", "Learned turbulence closure models"],
+                  cloud: ["Kubernetes + Slurm hybrid", "NVMe scratch, Lustre/GPFS, cold store"]
+                },
+                {
+                  num: "1.4",
+                  title: "Structural Testing Labs (Virtual Testbeds)",
+                  icon: Rocket,
+                  subsystems: ["Virtual load frames & actuators", "Material nonlinearities", "Vibration & modal test rig"],
+                  tools: ["FEA solver integrations", "Digital strain gauge emulation"],
+                  capabilities: ["Multi-scale structural models", "Fatigue life prediction", "Mission spectrum analysis"],
+                  ai: ["Bayesian experimental planning", "Anomaly detection on modal response"],
+                  cloud: ["High-memory nodes for sparse solve"]
+                },
+                {
+                  num: "1.5",
+                  title: "Material Science Labs (Virtual Materials Foundry)",
+                  icon: Microscope,
+                  subsystems: ["Materials database", "Microscale/mesoscale simulation chains", "Manufacturing process simulation"],
+                  tools: ["DFT/MD toolchain connectors", "Microstructure image analysis"],
+                  capabilities: ["Additive manufacturing residual stress", "Creep & oxidation simulation", "Radiation damage"],
+                  ai: ["Generative materials discovery", "Predictive upscaling"],
+                  cloud: ["HPC instances for MD/DFT", "Data cataloging for provenance"]
+                },
+                {
+                  num: "1.6",
+                  title: "Combustion & Propulsion Labs (Virtual Engine Testbeds)",
+                  icon: Rocket,
+                  subsystems: ["Injector & chamber libraries", "Thermochemical kinetics engine", "Emissions & soot models", "Thrust stand emulation"],
+                  tools: ["0D/1D rocket cycle calculators", "Reaction network management"],
+                  capabilities: ["Detailed reacting flow LES/DNS", "Injector-atomization multi-phase", "Spray models"],
+                  ai: ["Neural surrogates for instability", "Active control policy search"],
+                  cloud: ["GPU clusters with low-latency interconnects", "Checkpoint & restart at scale"]
+                },
+                {
+                  num: "1.7",
+                  title: "Rocket Engine Test Simulation Environments",
+                  icon: Rocket,
+                  subsystems: ["Full-system engine cycle simulators", "Thermal/structural/propellant coupling", "Nozzle plume interactions"],
+                  tools: ["Propellant material libraries", "Turbomachinery blade element models", "Stage ignition scripts"],
+                  capabilities: ["Multi-physics transient", "Cavitation & LOX/GH2 plumbing", "Failure insertion testing"],
+                  ai: ["Rapid sensitivity analysis", "Autotuning of operating points"],
+                  cloud: ["Safety-isolated compute enclaves"]
+                },
+                {
+                  num: "1.8",
+                  title: "Satellite Integration Labs (Virtual Cleanrooms + AIT)",
+                  icon: Sparkles,
+                  subsystems: ["Payload mounting & compatibility", "EMI/EMC simulation rigs", "Vibration & shock test emulators", "RF/antenna pattern testbeds"],
+                  tools: ["Spacecraft bus & subsystem libraries", "Thermal modeling & scenario builders"],
+                  capabilities: ["End-to-end mission simulations", "Power & thermal management", "On-orbit operations"],
+                  ai: ["Automated trade-off engine", "Failure mode prediction"],
+                  cloud: ["Secure mission environments", "Deterministic simulation runtimes"]
+                },
+                {
+                  num: "1.9",
+                  title: "Thermal Vacuum Chambers (Virtual)",
+                  icon: Gauge,
+                  subsystems: ["Vacuum envelope models", "Radiative thermal network solver"],
+                  tools: ["Sun-angle & deep-space thermal builders"],
+                  capabilities: ["Thermal vacuum soak", "Bakeout & thermal balance test simulations"],
+                  ai: ["Intelligent test sequencing"],
+                  cloud: ["Time-series thermal logs", "Virtual instrumentation dashboards"]
+                },
+                {
+                  num: "1.10",
+                  title: "Avionics Labs (Virtual HW-in-the-loop & SW-in-the-loop)",
+                  icon: Code2,
+                  subsystems: ["Real-time RTOS emulators", "Hardware abstraction layers", "Sensor/actuator virtualization"],
+                  tools: ["MIL-STD connectors", "DO-178C compliance toolchains", "FPGA/SoC co-simulation"],
+                  capabilities: ["HW-in-the-loop over low-latency links", "Avionics bus emulation (ARINC, CAN)"],
+                  ai: ["ML summarizer for code coverage", "Safety-critical anomaly detection"],
+                  cloud: ["Deterministic low-latency streaming", "Edge compute for HIL"]
+                },
+                {
+                  num: "1.11",
+                  title: "Flight Control System Labs",
+                  icon: Brain,
+                  subsystems: ["GNC algorithm repository", "Monte-Carlo uncertainty injector", "Sensor fusion pipelines"],
+                  tools: ["Full aircraft dynamics solvers", "Hardware autopilot connectors"],
+                  capabilities: ["High-fidelity aero + structural + control closed-loop", "Failure injection & recovery validation"],
+                  ai: ["AI co-pilot for controller tuning", "Automated stability margin search"],
+                  cloud: ["GPU compute for RL training", "Rollout databases"]
+                },
+                {
+                  num: "1.12",
+                  title: "Orbital Mechanics & Re-entry Simulation Environments",
+                  icon: Globe,
+                  subsystems: ["Ephemeris & force models", "Atmospheric re-entry/ablation modules", "Guidance & intercept simulation"],
+                  tools: ["Mission planning UI", "Patched conics & full n-body solvers", "Monte-Carlo collision simulators"],
+                  capabilities: ["High-fidelity atmospheric entry physics", "Plasma sheath modeling", "Reusable vehicle entry & aero-thermal loads"],
+                  ai: ["Autonomous reentry trajectory optimizer"],
+                  cloud: ["Deterministic simulation pipelines", "Large ephemeris data stores"]
+                }
+              ].map((lab, idx) => {
+                const Icon = lab.icon;
+                return (
+                  <motion.div
+                    key={idx}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6, delay: idx * 0.05 }}
+                    viewport={{ once: true }}
+                    className="group relative bg-primary/40 border border-aerospace-blue/20 rounded-lg p-8 hover:border-aerospace-accent/50 transition-all duration-300"
+                  >
+                    <div className="flex items-start gap-4 mb-6">
+                      <div className="p-3 bg-aerospace-accent/15 rounded-lg group-hover:bg-aerospace-accent/25 transition-colors">
+                        <Icon className="w-6 h-6 text-aerospace-accent" />
+                      </div>
+                      <div className="flex-1">
+                        <p className="font-mono text-xs text-aerospace-accent uppercase tracking-widest mb-1">Module {lab.num}</p>
+                        <h3 className="font-heading text-2xl font-bold text-foreground group-hover:text-aerospace-accent transition-colors">
+                          {lab.title}
+                        </h3>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                      <div>
+                        <h4 className="font-heading text-sm font-bold text-aerospace-blue mb-3 uppercase tracking-wider">Subsystems</h4>
+                        <ul className="space-y-2">
+                          {lab.subsystems.map((item, i) => (
+                            <li key={i} className="flex items-start gap-2 text-sm text-foreground/70">
+                              <CheckCircle2 className="w-3 h-3 text-aerospace-accent shrink-0 mt-1" />
+                              <span>{item}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+
+                      <div>
+                        <h4 className="font-heading text-sm font-bold text-aerospace-blue mb-3 uppercase tracking-wider">Tools</h4>
+                        <ul className="space-y-2">
+                          {lab.tools.map((item, i) => (
+                            <li key={i} className="flex items-start gap-2 text-sm text-foreground/70">
+                              <CheckCircle2 className="w-3 h-3 text-aerospace-accent shrink-0 mt-1" />
+                              <span>{item}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+
+                      <div>
+                        <h4 className="font-heading text-sm font-bold text-aerospace-blue mb-3 uppercase tracking-wider">Capabilities</h4>
+                        <ul className="space-y-2">
+                          {lab.capabilities.map((item, i) => (
+                            <li key={i} className="flex items-start gap-2 text-sm text-foreground/70">
+                              <CheckCircle2 className="w-3 h-3 text-aerospace-accent shrink-0 mt-1" />
+                              <span>{item}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    </div>
+
+                    <div className="mt-6 pt-6 border-t border-aerospace-blue/20 grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div>
+                        <h4 className="font-heading text-sm font-bold text-aerospace-blue mb-3 uppercase tracking-wider">AI Enhancements</h4>
+                        <ul className="space-y-2">
+                          {lab.ai.map((item, i) => (
+                            <li key={i} className="flex items-start gap-2 text-sm text-foreground/70">
+                              <Brain className="w-3 h-3 text-aerospace-accent shrink-0 mt-1" />
+                              <span>{item}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+
+                      <div>
+                        <h4 className="font-heading text-sm font-bold text-aerospace-blue mb-3 uppercase tracking-wider">Cloud Architecture</h4>
+                        <ul className="space-y-2">
+                          {lab.cloud.map((item, i) => (
+                            <li key={i} className="flex items-start gap-2 text-sm text-foreground/70">
+                              <Cloud className="w-3 h-3 text-aerospace-accent shrink-0 mt-1" />
+                              <span>{item}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    </div>
+                  </motion.div>
+                );
+              })}
+            </div>
+
+            {/* Research Lab Differentiation */}
+            <div className="mb-20">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6 }}
+                viewport={{ once: true }}
+                className="mb-12"
+              >
+                <h3 className="font-heading text-3xl font-bold text-aerospace-blue mb-2">Why This Research Lab Ecosystem Wins</h3>
+                <div className="w-12 h-1 bg-aerospace-accent" />
+              </motion.div>
+
+              <div className="bg-gradient-to-r from-aerospace-accent/10 to-aerospace-blue/10 border border-aerospace-accent/30 rounded-lg p-12">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  {[
+                    {
+                      title: "Complete Virtual Lab Ecosystem",
+                      desc: "12 integrated modules covering aerodynamics, propulsion, structures, materials, avionics, and orbital mechanics—replacing entire physical lab infrastructure."
+                    },
+                    {
+                      title: "Enterprise-Grade Cloud Architecture",
+                      desc: "GPU-accelerated computing, auto-scaling, deterministic simulation pipelines, and secure isolated enclaves for ITAR-compliant work."
+                    },
+                    {
+                      title: "AI-Native from Day One",
+                      desc: "ML-based surrogate models, active learning for experiment design, autonomous optimization, and intelligent test sequencing across all modules."
+                    },
+                    {
+                      title: "Seamless Integration",
+                      desc: "All 12 labs interconnected with shared data pipelines, unified version control, collaborative workspaces, and end-to-end mission simulation."
+                    }
+                  ].map((item, idx) => (
+                    <div key={idx} className="space-y-3">
+                      <div className="flex items-start gap-3">
+                        <Sparkles className="w-5 h-5 text-aerospace-accent shrink-0 mt-1" />
+                        <div>
+                          <h4 className="font-heading text-lg font-bold text-foreground mb-2">
+                            {item.title}
+                          </h4>
+                          <p className="font-paragraph text-foreground/70">
+                            {item.desc}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
             {/* MVP Philosophy */}
             <div className="mb-20">
               <motion.div
