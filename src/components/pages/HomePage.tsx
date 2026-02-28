@@ -216,38 +216,38 @@ export default function HomePage() {
                   initial={{ opacity: 0, scale: 0.9, y: 40 }}
                   animate={{ opacity: 1, scale: 1, y: 0 }}
                   transition={{ duration: 0.8, delay: 0.3 }}
-                  className="w-full aspect-square border-2 border-aerospace-blue/30 relative p-6 flex flex-col justify-between bg-gradient-to-br from-aerospace-blue/10 to-aerospace-accent/10 backdrop-blur-sm rounded-xl hover:border-aerospace-blue/60 transition-all duration-300"
+                  className="w-full aspect-square border-2 border-aerospace-blue/40 relative p-8 flex flex-col justify-between bg-gradient-to-br from-aerospace-blue/15 to-aerospace-accent/15 backdrop-blur-sm rounded-xl hover:border-aerospace-blue/70 transition-all duration-300 shadow-2xl"
                 >
                   <div className="flex justify-between items-start">
                     <div className="flex items-center gap-2">
                       <div className="w-3 h-3 bg-aerospace-success rounded-full animate-pulse" />
-                      <span className="font-mono text-xs text-aerospace-blue/80">SYSTEM ACTIVE</span>
+                      <span className="font-mono text-xs text-aerospace-blue/90 font-semibold">SYSTEM ACTIVE</span>
                     </div>
-                    <Terminal className="w-6 h-6 text-aerospace-blue/60" />
+                    <Terminal className="w-6 h-6 text-aerospace-blue/70" />
                   </div>
                   
-                  <div className="space-y-4 font-mono text-xs text-aerospace-blue/70">
-                    <div className="flex justify-between border-b border-aerospace-blue/20 pb-2">
-                      <span>COMPILATION MODE</span>
-                      <span className="text-aerospace-success">DETERMINISTIC</span>
+                  <div className="space-y-5 font-mono text-xs text-aerospace-blue/80">
+                    <div className="flex justify-between border-b border-aerospace-blue/30 pb-3">
+                      <span className="font-semibold">COMPILATION MODE</span>
+                      <span className="text-aerospace-success font-bold">DETERMINISTIC</span>
                     </div>
-                    <div className="flex justify-between border-b border-aerospace-blue/20 pb-2">
-                      <span>VALIDATION LEVEL</span>
-                      <span className="text-aerospace-accent">AEROSPACE</span>
+                    <div className="flex justify-between border-b border-aerospace-blue/30 pb-3">
+                      <span className="font-semibold">VALIDATION LEVEL</span>
+                      <span className="text-aerospace-accent font-bold">AEROSPACE</span>
                     </div>
-                    <div className="flex justify-between border-b border-aerospace-blue/20 pb-2">
-                      <span>LATENCY</span>
-                      <span>12ms</span>
+                    <div className="flex justify-between border-b border-aerospace-blue/30 pb-3">
+                      <span className="font-semibold">LATENCY</span>
+                      <span className="text-aerospace-blue font-bold">12ms</span>
                     </div>
                     <div className="flex justify-between">
-                      <span>AUDIT TRAIL</span>
-                      <span className="text-aerospace-blue">ENABLED</span>
+                      <span className="font-semibold">AUDIT TRAIL</span>
+                      <span className="text-aerospace-success font-bold">ENABLED</span>
                     </div>
                   </div>
 
-                  <div className="text-center space-y-2 pt-4 border-t border-aerospace-blue/20">
-                    <p className="font-mono text-xs text-foreground/40">v1.0.4 • Production Ready</p>
-                    <p className="font-mono text-xs text-aerospace-blue/60">Zero Ambiguity • Full Traceability</p>
+                  <div className="text-center space-y-2 pt-6 border-t border-aerospace-blue/30">
+                    <p className="font-mono text-xs text-foreground/50 font-semibold">v1.0.4 • Production Ready</p>
+                    <p className="font-mono text-xs text-aerospace-blue/70 font-semibold">Zero Ambiguity • Full Traceability</p>
                   </div>
                 </motion.div>
               </div>
@@ -322,17 +322,17 @@ export default function HomePage() {
                     whileInView={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.6, delay: idx * 0.1 }}
                     viewport={{ once: true }}
-                    className="group relative bg-aerospace-dark/50 border border-secondary/20 rounded-lg p-8 hover:border-aerospace-blue/50 transition-all duration-300"
+                    className="group relative bg-gradient-to-br from-aerospace-dark/60 to-aerospace-dark/40 border border-aerospace-blue/20 rounded-lg p-8 hover:border-aerospace-blue/60 hover:from-aerospace-dark/80 hover:to-aerospace-dark/60 transition-all duration-300 shadow-lg hover:shadow-xl"
                   >
                     <div className="flex items-start gap-4 mb-4">
-                      <div className="p-3 bg-aerospace-blue/10 rounded-lg group-hover:bg-aerospace-blue/20 transition-colors">
-                        <Icon className="w-6 h-6 text-aerospace-blue" />
+                      <div className="p-3 bg-aerospace-blue/15 rounded-lg group-hover:bg-aerospace-blue/30 transition-colors">
+                        <Icon className="w-6 h-6 text-aerospace-blue group-hover:text-aerospace-accent transition-colors" />
                       </div>
                     </div>
-                    <h3 className="font-heading text-xl font-bold text-foreground mb-3">
+                    <h3 className="font-heading text-xl font-bold text-foreground mb-3 group-hover:text-aerospace-blue transition-colors">
                       {item.title}
                     </h3>
-                    <p className="font-paragraph text-foreground/70">
+                    <p className="font-paragraph text-foreground/70 group-hover:text-foreground/80 transition-colors">
                       {item.desc}
                     </p>
                   </motion.div>

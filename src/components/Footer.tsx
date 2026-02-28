@@ -1,10 +1,131 @@
+import { Link } from 'react-router-dom';
+import { Mail, Linkedin, Github, ExternalLink } from 'lucide-react';
+
 export default function Footer() {
+  const currentYear = new Date().getFullYear();
+
+  const footerSections = [
+    {
+      title: 'Products',
+      links: [
+        { label: 'Mechanical CAD Suite', path: '/mechanical-cad-suite' },
+        { label: 'Advanced CFD', path: '/advanced-cfd' },
+        { label: 'Parametric Compiler', path: '/compiler' },
+        { label: 'Elite Multi-Objective', path: '/elite-multi-objective-optimization' }
+      ]
+    },
+    {
+      title: 'Resources',
+      links: [
+        { label: 'Knowledge Base', path: '/knowledge-base' },
+        { label: 'Research Hub', path: '/research-hub' },
+        { label: 'Case Studies', path: '/case-studies' },
+        { label: 'Documentation', path: '/about-tools' }
+      ]
+    },
+    {
+      title: 'Enterprise',
+      links: [
+        { label: 'API Reference', path: '/api' },
+        { label: 'Architecture', path: '/architecture' },
+        { label: 'Certifications', path: '/certifications' },
+        { label: 'Compliance', path: '/dsl-docs' }
+      ]
+    },
+    {
+      title: 'Connect',
+      links: [
+        { label: 'Contact', external: true, href: 'mailto:info@aeroforge.ai' },
+        { label: 'LinkedIn', external: true, href: 'https://linkedin.com' },
+        { label: 'GitHub', external: true, href: 'https://github.com' },
+        { label: 'Status', external: true, href: '#' }
+      ]
+    }
+  ];
+
   return (
-    <footer className="w-full border-t border-secondary/20 mt-auto">
-      <div className="max-w-[120rem] mx-auto px-[8%] py-8">
-        <p className="font-paragraph text-sm text-secondary-foreground">
-          © {new Date().getFullYear()} AeroForge AI. Deterministic Parametric CAD Compiler.
-        </p>
+    <footer className="w-full bg-aerospace-dark border-t border-secondary/20 mt-auto">
+      {/* Main Footer Content */}
+      <div className="max-w-[120rem] mx-auto px-6 md:px-[8%] py-16">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12 mb-12">
+          {/* Brand Column */}
+          <div className="lg:col-span-1">
+            <Link to="/" className="flex items-center gap-2 mb-6">
+              <div className="relative w-10 h-10 flex items-center justify-center">
+                <div className="absolute inset-0 bg-gradient-to-br from-aerospace-blue to-aerospace-accent rounded-lg opacity-80" />
+                <div className="relative z-10 font-heading font-bold text-white text-lg">AF</div>
+              </div>
+              <div className="flex flex-col">
+                <span className="font-heading text-lg font-bold text-aerospace-blue">AeroForge</span>
+                <span className="font-mono text-xs text-aerospace-accent/70">Enterprise</span>
+              </div>
+            </Link>
+            <p className="font-paragraph text-sm text-secondary-foreground leading-relaxed">
+              Deterministic AI-powered CAD compiler for aerospace-grade manufacturing.
+            </p>
+          </div>
+
+          {/* Footer Links */}
+          {footerSections.map((section) => (
+            <div key={section.title}>
+              <h3 className="font-heading text-sm font-bold text-foreground mb-4 uppercase tracking-wider">
+                {section.title}
+              </h3>
+              <ul className="space-y-3">
+                {section.links.map((link) => (
+                  <li key={link.label}>
+                    {link.external ? (
+                      <a
+                        href={link.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="font-paragraph text-sm text-secondary-foreground hover:text-aerospace-blue transition-colors flex items-center gap-2 group"
+                      >
+                        {link.label}
+                        <ExternalLink className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />
+                      </a>
+                    ) : (
+                      <Link
+                        to={link.path}
+                        className="font-paragraph text-sm text-secondary-foreground hover:text-aerospace-blue transition-colors"
+                      >
+                        {link.label}
+                      </Link>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+
+        {/* Divider */}
+        <div className="border-t border-secondary/20 pt-8">
+          {/* Bottom Section */}
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+            <div className="flex flex-col gap-2">
+              <p className="font-paragraph text-sm text-secondary-foreground">
+                © {currentYear} AeroForge AI. All rights reserved.
+              </p>
+              <p className="font-mono text-xs text-aerospace-accent/60">
+                ISO 9001:2015 Certified • Aerospace Grade • Enterprise Edition
+              </p>
+            </div>
+
+            {/* Legal Links */}
+            <div className="flex gap-6 text-sm">
+              <a href="#" className="font-paragraph text-secondary-foreground hover:text-aerospace-blue transition-colors">
+                Privacy Policy
+              </a>
+              <a href="#" className="font-paragraph text-secondary-foreground hover:text-aerospace-blue transition-colors">
+                Terms of Service
+              </a>
+              <a href="#" className="font-paragraph text-secondary-foreground hover:text-aerospace-blue transition-colors">
+                Security
+              </a>
+            </div>
+          </div>
+        </div>
       </div>
     </footer>
   );

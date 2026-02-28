@@ -1,10 +1,11 @@
 import { Link, useLocation } from 'react-router-dom';
 import { useState } from 'react';
-import { Menu, X, Shield, Award } from 'lucide-react';
+import { Menu, X, Shield, Award, ChevronDown } from 'lucide-react';
 
 export default function Header() {
   const location = useLocation();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   
   const isActive = (path: string) => location.pathname === path || (path === '/compiler' && location.pathname === '/compiler-classic');
   
@@ -13,11 +14,11 @@ export default function Header() {
     { 
       category: 'Elite Suite',
       links: [
-        { path: '/elite-multi-objective-optimization', label: '🏆 Elite Multi-Objective' },
-        { path: '/turbulence-modeling-research-lab', label: '🌪️ Turbulence Lab' },
-        { path: '/aerospace-design-patterns-library', label: '📐 Design Patterns' },
-        { path: '/ai-research-assistant', label: '🤖 AI Assistant' },
-        { path: '/collaborative-workspace', label: '👥 Collaboration' },
+        { path: '/elite-multi-objective-optimization', label: 'Elite Multi-Objective' },
+        { path: '/turbulence-modeling-research-lab', label: 'Turbulence Lab' },
+        { path: '/aerospace-design-patterns-library', label: 'Design Patterns' },
+        { path: '/ai-research-assistant', label: 'AI Assistant' },
+        { path: '/collaborative-workspace', label: 'Collaboration' },
       ]
     },
     { 
@@ -60,14 +61,11 @@ export default function Header() {
       ]
     }
   ];
-
-  // Flatten for mobile
-  const allLinks = navLinks.flatMap(cat => cat.links);
   
   return (
     <header className="w-full bg-primary sticky top-0 z-50 border-b border-secondary/20">
       {/* Trust Badges Bar */}
-      <div className="w-full bg-aerospace-dark/50 border-b border-secondary/10 px-4 md:px-[8%] py-2">
+      <div className="w-full bg-aerospace-dark/50 border-b border-secondary/10 px-4 md:px-[8%] py-2.5">
         <div className="max-w-[120rem] mx-auto flex items-center justify-end gap-6 text-xs md:text-sm">
           <div className="flex items-center gap-2 text-aerospace-success">
             <Shield className="w-4 h-4" />
@@ -81,11 +79,10 @@ export default function Header() {
       </div>
 
       {/* Main Header */}
-      <div className="max-w-[120rem] mx-auto px-4 md:px-[8%] py-4 md:py-6">
+      <div className="max-w-[120rem] mx-auto px-4 md:px-[8%] py-4 md:py-5">
         <nav className="flex items-center justify-between">
           {/* Logo & Brand */}
           <Link to="/" className="flex items-center gap-3 flex-shrink-0 group">
-            {/* Professional Logo Mark */}
             <div className="relative w-10 h-10 md:w-12 md:h-12 flex items-center justify-center">
               <div className="absolute inset-0 bg-gradient-to-br from-aerospace-blue to-aerospace-accent rounded-lg opacity-80 group-hover:opacity-100 transition-opacity" />
               <div className="relative z-10 font-heading font-bold text-white text-lg md:text-xl">AF</div>
@@ -99,22 +96,23 @@ export default function Header() {
           </Link>
           
           {/* Desktop Navigation */}
-          <div className="hidden lg:flex items-center gap-8">
+          <div className="hidden lg:flex items-center gap-1">
             {navLinks.map((category) => (
               <div key={category.category} className="relative group">
-                <button className="font-paragraph text-sm font-semibold text-foreground hover:text-aerospace-blue transition-colors py-2">
+                <button className="font-paragraph text-sm font-semibold text-foreground hover:text-aerospace-blue transition-colors py-2 px-4 rounded-md hover:bg-secondary/10 flex items-center gap-1.5">
                   {category.category}
+                  <ChevronDown className="w-4 h-4 opacity-60 group-hover:opacity-100 transition-opacity" />
                 </button>
                 {/* Dropdown Menu */}
-                <div className="absolute left-0 mt-0 w-56 bg-primary border border-secondary/20 rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 py-2 z-50">
+                <div className="absolute left-0 mt-0 w-56 bg-primary border border-secondary/20 rounded-lg shadow-2xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 py-2 z-50">
                   {category.links.map(link => (
                     <Link
                       key={link.path}
                       to={link.path}
-                      className={`block px-4 py-2 text-sm font-paragraph transition-colors ${
+                      className={`block px-4 py-2.5 text-sm font-paragraph transition-colors ${
                         isActive(link.path) 
-                          ? 'text-aerospace-blue bg-secondary/10' 
-                          : 'text-foreground hover:text-aerospace-blue hover:bg-secondary/5'
+                          ? 'text-aerospace-blue bg-secondary/15 border-l-2 border-aerospace-blue' 
+                          : 'text-foreground hover:text-aerospace-blue hover:bg-secondary/10'
                       }`}
                     >
                       {link.label}
@@ -137,25 +135,33 @@ export default function Header() {
         
         {/* Mobile Navigation */}
         {isMenuOpen && (
-          <div className="lg:hidden mt-4 pb-4 border-t border-secondary/20 pt-4">
-            <div className="flex flex-col gap-1">
+          <div className="lg:hidden mt-4 pb-4 border-t border-secondary/20 pt-4 max-h-[calc(100vh-200px)] overflow-y-auto">
+            <div className="flex flex-col gap-2">
               {navLinks.map((category) => (
                 <div key={category.category}>
-                  <div className="px-3 py-2 font-mono text-xs uppercase tracking-widest text-aerospace-blue/70 font-semibold">
+                  <button
+                    onClick={() => setOpenDropdown(openDropdown === category.category ? null : category.category)}
+                    className="w-full px-3 py-2 font-mono text-xs uppercase tracking-widest text-aerospace-blue/70 font-semibold hover:text-aerospace-blue transition-colors flex items-center justify-between"
+                  >
                     {category.category}
-                  </div>
-                  {category.links.map(link => (
-                    <Link 
-                      key={link.path}
-                      to={link.path}
-                      onClick={() => setIsMenuOpen(false)}
-                      className={`block px-4 py-2 text-sm font-paragraph rounded transition-colors ${
-                        isActive(link.path) ? 'text-aerospace-blue font-semibold bg-slate-800' : 'text-foreground hover:text-aerospace-blue hover:bg-slate-800'
-                      }`}
-                    >
-                      {link.label}
-                    </Link>
-                  ))}
+                    <ChevronDown className={`w-4 h-4 transition-transform ${openDropdown === category.category ? 'rotate-180' : ''}`} />
+                  </button>
+                  {openDropdown === category.category && (
+                    <div className="pl-2 space-y-1">
+                      {category.links.map(link => (
+                        <Link 
+                          key={link.path}
+                          to={link.path}
+                          onClick={() => setIsMenuOpen(false)}
+                          className={`block px-4 py-2 text-sm font-paragraph rounded transition-colors ${
+                            isActive(link.path) ? 'text-aerospace-blue font-semibold bg-slate-800' : 'text-foreground hover:text-aerospace-blue hover:bg-slate-800'
+                          }`}
+                        >
+                          {link.label}
+                        </Link>
+                      ))}
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
