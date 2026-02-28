@@ -2,7 +2,7 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, useScroll, useInView } from 'framer-motion';
-import { CheckCircle2, Layers, ShieldCheck, Cpu, Terminal, XCircle, ChevronRight, BookOpen, Zap, Code2, Database, Lightbulb, ArrowRight, Rocket, Sparkles, Award, TrendingUp, Brain, Wind, Users } from 'lucide-react';
+import { CheckCircle2, Layers, ShieldCheck, Cpu, Terminal, XCircle, ChevronRight, BookOpen, Zap, Code2, Database, Lightbulb, ArrowRight, Rocket, Sparkles, Award, TrendingUp, Brain, Wind, Users, Microscope, Cloud, Gauge, Workflow, Lock, Zap as Lightning, Globe, BarChart3, GitBranch } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Image } from '@/components/ui/image';
@@ -509,6 +509,309 @@ export default function HomePage() {
                 View All Research <ArrowRight className="w-4 h-4" />
               </Link>
             </motion.div>
+          </div>
+        </section>
+
+        {/* REVOLUTIONARY DIGITAL AEROSPACE LAB SECTION */}
+        <section className="w-full py-32 bg-aerospace-dark border-t border-secondary/20 relative overflow-hidden">
+          <div className="absolute inset-0 opacity-5 pointer-events-none">
+            <GridBackground />
+          </div>
+          <div className="w-full max-w-[120rem] mx-auto px-6 md:px-12 lg:px-16 relative z-10">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+              viewport={{ once: true }}
+              className="mb-20 text-center"
+            >
+              <div className="flex items-center justify-center gap-3 mb-4">
+                <Microscope className="w-6 h-6 text-aerospace-accent" />
+                <span className="font-mono text-sm uppercase tracking-widest text-aerospace-accent">Next Generation Platform</span>
+              </div>
+              <h2 className="font-heading text-5xl md:text-6xl font-bold text-foreground mb-6">
+                The World's First <br />
+                <span className="text-aerospace-accent">Fully Integrated Digital</span> <br />
+                Aerospace Research Laboratory
+              </h2>
+              <p className="font-paragraph text-xl text-secondary-foreground max-w-3xl mx-auto">
+                A consensus-driven platform from research directors, CFD scientists, propulsion engineers, defense analysts, satellite architects, AI engineers, cloud supercomputing architects, professors, startup founders, and senior mechanical engineers.
+              </p>
+            </motion.div>
+
+            {/* Core Lab Modules */}
+            <div className="mb-20">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6 }}
+                viewport={{ once: true }}
+                className="mb-12"
+              >
+                <h3 className="font-heading text-3xl font-bold text-aerospace-blue mb-2">Core Lab Modules & Subsystems</h3>
+                <div className="w-12 h-1 bg-aerospace-accent" />
+              </motion.div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+                {[
+                  {
+                    icon: Wind,
+                    title: "CFD Simulation Engine",
+                    items: ["Multi-physics coupling", "Real-time convergence monitoring", "Turbulence model comparison", "Mesh generation & adaptation"]
+                  },
+                  {
+                    icon: Cpu,
+                    title: "Parametric CAD Compiler",
+                    items: ["Deterministic geometry generation", "Design intent interpretation", "Manufacturing constraint validation", "Audit trail & versioning"]
+                  },
+                  {
+                    icon: Gauge,
+                    title: "Structural Analysis Suite",
+                    items: ["FEA solver integration", "Fatigue & stress analysis", "Composite material modeling", "Optimization workflows"]
+                  },
+                  {
+                    icon: Rocket,
+                    title: "Propulsion Systems Lab",
+                    items: ["Thermodynamic analysis", "Combustion modeling", "Nozzle design optimization", "Performance prediction"]
+                  },
+                  {
+                    icon: Workflow,
+                    title: "Systems Integration Hub",
+                    items: ["Multi-disciplinary optimization", "Design trade-space exploration", "Pareto frontier analysis", "Real-time collaboration"]
+                  },
+                  {
+                    icon: Database,
+                    title: "Enterprise Data Layer",
+                    items: ["Design history & versioning", "Material property database", "Regulatory compliance tracking", "Audit & traceability"]
+                  }
+                ].map((module, idx) => {
+                  const Icon = module.icon;
+                  return (
+                    <motion.div
+                      key={idx}
+                      initial={{ opacity: 0, y: 20 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.6, delay: idx * 0.1 }}
+                      viewport={{ once: true }}
+                      className="group relative bg-primary/40 border border-aerospace-blue/20 rounded-lg p-6 hover:border-aerospace-accent/50 transition-all duration-300"
+                    >
+                      <div className="flex items-start gap-4 mb-4">
+                        <div className="p-3 bg-aerospace-accent/15 rounded-lg group-hover:bg-aerospace-accent/25 transition-colors">
+                          <Icon className="w-6 h-6 text-aerospace-accent" />
+                        </div>
+                      </div>
+                      <h4 className="font-heading text-lg font-bold text-foreground mb-4 group-hover:text-aerospace-accent transition-colors">
+                        {module.title}
+                      </h4>
+                      <ul className="space-y-2">
+                        {module.items.map((item, i) => (
+                          <li key={i} className="flex items-start gap-2 text-sm text-foreground/70">
+                            <CheckCircle2 className="w-4 h-4 text-aerospace-accent shrink-0 mt-0.5" />
+                            <span>{item}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </motion.div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* AI & Cloud Capabilities */}
+            <div className="mb-20">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6 }}
+                viewport={{ once: true }}
+                className="mb-12"
+              >
+                <h3 className="font-heading text-3xl font-bold text-aerospace-blue mb-2">AI-First & Cloud-Native Capabilities</h3>
+                <div className="w-12 h-1 bg-aerospace-accent" />
+              </motion.div>
+
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
+                {[
+                  {
+                    icon: Brain,
+                    title: "Intelligent Design Assistant",
+                    desc: "AI-powered design recommendations based on physics constraints, manufacturing capabilities, and performance objectives. Learn from historical designs and optimize for your specific requirements.",
+                    features: ["Natural language design intent", "Constraint-aware optimization", "Design pattern recognition", "Real-time feasibility analysis"]
+                  },
+                  {
+                    icon: Cloud,
+                    title: "Distributed Cloud Computing",
+                    desc: "Elastic cloud infrastructure scales to your computational needs. Run massive parameter sweeps, multi-physics simulations, and optimization studies without infrastructure investment.",
+                    features: ["Auto-scaling compute clusters", "GPU-accelerated solvers", "Distributed mesh generation", "Real-time result streaming"]
+                  },
+                  {
+                    icon: Lightning,
+                    title: "Predictive Performance Engine",
+                    desc: "Machine learning models trained on millions of simulations predict performance metrics in milliseconds. Accelerate design exploration by 100x.",
+                    features: ["Surrogate model generation", "Design space mapping", "Performance prediction", "Uncertainty quantification"]
+                  },
+                  {
+                    icon: Globe,
+                    title: "Global Collaboration Platform",
+                    desc: "Real-time multi-user workspace for distributed teams. Simultaneous design, simulation, and analysis with full version control and audit trails.",
+                    features: ["Live co-design sessions", "Conflict-free merging", "Design review workflows", "Permission-based access"]
+                  }
+                ].map((capability, idx) => {
+                  const Icon = capability.icon;
+                  return (
+                    <motion.div
+                      key={idx}
+                      initial={{ opacity: 0, y: 20 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.6, delay: idx * 0.1 }}
+                      viewport={{ once: true }}
+                      className="group relative bg-gradient-to-br from-aerospace-dark/60 to-aerospace-dark/40 border border-aerospace-accent/20 rounded-lg p-8 hover:border-aerospace-accent/60 transition-all duration-300"
+                    >
+                      <div className="flex items-start gap-4 mb-6">
+                        <div className="p-3 bg-aerospace-accent/15 rounded-lg group-hover:bg-aerospace-accent/30 transition-colors">
+                          <Icon className="w-6 h-6 text-aerospace-accent" />
+                        </div>
+                      </div>
+                      <h4 className="font-heading text-xl font-bold text-foreground mb-3 group-hover:text-aerospace-accent transition-colors">
+                        {capability.title}
+                      </h4>
+                      <p className="font-paragraph text-foreground/70 mb-6">
+                        {capability.desc}
+                      </p>
+                      <div className="space-y-2 pt-6 border-t border-aerospace-accent/10">
+                        {capability.features.map((feature, i) => (
+                          <div key={i} className="flex items-center gap-2 text-sm text-foreground/70">
+                            <div className="w-1.5 h-1.5 bg-aerospace-accent rounded-full" />
+                            <span>{feature}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </motion.div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Enterprise Features */}
+            <div className="mb-20">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6 }}
+                viewport={{ once: true }}
+                className="mb-12"
+              >
+                <h3 className="font-heading text-3xl font-bold text-aerospace-blue mb-2">Enterprise & Compliance Features</h3>
+                <div className="w-12 h-1 bg-aerospace-accent" />
+              </motion.div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                {[
+                  {
+                    icon: Lock,
+                    title: "Security & Compliance",
+                    items: ["End-to-end encryption", "ITAR compliance", "Role-based access control", "Audit logging"]
+                  },
+                  {
+                    icon: BarChart3,
+                    title: "Analytics & Reporting",
+                    items: ["Design metrics dashboard", "Performance analytics", "Cost tracking", "Team productivity"]
+                  },
+                  {
+                    icon: GitBranch,
+                    title: "Version Control",
+                    items: ["Design branching", "Merge conflict resolution", "Change tracking", "Rollback capability"]
+                  },
+                  {
+                    icon: Zap,
+                    title: "Integration & APIs",
+                    items: ["CAD system integration", "PLM platform connectivity", "Custom workflow automation", "Third-party tool support"]
+                  }
+                ].map((feature, idx) => {
+                  const Icon = feature.icon;
+                  return (
+                    <motion.div
+                      key={idx}
+                      initial={{ opacity: 0, y: 20 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.6, delay: idx * 0.1 }}
+                      viewport={{ once: true }}
+                      className="group relative bg-primary/40 border border-aerospace-blue/20 rounded-lg p-6 hover:border-aerospace-accent/50 transition-all duration-300"
+                    >
+                      <div className="p-3 bg-aerospace-blue/15 rounded-lg group-hover:bg-aerospace-blue/30 transition-colors w-fit mb-4">
+                        <Icon className="w-6 h-6 text-aerospace-blue" />
+                      </div>
+                      <h4 className="font-heading text-lg font-bold text-foreground mb-4 group-hover:text-aerospace-blue transition-colors">
+                        {feature.title}
+                      </h4>
+                      <ul className="space-y-2">
+                        {feature.items.map((item, i) => (
+                          <li key={i} className="flex items-start gap-2 text-sm text-foreground/70">
+                            <div className="w-1.5 h-1.5 bg-aerospace-blue rounded-full mt-1.5" />
+                            <span>{item}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </motion.div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Revolutionary Capabilities */}
+            <div className="bg-gradient-to-r from-aerospace-accent/10 to-aerospace-blue/10 border border-aerospace-accent/30 rounded-lg p-12">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6 }}
+                viewport={{ once: true }}
+              >
+                <h3 className="font-heading text-3xl font-bold text-aerospace-accent mb-8">Revolutionary Capabilities Only Digital Platforms Can Deliver</h3>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  {[
+                    {
+                      title: "Infinite Design Exploration",
+                      desc: "Explore millions of design variations simultaneously. No physical prototyping constraints. Discover optimal solutions across entire design spaces in hours instead of months."
+                    },
+                    {
+                      title: "Real-Time Multi-Physics Coupling",
+                      desc: "Simultaneously solve aerodynamics, structures, propulsion, and thermal physics. See how changes in one discipline instantly affect all others."
+                    },
+                    {
+                      title: "Deterministic AI Compilation",
+                      desc: "Transform natural language design intent into manufacturing-ready geometry with zero ambiguity. Every compilation produces identical results."
+                    },
+                    {
+                      title: "Instant Design Validation",
+                      desc: "Validate designs against aerospace standards, manufacturing constraints, and regulatory requirements in real-time. No waiting for analysis."
+                    },
+                    {
+                      title: "Collaborative Design at Scale",
+                      desc: "Hundreds of engineers working simultaneously on the same design. Real-time synchronization, conflict resolution, and full audit trails."
+                    },
+                    {
+                      title: "Knowledge Capture & Reuse",
+                      desc: "Every design decision is captured. AI learns from your design patterns and recommends optimizations based on your historical performance."
+                    }
+                  ].map((capability, idx) => (
+                    <div key={idx} className="space-y-3">
+                      <div className="flex items-start gap-3">
+                        <Sparkles className="w-5 h-5 text-aerospace-accent shrink-0 mt-1" />
+                        <div>
+                          <h4 className="font-heading text-lg font-bold text-foreground mb-2">
+                            {capability.title}
+                          </h4>
+                          <p className="font-paragraph text-foreground/70">
+                            {capability.desc}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </motion.div>
+            </div>
           </div>
         </section>
 
