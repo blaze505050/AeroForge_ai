@@ -1,7 +1,7 @@
 import React, { useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, useInView } from 'framer-motion';
-import { CheckCircle2, Brain, Cloud, Code2, Database, GitBranch, Gauge, Globe, Microscope, Rocket, Sparkles, Wind, Target, Lock, Zap, ArrowRight } from 'lucide-react';
+import { CheckCircle2, Brain, Cloud, Code2, Database, GitBranch, Gauge, Globe, Microscope, Rocket, Sparkles, Wind, Target, Lock, Zap, ArrowRight, Layers } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 
@@ -808,6 +808,101 @@ export default function DigitalAerospaceResearchLabPage() {
             </div>
           </div>
         </section>
+
+        {/* ADVANCED CFD CAPABILITIES */}
+         <section className="w-full py-32 bg-primary border-t border-secondary/20 relative overflow-hidden">
+           <div className="absolute inset-0 opacity-5 pointer-events-none">
+             <GridBackground />
+           </div>
+           <div className="w-full max-w-[120rem] mx-auto px-6 md:px-12 lg:px-16 relative z-10">
+             <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} viewport={{ once: true }} className="mb-12">
+               <h3 className="font-heading text-3xl font-bold text-aerospace-blue mb-2">Advanced CFD Capabilities</h3>
+               <div className="w-12 h-1 bg-aerospace-accent" />
+             </motion.div>
+             <div className="space-y-8">
+               {[
+                 { title: "Solver Families", icon: Wind, items: ["Production RANS suites (k-ω SST, k-ε, Reynolds stress models)", "Scale-resolving: LES, DES, hybrid RANS-LES", "DNS engines for canonical research flows (MPI+GPU)", "Multi-phase (VOF, Eulerian-Eulerian, Lagrangian particle tracking)"] },
+                 { title: "Turbulence Modeling Libraries", icon: Brain, items: ["Modular closure library supporting classical and data-driven closures", "Transfer learning-ready models trained on high-fidelity DNS repositories"] },
+                 { title: "Hypersonic & High-Enthalpy", icon: Rocket, items: ["Real gas models and vibrational modes", "Chemical non-equilibrium solvers", "Shock–boundary layer interaction prediction"] },
+                 { title: "Aeroacoustics", icon: Wind, items: ["Hybrid RANS/LES aeroacoustic modules", "Ffowcs-Williams & Hawkings integration"] },
+                 { title: "Reactive Flows & Combustion", icon: Rocket, items: ["Detailed chemistry solvers", "Flamelet/progress variable approaches", "Soot and pollutant formation modules"] },
+                 { title: "Multi-Physics Coupling", icon: Gauge, items: ["Fully-coupled FSI (Fluid-Structure Interaction)", "Conjugate heat transfer", "Combustion–structure interaction"] },
+                 { title: "AI-Accelerated Solvers", icon: Brain, items: ["Learned implicit-explicit stepper operators", "Data-driven preconditioners and linear solvers", "Neural PDE surrogates for parameter sweeps"] },
+                 { title: "GPU-Based Distributed Solvers", icon: Cloud, items: ["Native CUDA / ROCm solvers", "NVLink/InfiniBand aware decomposition", "Mixed-precision strategies for speedups"] },
+                 { title: "Adaptive Mesh Refinement (AMR)", icon: Layers, items: ["Feature-aware AMR (shock/gradient detectors)", "Error-estimate driven remeshing"] },
+                 { title: "Digital Twin Systems", icon: Database, items: ["Persistent flow twins mapped to physical test data", "Live data assimilation", "Bayesian updating of model physics from test data"] }
+               ].map((section, idx) => {
+                 const Icon = section.icon;
+                 return (
+                   <motion.div key={idx} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: idx * 0.05 }} viewport={{ once: true }} className="group relative bg-aerospace-dark/50 border border-aerospace-blue/20 rounded-lg p-8 hover:border-aerospace-accent/50 transition-all duration-300">
+                     <div className="flex items-start gap-4 mb-4">
+                       <div className="p-3 bg-aerospace-accent/15 rounded-lg group-hover:bg-aerospace-accent/25 transition-colors">
+                         <Icon className="w-6 h-6 text-aerospace-accent" />
+                       </div>
+                       <h4 className="font-heading text-xl font-bold text-foreground group-hover:text-aerospace-accent transition-colors">{section.title}</h4>
+                     </div>
+                     <ul className="space-y-2 ml-16">
+                       {section.items.map((item, i) => (
+                         <li key={i} className="flex items-start gap-2 text-sm text-foreground/70">
+                           <CheckCircle2 className="w-4 h-4 text-aerospace-success shrink-0 mt-0.5" />
+                           <span>{item}</span>
+                         </li>
+                       ))}
+                     </ul>
+                   </motion.div>
+                 );
+               })}
+             </div>
+           </div>
+         </section>
+
+         {/* ROCKET & SPACE SYSTEMS DESIGN SUITE */}
+         <section className="w-full py-32 bg-aerospace-dark border-t border-secondary/20 relative overflow-hidden">
+           <div className="absolute inset-0 opacity-5 pointer-events-none">
+             <GridBackground />
+           </div>
+           <div className="w-full max-w-[120rem] mx-auto px-6 md:px-12 lg:px-16 relative z-10">
+             <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} viewport={{ once: true }} className="mb-12">
+               <h3 className="font-heading text-3xl font-bold text-aerospace-blue mb-2">Rocket & Space Systems Design Suite</h3>
+               <div className="w-12 h-1 bg-aerospace-accent" />
+             </motion.div>
+             <div className="space-y-8">
+               {[
+                 { title: "Launch Vehicle Architecture Builder", icon: Rocket, items: ["Parametric vehicle blocks (structure, tanks, engines, avionics)", "Mass budgeting and center-of-gravity progression tool", "Stage optimization loops (mass, delta-v, fairing sizing)"] },
+                 { title: "Propulsion Cycle Simulators", icon: Gauge, items: ["Gas-generator, staged-combustion, expander cycle models", "Electric propulsion models", "Turbopump CFD → stress coupling", "Cavitation modeling"] },
+                 { title: "Stage Separation & Pyro-Mechanics", icon: Rocket, items: ["Multi-body separation dynamics", "Plume interference analysis", "Shock propagation modeling"] },
+                 { title: "Failure Analysis & Safety", icon: Target, items: ["Probabilistic Risk Assessment (PRA)", "FMEA automation", "Fault tree analysis", "Red-team scenario generator for range safety & destruct criteria"] },
+                 { title: "Payload Optimization", icon: Sparkles, items: ["Volume/mass/thermal co-optimization", "Deployable mechanisms design"] },
+                 { title: "Interplanetary Mission Planner", icon: Globe, items: ["Low-energy transfer search", "Patched-conic + full n-body optimization", "Launch window calculators"] },
+                 { title: "Autonomous Guidance Navigation & Control (GNC)", icon: Brain, items: ["RL & MPC based autopilots", "Vision-based navigation", "LIDAR/IMU sensor suite simulation"] },
+                 { title: "Space Debris Avoidance AI", icon: Brain, items: ["Conjunction assessment automation", "Collision probability estimation", "Avoidance maneuver planner"] },
+                 { title: "Satellite Constellation Optimizer", icon: Sparkles, items: ["Coverage & revisit trade-off analysis", "Phased deployment sequencing", "Cost-of-ownership modeling"] },
+                 { title: "On-Orbit Servicing & Formation Flight", icon: Rocket, items: ["Proximity operations suites", "Grappling kinodynamic planners"] },
+                 { title: "Ground Segment Integration", icon: Database, items: ["Mission operations simulator", "Telemetry & command emulation", "Anomaly detection workflows"] }
+               ].map((section, idx) => {
+                 const Icon = section.icon;
+                 return (
+                   <motion.div key={idx} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: idx * 0.05 }} viewport={{ once: true }} className="group relative bg-primary/40 border border-aerospace-blue/20 rounded-lg p-8 hover:border-aerospace-accent/50 transition-all duration-300">
+                     <div className="flex items-start gap-4 mb-4">
+                       <div className="p-3 bg-aerospace-accent/15 rounded-lg group-hover:bg-aerospace-accent/25 transition-colors">
+                         <Icon className="w-6 h-6 text-aerospace-accent" />
+                       </div>
+                       <h4 className="font-heading text-xl font-bold text-foreground group-hover:text-aerospace-accent transition-colors">{section.title}</h4>
+                     </div>
+                     <ul className="space-y-2 ml-16">
+                       {section.items.map((item, i) => (
+                         <li key={i} className="flex items-start gap-2 text-sm text-foreground/70">
+                           <CheckCircle2 className="w-4 h-4 text-aerospace-success shrink-0 mt-0.5" />
+                           <span>{item}</span>
+                         </li>
+                       ))}
+                     </ul>
+                   </motion.div>
+                 );
+               })}
+             </div>
+           </div>
+         </section>
 
         {/* SUCCESS METRICS */}
         <section className="w-full py-32 bg-aerospace-dark border-t border-secondary/20 relative overflow-hidden">
