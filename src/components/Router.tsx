@@ -39,6 +39,7 @@ import AIResearchAssistantPage from '@/components/pages/AIResearchAssistantPage'
 import CollaborativeWorkspacePage from '@/components/pages/CollaborativeWorkspacePage';
 import DigitalAerospaceResearchLabPage from '@/components/pages/DigitalAerospaceResearchLabPage';
 import ResearchLabsHubPage from '@/components/pages/ResearchLabsHubPage';
+import VirtualLabPage from '@/components/pages/VirtualLabPage';
 
 // Layout component that includes ScrollToTop
 function Layout() {
@@ -313,6 +314,13 @@ const router = createBrowserRouter([
         element: <ResearchLabsHubPage />,
         routeMetadata: {
           pageIdentifier: 'research-labs-hub',
+        },
+      },
+      {
+        path: "virtual-lab",
+        element: <VirtualLabPage />,
+        routeMetadata: {
+          pageIdentifier: 'virtual-lab',
         },
       },
       {

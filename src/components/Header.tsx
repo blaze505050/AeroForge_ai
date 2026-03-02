@@ -59,6 +59,16 @@ export default function Header() {
         { path: '/api', label: 'API Reference' },
         { path: '/dsl-docs', label: 'DSL Documentation' },
       ]
+    },
+    {
+      category: 'Virtual Lab',
+      links: [
+        { path: '/virtual-lab', label: 'Virtual Lab Hub' },
+        { path: '/airfoil-designer', label: 'Airfoil Designer' },
+        { path: '/cfd-simulator', label: 'CFD Simulator' },
+        { path: '/wing-calculator', label: 'Wing Calculator' },
+        { path: '/advanced-aerospace-suite', label: 'Aerospace Suite' },
+      ]
     }
   ];
   
