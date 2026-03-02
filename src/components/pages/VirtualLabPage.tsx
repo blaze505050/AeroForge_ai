@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { 
   Wind, Database, Wrench, Zap, Download, Cpu, Calculator, 
   Microscope, Beaker, Gauge, Layers, Rocket, Brain, Workflow,
-  BarChart3, GitBranch, Target, Lightbulb, Settings, Play
+  BarChart3, GitBranch, Target, Lightbulb, Settings, Play, Users
 } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
