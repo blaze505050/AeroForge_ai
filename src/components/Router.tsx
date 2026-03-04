@@ -40,6 +40,11 @@ import CollaborativeWorkspacePage from '@/components/pages/CollaborativeWorkspac
 import DigitalAerospaceResearchLabPage from '@/components/pages/DigitalAerospaceResearchLabPage';
 import ResearchLabsHubPage from '@/components/pages/ResearchLabsHubPage';
 import VirtualLabPage from '@/components/pages/VirtualLabPage';
+import StructuralAnalysisPage from '@/components/pages/StructuralAnalysisPage';
+import PropulsionSystemsPage from '@/components/pages/PropulsionSystemsPage';
+import AerodynamicsLabPage from '@/components/pages/AerodynamicsLabPage';
+import MaterialsLabPage from '@/components/pages/MaterialsLabPage';
+import SystemsIntegrationPage from '@/components/pages/SystemsIntegrationPage';
 
 // Layout component that includes ScrollToTop
 function Layout() {
@@ -321,6 +326,41 @@ const router = createBrowserRouter([
         element: <VirtualLabPage />,
         routeMetadata: {
           pageIdentifier: 'virtual-lab',
+        },
+      },
+      {
+        path: "structural-analysis",
+        element: <StructuralAnalysisPage />,
+        routeMetadata: {
+          pageIdentifier: 'structural-analysis',
+        },
+      },
+      {
+        path: "propulsion-systems",
+        element: <PropulsionSystemsPage />,
+        routeMetadata: {
+          pageIdentifier: 'propulsion-systems',
+        },
+      },
+      {
+        path: "aerodynamics-lab",
+        element: <AerodynamicsLabPage />,
+        routeMetadata: {
+          pageIdentifier: 'aerodynamics-lab',
+        },
+      },
+      {
+        path: "materials-lab",
+        element: <MaterialsLabPage />,
+        routeMetadata: {
+          pageIdentifier: 'materials-lab',
+        },
+      },
+      {
+        path: "systems-integration",
+        element: <SystemsIntegrationPage />,
+        routeMetadata: {
+          pageIdentifier: 'systems-integration',
         },
       },
       {

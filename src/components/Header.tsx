@@ -69,6 +69,16 @@ export default function Header() {
         { path: '/wing-calculator', label: 'Wing Calculator' },
         { path: '/advanced-aerospace-suite', label: 'Aerospace Suite' },
       ]
+    },
+    {
+      category: 'Advanced Modules',
+      links: [
+        { path: '/structural-analysis', label: 'Structural Analysis' },
+        { path: '/propulsion-systems', label: 'Propulsion Systems' },
+        { path: '/aerodynamics-lab', label: 'Aerodynamics Lab' },
+        { path: '/materials-lab', label: 'Materials Lab' },
+        { path: '/systems-integration', label: 'Systems Integration' },
+      ]
     }
   ];
   
