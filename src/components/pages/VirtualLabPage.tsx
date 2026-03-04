@@ -4,10 +4,12 @@ import { motion } from 'framer-motion';
 import { 
   Wind, Database, Wrench, Zap, Download, Cpu, Calculator, 
   Microscope, Beaker, Gauge, Layers, Rocket, Brain, Workflow,
-  BarChart3, GitBranch, Target, Lightbulb, Settings, Play, Users
+  BarChart3, GitBranch, Target, Lightbulb, Settings, Play, Users,
+  Thermometer, Navigation, Satellite, ChevronDown, Code, Zap as ZapIcon
 } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import { VIRTUAL_LAB_MODULES, getModuleStatistics } from '@/services/virtualLabModules';
 
 interface LabTool {
   id: string;
@@ -479,6 +481,9 @@ export default function VirtualLabPage() {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [hoveredTool, setHoveredTool] = useState<string | null>(null);
   const [activeCount, setActiveCount] = useState(0);
+  const [expandedModule, setExpandedModule] = useState<string | null>(null);
+  const [showModules, setShowModules] = useState(false);
+  const moduleStats = getModuleStatistics();
 
   useEffect(() => {
     setActiveCount(labTools.filter(t => t.isActive).length);
@@ -537,9 +542,9 @@ export default function VirtualLabPage() {
             
             <div className="flex flex-wrap justify-center gap-3 mb-12">
               <button
-                onClick={() => setSelectedCategory(null)}
+                onClick={() => { setSelectedCategory(null); setShowModules(false); }}
                 className={`px-6 py-2 rounded-lg font-paragraph font-medium transition-all ${
-                  selectedCategory === null
+                  !showModules && selectedCategory === null
                     ? 'bg-blue-500 text-white'
                     : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
                 }`}
@@ -551,9 +556,9 @@ export default function VirtualLabPage() {
                 return (
                   <button
                     key={cat}
-                    onClick={() => setSelectedCategory(cat)}
+                    onClick={() => { setSelectedCategory(cat); setShowModules(false); }}
                     className={`px-6 py-2 rounded-lg font-paragraph font-medium transition-all ${
-                      selectedCategory === cat
+                      !showModules && selectedCategory === cat
                         ? 'bg-blue-500 text-white'
                         : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
                     }`}
@@ -562,6 +567,17 @@ export default function VirtualLabPage() {
                   </button>
                 );
               })}
+              <button
+                onClick={() => setShowModules(!showModules)}
+                className={`px-6 py-2 rounded-lg font-paragraph font-medium transition-all flex items-center gap-2 ${
+                  showModules
+                    ? 'bg-purple-500 text-white'
+                    : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
+                }`}
+              >
+                <Microscope className="w-4 h-4" />
+                Research Modules ({moduleStats.modules})
+              </button>
             </div>
 
             {/* Stats */}
@@ -586,14 +602,297 @@ export default function VirtualLabPage() {
                 </motion.div>
               ))}
             </div>
+
+            {/* Module Stats */}
+            {showModules && (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="mt-8 grid grid-cols-2 md:grid-cols-5 gap-4 max-w-3xl mx-auto"
+              >
+                {[
+                  { label: 'Research Modules', value: moduleStats.modules },
+                  { label: 'Subsystems', value: moduleStats.subsystems },
+                  { label: 'Tools', value: moduleStats.tools },
+                  { label: 'Capabilities', value: moduleStats.capabilities },
+                  { label: 'AI Enhancements', value: moduleStats.aiEnhancements },
+                ].map((stat, i) => (
+                  <motion.div
+                    key={i}
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.5, delay: i * 0.1 }}
+                    className="bg-purple-900/30 rounded-lg p-3 border border-purple-500/30"
+                  >
+                    <div className="text-xl md:text-2xl font-bold text-purple-400 mb-1">
+                      {stat.value}
+                    </div>
+                    <div className="text-xs md:text-sm text-purple-300">{stat.label}</div>
+                  </motion.div>
+                ))}
+              </motion.div>
+            )}
           </motion.div>
         </section>
 
         {/* Tools Grid */}
         <section className="w-full max-w-[120rem] mx-auto px-4 py-16">
-          {!selectedCategory ? (
+          {showModules ? (
+            // Show research modules
+            <div className="space-y-8">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="text-center mb-12"
+              >
+                <h2 className="font-heading text-4xl md:text-5xl font-bold text-white mb-4">
+                  Advanced Research Modules
+                </h2>
+                <p className="font-paragraph text-xl text-slate-300 max-w-2xl mx-auto">
+                  12 comprehensive aerospace research modules with {moduleStats.subsystems} subsystems,
+                  {moduleStats.tools} tools, {moduleStats.capabilities} capabilities, and {moduleStats.aiEnhancements} AI enhancements
+                </p>
+              </motion.div>
+
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="grid grid-cols-1 gap-6"
+              >
+                {VIRTUAL_LAB_MODULES.map((module, idx) => (
+                  <motion.div
+                    key={module.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: idx * 0.05 }}
+                    className="group"
+                  >
+                    <div className="relative bg-slate-800 rounded-xl overflow-hidden border border-slate-700 hover:border-slate-600 transition-all duration-300 hover:shadow-2xl hover:shadow-purple-500/20">
+                      {/* Background gradient */}
+                      <div className={`absolute inset-0 bg-gradient-to-r ${module.color} opacity-0 group-hover:opacity-5 transition-opacity duration-300`} />
+                      
+                      {/* Header */}
+                      <button
+                        onClick={() => setExpandedModule(expandedModule === module.id ? null : module.id)}
+                        className="w-full relative p-6 flex items-start justify-between hover:bg-slate-700/50 transition-colors"
+                      >
+                        <div className="flex items-start gap-4 flex-1 text-left">
+                          <div className={`w-12 h-12 rounded-lg bg-gradient-to-br ${module.color} p-2 flex items-center justify-center text-white flex-shrink-0`}>
+                            {module.icon === 'Wind' && <Wind className="w-6 h-6" />}
+                            {module.icon === 'Zap' && <Zap className="w-6 h-6" />}
+                            {module.icon === 'Cpu' && <Cpu className="w-6 h-6" />}
+                            {module.icon === 'Layers' && <Layers className="w-6 h-6" />}
+                            {module.icon === 'Beaker' && <Beaker className="w-6 h-6" />}
+                            {module.icon === 'Rocket' && <Rocket className="w-6 h-6" />}
+                            {module.icon === 'Satellite' && <Satellite className="w-6 h-6" />}
+                            {module.icon === 'Thermometer' && <Thermometer className="w-6 h-6" />}
+                            {module.icon === 'Navigation' && <Navigation className="w-6 h-6" />}
+                          </div>
+                          <div className="flex-1">
+                            <div className="flex items-center gap-3 mb-2">
+                              <span className="text-sm font-mono text-purple-400 font-semibold">Module {module.number}</span>
+                              <span className="text-xs bg-green-500/20 text-green-400 px-2 py-1 rounded-full">Active</span>
+                            </div>
+                            <h3 className="font-heading text-xl md:text-2xl font-bold text-white mb-2">
+                              {module.title}
+                            </h3>
+                            <p className="font-paragraph text-slate-400 text-sm md:text-base">
+                              {module.description}
+                            </p>
+                          </div>
+                        </div>
+                        <motion.div
+                          animate={{ rotate: expandedModule === module.id ? 180 : 0 }}
+                          className="flex-shrink-0 ml-4"
+                        >
+                          <ChevronDown className="w-6 h-6 text-slate-400" />
+                        </motion.div>
+                      </button>
+
+                      {/* Expanded Content */}
+                      <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{
+                          height: expandedModule === module.id ? 'auto' : 0,
+                          opacity: expandedModule === module.id ? 1 : 0,
+                        }}
+                        transition={{ duration: 0.3 }}
+                        className="overflow-hidden"
+                      >
+                        <div className="relative p-6 pt-0 border-t border-slate-700 space-y-6">
+                          {/* Subsystems */}
+                          <div>
+                            <h4 className="font-heading text-lg font-bold text-white mb-3 flex items-center gap-2">
+                              <Code className="w-5 h-5 text-blue-400" />
+                              Subsystems ({module.subsystems.length})
+                            </h4>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                              {module.subsystems.map((subsystem, i) => (
+                                <div key={i} className="bg-slate-700/50 rounded-lg p-3 border border-slate-600">
+                                  <p className="font-paragraph font-semibold text-white text-sm mb-1">
+                                    {subsystem.name}
+                                  </p>
+                                  <p className="font-paragraph text-xs text-slate-400 mb-2">
+                                    {subsystem.description}
+                                  </p>
+                                  <div className="flex flex-wrap gap-1">
+                                    {subsystem.capabilities.map((cap, j) => (
+                                      <span key={j} className="text-xs bg-blue-500/20 text-blue-300 px-2 py-0.5 rounded">
+                                        {cap}
+                                      </span>
+                                    ))}
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+
+                          {/* Tools */}
+                          <div>
+                            <h4 className="font-heading text-lg font-bold text-white mb-3 flex items-center gap-2">
+                              <Wrench className="w-5 h-5 text-cyan-400" />
+                              Tools ({module.tools.length})
+                            </h4>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                              {module.tools.map((tool, i) => (
+                                <div key={i} className="bg-slate-700/50 rounded-lg p-3 border border-slate-600">
+                                  <p className="font-paragraph font-semibold text-white text-sm mb-1">
+                                    {tool.name}
+                                  </p>
+                                  <p className="font-paragraph text-xs text-slate-400 mb-2">
+                                    {tool.description}
+                                  </p>
+                                  <span className="text-xs bg-cyan-500/20 text-cyan-300 px-2 py-0.5 rounded">
+                                    {tool.type}
+                                  </span>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+
+                          {/* Capabilities */}
+                          <div>
+                            <h4 className="font-heading text-lg font-bold text-white mb-3 flex items-center gap-2">
+                              <ZapIcon className="w-5 h-5 text-yellow-400" />
+                              Capabilities ({module.capabilities.length})
+                            </h4>
+                            <div className="space-y-2">
+                              {module.capabilities.map((cap, i) => (
+                                <div key={i} className="bg-slate-700/50 rounded-lg p-3 border border-slate-600">
+                                  <p className="font-paragraph font-semibold text-white text-sm mb-1">
+                                    {cap.name}
+                                  </p>
+                                  <p className="font-paragraph text-xs text-slate-400 mb-2">
+                                    {cap.description}
+                                  </p>
+                                  <span className={`text-xs px-2 py-0.5 rounded ${
+                                    cap.physicsLevel === 'research-grade'
+                                      ? 'bg-red-500/20 text-red-300'
+                                      : cap.physicsLevel === 'advanced'
+                                      ? 'bg-orange-500/20 text-orange-300'
+                                      : 'bg-yellow-500/20 text-yellow-300'
+                                  }`}>
+                                    {cap.physicsLevel}
+                                  </span>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+
+                          {/* AI Enhancements */}
+                          <div>
+                            <h4 className="font-heading text-lg font-bold text-white mb-3 flex items-center gap-2">
+                              <Brain className="w-5 h-5 text-purple-400" />
+                              AI Enhancements ({module.aiEnhancements.length})
+                            </h4>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                              {module.aiEnhancements.map((ai, i) => (
+                                <div key={i} className="bg-purple-900/30 rounded-lg p-3 border border-purple-500/30">
+                                  <p className="font-paragraph font-semibold text-purple-200 text-sm mb-1">
+                                    {ai.name}
+                                  </p>
+                                  <p className="font-paragraph text-xs text-purple-300/80">
+                                    {ai.description}
+                                  </p>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+
+                          {/* Cloud Architecture */}
+                          <div>
+                            <h4 className="font-heading text-lg font-bold text-white mb-3 flex items-center gap-2">
+                              <Database className="w-5 h-5 text-green-400" />
+                              Cloud Architecture
+                            </h4>
+                            <div className="bg-slate-700/50 rounded-lg p-4 border border-slate-600 space-y-3">
+                              <div>
+                                <p className="font-paragraph font-semibold text-white text-sm mb-1">Infrastructure</p>
+                                <p className="font-paragraph text-xs text-slate-300">
+                                  {module.cloudArchitecture.infrastructure}
+                                </p>
+                              </div>
+                              <div>
+                                <p className="font-paragraph font-semibold text-white text-sm mb-1">Scalability</p>
+                                <p className="font-paragraph text-xs text-slate-300">
+                                  {module.cloudArchitecture.scalability}
+                                </p>
+                              </div>
+                              <div>
+                                <p className="font-paragraph font-semibold text-white text-sm mb-1">Data Management</p>
+                                <p className="font-paragraph text-xs text-slate-300">
+                                  {module.cloudArchitecture.dataManagement}
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </motion.div>
+                    </div>
+                  </motion.div>
+                ))}
+              </motion.div>
+            </div>
+          ) : !selectedCategory ? (
             // Show all tools organized by category
             <div className="space-y-16">
+              {/* Physics Engine Info */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
+                viewport={{ once: true }}
+                className="bg-gradient-to-r from-slate-800 to-slate-900 rounded-xl p-8 border border-slate-700"
+              >
+                <div className="flex items-start gap-4 mb-4">
+                  <ZapIcon className="w-8 h-8 text-yellow-400 flex-shrink-0 mt-1" />
+                  <div>
+                    <h3 className="font-heading text-2xl font-bold text-white mb-2">
+                      Enhanced Physics Engine
+                    </h3>
+                    <p className="font-paragraph text-slate-300 mb-4">
+                      Powered by advanced multi-physics simulation with atmospheric modeling, aerodynamic analysis,
+                      structural mechanics, thermal analysis, propulsion dynamics, orbital mechanics, and numerical integration.
+                    </p>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <div className="bg-slate-700/50 rounded-lg p-3">
+                        <p className="font-paragraph text-sm font-semibold text-blue-300 mb-1">Atmospheric Model</p>
+                        <p className="font-paragraph text-xs text-slate-400">US Standard Atmosphere 1976 up to 86km</p>
+                      </div>
+                      <div className="bg-slate-700/50 rounded-lg p-3">
+                        <p className="font-paragraph text-sm font-semibold text-cyan-300 mb-1">Aerodynamics</p>
+                        <p className="font-paragraph text-xs text-slate-400">Subsonic to hypersonic with compressibility</p>
+                      </div>
+                      <div className="bg-slate-700/50 rounded-lg p-3">
+                        <p className="font-paragraph text-sm font-semibold text-purple-300 mb-1">Numerical Methods</p>
+                        <p className="font-paragraph text-xs text-slate-400">RK4 with adaptive step control</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+
+              {/* Tools by Category */}
               {categories.map((category) => {
                 const categoryTools = labTools.filter(t => t.category === category);
                 return (
@@ -908,7 +1207,7 @@ export default function VirtualLabPage() {
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              onClick={() => setSelectedCategory(null)}
+              onClick={() => { setSelectedCategory(null); setShowModules(false); }}
               className="px-10 py-4 bg-gradient-to-r from-blue-500 to-cyan-500 text-white font-heading font-bold text-lg rounded-lg hover:shadow-2xl hover:shadow-blue-500/50 transition-all duration-300"
             >
               Explore All Tools
