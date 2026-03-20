@@ -489,12 +489,12 @@ export default function VirtualLabPage() {
     setActiveCount(labTools.filter(t => t.isActive).length);
   }, []);
 
-  // Organize categories in order
+  // Organize categories in order - Elite Suite, Products, Advanced Modules consolidated
   const categoryOrder = [
-    'Advanced Modules',
-    'Products',
-    'Research',
     'Elite Suite',
+    'Products',
+    'Advanced Modules',
+    'Research',
     'Core Tools'
   ];
   
