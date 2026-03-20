@@ -181,7 +181,7 @@ export default function HomePage() {
                     </span>
                   </Link>
                   <Link 
-                    to="/virtual-lab"
+                    to="/tools"
                     className="group relative inline-flex items-center justify-center px-10 py-5 bg-transparent border-2 border-aerospace-blue text-aerospace-blue font-mono text-sm uppercase tracking-wider hover:bg-aerospace-blue hover:text-white transition-all duration-300 rounded-lg"
                   >
                     <span className="relative z-10 flex items-center gap-2">

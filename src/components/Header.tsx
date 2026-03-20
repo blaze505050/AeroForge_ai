@@ -12,6 +12,7 @@ export default function Header() {
   const navLinks = [
     { path: '/', label: 'Home' },
     { path: '/compiler', label: 'Compiler' },
+    { path: '/tools', label: 'Tools' },
     { path: '/results', label: 'Results' },
     { path: '/architecture', label: 'Architecture' },
     { path: '/dsl-docs', label: 'DSL Docs' },
