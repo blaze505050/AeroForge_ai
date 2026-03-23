@@ -1,12 +1,14 @@
-import React, { useState, useCallback } from 'react';
-import { Search, X, Filter, ChevronDown } from 'lucide-react';
+import React, { useState, useCallback, useMemo } from 'react';
+import { Search, X, Filter, ChevronDown, Zap } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { debounce } from '@/services/performanceOptimization';
 
 interface SearchAndFilterProps {
   onSearch: (query: string) => void;
   onFilterChange: (filters: Record<string, string[]>) => void;
   categories: string[];
   difficulties: string[];
+  onAdvancedSearch?: (config: any) => void;
 }
 
 export default function SearchAndFilter({
@@ -14,18 +16,28 @@ export default function SearchAndFilter({
   onFilterChange,
   categories,
   difficulties,
+  onAdvancedSearch,
 }: SearchAndFilterProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [showAdvanced, setShowAdvanced] = useState(false);
   const [activeFilters, setActiveFilters] = useState<Record<string, string[]>>({
     category: [],
     difficulty: [],
   });
 
+  // Debounced search for performance
+  const debouncedSearch = useMemo(
+    () => debounce((value: string) => {
+      onSearch(value);
+    }, 300),
+    [onSearch]
+  );
+
   const handleSearch = useCallback((value: string) => {
     setSearchQuery(value);
-    onSearch(value);
-  }, [onSearch]);
+    debouncedSearch(value);
+  }, [debouncedSearch]);
 
   const handleFilterToggle = (filterType: string, value: string) => {
     setActiveFilters((prev) => {
@@ -85,6 +97,15 @@ export default function SearchAndFilter({
             </span>
           )}
           <ChevronDown className={`w-4 h-4 transition-transform ${isFilterOpen ? 'rotate-180' : ''}`} />
+        </button>
+
+        {/* Advanced Search Toggle */}
+        <button
+          onClick={() => setShowAdvanced(!showAdvanced)}
+          className="flex items-center gap-2 px-4 py-2 bg-aerospace-blue/10 border border-aerospace-blue/30 rounded-lg text-aerospace-blue hover:bg-aerospace-blue/20 transition-colors font-paragraph text-sm"
+        >
+          <Zap className="w-4 h-4" />
+          Advanced
         </button>
 
         {activeFilterCount > 0 && (
@@ -154,6 +175,47 @@ export default function SearchAndFilter({
               ))}
             </div>
           </div>
+        </motion.div>
+      )}
+
+      {/* Advanced Search Panel */}
+      {showAdvanced && (
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -10 }}
+          className="p-6 bg-primary border border-aerospace-blue/30 rounded-lg space-y-4"
+        >
+          <h3 className="font-heading text-sm font-bold text-aerospace-blue uppercase tracking-wider">
+            Advanced Search Options
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-xs font-mono text-foreground/70 mb-2">
+                Search Type
+              </label>
+              <select className="w-full px-3 py-2 bg-aerospace-dark border border-secondary/30 rounded text-foreground text-sm">
+                <option>Contains</option>
+                <option>Exact Match</option>
+                <option>Starts With</option>
+                <option>Fuzzy Match</option>
+              </select>
+            </div>
+            <div>
+              <label className="block text-xs font-mono text-foreground/70 mb-2">
+                Sort By
+              </label>
+              <select className="w-full px-3 py-2 bg-aerospace-dark border border-secondary/30 rounded text-foreground text-sm">
+                <option>Relevance</option>
+                <option>Name (A-Z)</option>
+                <option>Newest</option>
+                <option>Most Popular</option>
+              </select>
+            </div>
+          </div>
+          <p className="text-xs text-foreground/50 font-mono">
+            💡 Tip: Use fuzzy matching for typo-tolerant searches
+          </p>
         </motion.div>
       )}
     </div>
