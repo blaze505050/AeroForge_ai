@@ -1,6 +1,7 @@
 import { Link, useLocation } from 'react-router-dom';
 import { useState } from 'react';
 import { Menu, X, Shield, Award } from 'lucide-react';
+import { Image } from '@/components/ui/image';
 
 export default function Header() {
   const location = useLocation();
@@ -42,10 +43,13 @@ export default function Header() {
         <nav className="flex items-center justify-between">
           {/* Logo & Brand */}
           <Link to="/" className="flex items-center gap-3 flex-shrink-0 group">
-            <div className="relative w-10 h-10 md:w-12 md:h-12 flex items-center justify-center">
-              <div className="absolute inset-0 bg-gradient-to-br from-aerospace-blue to-aerospace-accent rounded-lg opacity-80 group-hover:opacity-100 transition-opacity" />
-              <div className="relative z-10 font-heading font-bold text-white text-lg md:text-xl">AF</div>
-            </div>
+            <Image 
+              src="https://static.wixstatic.com/media/18a222_a061b26960ac4418850c196f62b8a14a~mv2.png"
+              alt="AeroForge Logo"
+              width={48}
+              height={48}
+              className="w-10 h-10 md:w-12 md:h-12 object-contain"
+            />
             <div className="flex flex-col">
               <span className="font-heading text-lg md:text-xl font-bold text-aerospace-blue group-hover:text-aerospace-accent transition-colors">
                 AeroForge

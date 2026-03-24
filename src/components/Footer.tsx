@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { Mail, Linkedin, Github, ExternalLink } from 'lucide-react';
+import { Image } from '@/components/ui/image';
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
@@ -51,10 +52,13 @@ export default function Footer() {
           {/* Brand Column */}
           <div className="lg:col-span-1">
             <Link to="/" className="flex items-center gap-2 mb-6">
-              <div className="relative w-10 h-10 flex items-center justify-center">
-                <div className="absolute inset-0 bg-gradient-to-br from-aerospace-blue to-aerospace-accent rounded-lg opacity-80" />
-                <div className="relative z-10 font-heading font-bold text-white text-lg">AF</div>
-              </div>
+              <Image 
+                src="https://static.wixstatic.com/media/18a222_a061b26960ac4418850c196f62b8a14a~mv2.png"
+                alt="AeroForge Logo"
+                width={40}
+                height={40}
+                className="w-10 h-10 object-contain"
+              />
               <div className="flex flex-col">
                 <span className="font-heading text-lg font-bold text-aerospace-blue">AeroForge</span>
                 <span className="font-mono text-xs text-aerospace-accent/70">Enterprise</span>
