@@ -7,39 +7,39 @@ export default function Footer() {
 
   const footerSections = [
     {
-      title: 'Products',
+      title: 'Platform',
       links: [
-        { label: 'Mechanical CAD Suite', path: '/mechanical-cad-suite' },
-        { label: 'Advanced CFD', path: '/advanced-cfd' },
-        { label: 'Parametric Compiler', path: '/compiler' },
-        { label: 'Elite Multi-Objective', path: '/elite-multi-objective-optimization' }
+        { label: 'Compiler', path: '/compiler' },
+        { label: 'Tools', path: '/tools' },
+        { label: 'Optimization', path: '/optimization' },
+        { label: 'Virtual Lab', path: '/virtual-lab' }
       ]
     },
     {
-      title: 'Resources',
+      title: 'Learn',
       links: [
-        { label: 'Knowledge Base', path: '/knowledge-base' },
-        { label: 'Research Hub', path: '/research-hub' },
-        { label: 'Case Studies', path: '/case-studies' },
-        { label: 'Documentation', path: '/about-tools' }
-      ]
-    },
-    {
-      title: 'Enterprise',
-      links: [
-        { label: 'API Reference', path: '/api' },
         { label: 'Architecture', path: '/architecture' },
-        { label: 'Certifications', path: '/certifications' },
-        { label: 'Compliance', path: '/dsl-docs' }
+        { label: 'DSL Documentation', path: '/dsl-docs' },
+        { label: 'API Reference', path: '/api' },
+        { label: 'Results', path: '/results' }
       ]
     },
     {
-      title: 'Connect',
+      title: 'Company',
       links: [
+        { label: 'About', external: true, href: '#' },
+        { label: 'Blog', external: true, href: '#' },
         { label: 'Contact', external: true, href: 'mailto:info@aeroforge.ai' },
-        { label: 'LinkedIn', external: true, href: 'https://linkedin.com' },
-        { label: 'GitHub', external: true, href: 'https://github.com' },
         { label: 'Status', external: true, href: '#' }
+      ]
+    },
+    {
+      title: 'Legal',
+      links: [
+        { label: 'Privacy', external: true, href: '#' },
+        { label: 'Terms', external: true, href: '#' },
+        { label: 'Security', external: true, href: '#' },
+        { label: 'Compliance', external: true, href: '#' }
       ]
     }
   ];
@@ -65,7 +65,7 @@ export default function Footer() {
               </div>
             </Link>
             <p className="font-paragraph text-sm text-secondary-foreground leading-relaxed">
-              Deterministic AI-powered CAD compiler for aerospace-grade manufacturing.
+              Deterministic AI-powered design compiler for aerospace and manufacturing.
             </p>
           </div>
 

@@ -528,16 +528,16 @@ export default function VirtualLabPage() {
             <div className="flex items-center justify-center gap-3 mb-6">
               <Microscope className="w-8 h-8 text-blue-400" />
               <span className="font-mono text-sm uppercase tracking-widest text-blue-400">
-                Advanced Research Environment
+                Tools & Resources
               </span>
             </div>
             
             <h1 className="font-heading text-5xl md:text-7xl font-bold text-white mb-6">
-              Virtual Aerospace Lab
+              Design & Analysis Tools
             </h1>
             
             <p className="font-paragraph text-xl md:text-2xl text-slate-300 max-w-3xl mx-auto mb-8">
-              Complete aerospace research and development environment. {activeCount} fully integrated tools organized by discipline for design, simulation, analysis, and optimization.
+              Integrated tools for aerospace and mechanical design, simulation, and optimization. {activeCount} tools ready to use.
             </p>
             
             <div className="flex flex-wrap justify-center gap-3 mb-12">

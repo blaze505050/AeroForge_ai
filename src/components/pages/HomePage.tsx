@@ -10,45 +10,45 @@ import { BaseCrudService } from '@/integrations';
 import { CaseStudies, KnowledgeBaseArticles, ResearchPapers } from '@/entities';
 
 const HERO_DATA = {
-  headline: "Design Without Compromise",
-  subtext: "Deterministic AI-powered CAD that transforms natural language into aerospace-certified geometry. Zero ambiguity. Zero guesswork.",
-  cta: "Start Designing"
+  headline: "AI-Powered Engineering Design",
+  subtext: "Transform your design ideas into production-ready CAD models. Deterministic, validated, and aerospace-certified.",
+  cta: "Start Designing Now"
 };
 
 const FEATURES = [
   { 
-    title: "Deterministic", 
-    desc: "Identical results every time",
-    help: "Every design produces the exact same geometry when executed, ensuring perfect repeatability for manufacturing.",
+    title: "Consistent Results", 
+    desc: "Same output every time",
+    help: "Get identical geometry every time you compile, ensuring perfect repeatability for manufacturing.",
     icon: CheckCircle2
   },
   { 
-    title: "Validated", 
-    desc: "Aerospace-grade standards",
-    help: "All outputs automatically validated against aerospace standards and manufacturing rules before delivery.",
+    title: "Quality Assured", 
+    desc: "Built-in validation",
+    help: "Automatic validation against industry standards ensures your designs meet all requirements.",
     icon: ShieldCheck
   },
   { 
-    title: "Transparent", 
-    desc: "Full audit trails included",
-    help: "Complete traceability of every design decision with explicit audit logs for compliance verification.",
+    title: "Fully Traceable", 
+    desc: "Complete audit history",
+    help: "Track every design decision with full audit logs for compliance and quality assurance.",
     icon: Layers
   },
   { 
-    title: "Production-Ready", 
-    desc: "Manufacturing specifications included",
-    help: "Designs include tolerances, material properties, and assembly instructions ready for production.",
+    title: "Ready to Manufacture", 
+    desc: "Production specifications included",
+    help: "Get tolerances, materials, and assembly instructions ready for immediate manufacturing.",
     icon: Cpu
   },
 ];
 
 const ANTI_GOALS = [
-  "No mesh diffusion",
-  "No topology optimization",
-  "No auto-repair heuristics",
-  "No simulation",
-  "No black-box geometry",
-  "No reinforcement learning"
+  "No unpredictable mesh generation",
+  "No automatic topology changes",
+  "No hidden geometry repairs",
+  "No built-in simulation (use external tools)",
+  "No black-box outputs",
+  "No machine learning guessing"
 ];
 
 const GridBackground = () => (

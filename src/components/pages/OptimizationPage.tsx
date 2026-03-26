@@ -143,10 +143,10 @@ export default function OptimizationPage() {
                 </span>
               </div>
               <h1 className="font-heading text-5xl md:text-6xl font-bold text-foreground mb-6">
-                Optimization Guide
+                Performance Tips
               </h1>
               <p className="font-paragraph text-xl text-secondary-foreground max-w-3xl mx-auto">
-                Discover advanced techniques for performance optimization, filtering, and system integration.
+                Best practices for optimizing your design workflow and system performance.
               </p>
             </motion.div>
           </div>

@@ -46,10 +46,10 @@ export default function ArchitecturePage() {
         <section className="w-full max-w-[120rem] mx-auto px-[8%] py-20">
           <div className="max-w-5xl min-h-[400px]">
             <h1 className="font-heading text-4xl text-foreground mb-3">
-              System Architecture
+              How It Works
             </h1>
             <p className="font-paragraph text-base text-foreground mb-12">
-              Technical documentation of the AeroForge AI compiler system, its deterministic approach, and explicit design constraints.
+              Understanding the AeroForge design compilation system and its deterministic approach.
             </p>
 
             {isLoading ? null : (

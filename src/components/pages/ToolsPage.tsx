@@ -171,10 +171,10 @@ export default function ToolsPage() {
                 </span>
               </div>
               <h1 className="font-heading text-5xl md:text-6xl font-bold text-foreground mb-6">
-                Explore Our Tools & Templates
+                Design Tools & Templates
               </h1>
               <p className="font-paragraph text-xl text-secondary-foreground max-w-3xl mx-auto">
-                Discover powerful tools for CAD design, simulation, and optimization. Compare features and find the perfect solution for your workflow.
+                Browse templates for mechanical, aerospace, and robotics design. Find the right starting point for your project.
               </p>
             </motion.div>
           </div>

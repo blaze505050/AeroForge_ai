@@ -15,14 +15,14 @@ export default function DSLDocsPage() {
               <div className="flex items-center gap-3 mb-4">
                 <div className="w-3 h-3 bg-accent" />
                 <span className="font-mono text-xs uppercase tracking-[0.2em] text-secondary-foreground/70">
-                  Feature DSL Specification
+                  Language Reference
                 </span>
               </div>
               <h1 className="font-heading text-5xl font-bold text-primary mb-4">
-                AeroForge DSL v1.0
+                Design Language Specification
               </h1>
               <p className="font-paragraph text-lg text-foreground/70 max-w-3xl">
-                Strict, deterministic, versioned JSON schema for parametric CAD feature definition. No implicit geometry.
+                Complete reference for the AeroForge design language. Deterministic, versioned, and fully validated.
               </p>
             </div>
 

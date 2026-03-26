@@ -19,10 +19,10 @@ export default function APIDocPage() {
                 </span>
               </div>
               <h1 className="font-heading text-5xl font-bold text-primary mb-4">
-                AeroForge API v1.0
+                API Reference
               </h1>
               <p className="font-paragraph text-lg text-foreground/70 max-w-3xl">
-                Deterministic CAD compilation via REST endpoints. All responses are deterministic and reproducible.
+                Complete API documentation for design compilation and integration.
               </p>
             </div>
 

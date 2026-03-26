@@ -70,10 +70,10 @@ export default function ResultsPage() {
             {/* Header */}
             <div className="mb-12">
               <h1 className="font-heading text-4xl text-foreground mb-3">
-                Compilation Results
+                Design Output
               </h1>
               <p className="font-paragraph text-base text-foreground/70">
-                AeroForge DSL v{dsl.version} • {dsl.units.toUpperCase()} • {dsl.features?.length || 0} features
+                Your compiled design • v{dsl.version} • {dsl.units.toUpperCase()} • {dsl.features?.length || 0} features
               </p>
             </div>
 

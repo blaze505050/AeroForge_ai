@@ -100,7 +100,7 @@ export default function CompilerSplitPage() {
                 </button>
               </div>
               <p className="font-paragraph text-sm text-cyan-300/60 mb-8">
-                Describe your mechanical part and watch it render in real-time
+                Enter your design specifications and get instant 3D geometry
               </p>
 
               {expandedPanel && (
@@ -112,14 +112,14 @@ export default function CompilerSplitPage() {
                   {/* Text Input */}
                   <div>
                     <label htmlFor="design-input" className="block font-paragraph text-sm font-medium text-cyan-300 mb-2">
-                      Describe your mechanical part
+                      Design Specification
                     </label>
                     <textarea
                       id="design-input"
                       value={input}
                       onChange={(e) => setInput(e.target.value)}
                       className="w-full h-48 px-4 py-3 border border-cyan-500/30 rounded bg-gray-800 text-cyan-100 font-paragraph text-sm resize-none focus:outline-none focus:border-cyan-400 focus:ring-2 focus:ring-cyan-500/20 transition-all duration-200 placeholder-gray-500"
-                      placeholder="Example: Create a mounting bracket with two 6mm bolt holes spaced 50mm apart, with rounded corners..."
+                      placeholder="Example: Rectangular plate 100mm x 50mm x 5mm with two 6mm holes at 25mm spacing..."
                       disabled={isGenerating}
                     />
                   </div>
