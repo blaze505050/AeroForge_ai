@@ -86,7 +86,7 @@ export default function CompilerSplitPage() {
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center gap-3">
                   <Sparkles className="w-6 h-6 text-cyan-400" />
-                  <h1 className="font-heading text-3xl text-cyan-300">Design Compiler</h1>
+                  <h1 className="font-heading text-3xl text-cyan-300">AI Design Compiler</h1>
                 </div>
                 <button
                   onClick={() => setExpandedPanel(!expandedPanel)}

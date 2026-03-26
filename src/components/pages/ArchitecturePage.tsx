@@ -80,7 +80,7 @@ export default function ArchitecturePage() {
 
                 {/* Architecture Diagram */}
                 <div className="mb-16">
-                  <h2 className="font-heading text-3xl text-primary mb-8">System Flow</h2>
+                  <h2 className="font-heading text-3xl text-primary mb-8">Design Process</h2>
                   <div className="bg-json-background p-8 font-mono text-sm text-foreground leading-relaxed">
                     <pre className="whitespace-pre">
 {`[ Natural Language Input ]
