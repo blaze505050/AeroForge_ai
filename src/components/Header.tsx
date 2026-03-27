@@ -14,6 +14,7 @@ export default function Header() {
     { path: '/', label: 'Home' },
     { path: '/compiler', label: 'Compiler' },
     { path: '/tools', label: 'Tools' },
+    { path: '/advanced-tools', label: 'Advanced Tools' },
     { path: '/optimization', label: 'Optimization' },
     { path: '/results', label: 'Results' },
     { path: '/architecture', label: 'Architecture' },

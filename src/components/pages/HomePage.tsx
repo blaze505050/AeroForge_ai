@@ -297,6 +297,95 @@ export default function HomePage() {
         {/* PREMIUM TOOLS SECTION */}
         <PremiumToolsSection />
 
+        {/* ADVANCED TOOLS SHOWCASE SECTION */}
+        <section className="w-full py-32 bg-primary border-t border-secondary/20 relative overflow-hidden">
+          <div className="absolute inset-0 opacity-10">
+            <div className="absolute top-0 right-0 w-96 h-96 bg-aerospace-blue rounded-full blur-3xl" />
+            <div className="absolute bottom-0 left-1/4 w-96 h-96 bg-aerospace-accent rounded-full blur-3xl" />
+          </div>
+
+          <div className="w-full max-w-[120rem] mx-auto px-6 md:px-12 lg:px-16 relative z-10">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+              viewport={{ once: true }}
+              className="text-center mb-16"
+            >
+              <div className="flex items-center justify-center gap-3 mb-4">
+                <Sparkles className="w-6 h-6 text-aerospace-blue animate-pulse" />
+                <span className="font-mono text-sm uppercase tracking-widest text-aerospace-blue">
+                  Next Generation
+                </span>
+                <Sparkles className="w-6 h-6 text-aerospace-blue animate-pulse" />
+              </div>
+              <h2 className="font-heading text-4xl md:text-5xl font-bold text-foreground mb-6">
+                Advanced Aerospace Tools
+              </h2>
+              <p className="font-paragraph text-xl text-secondary-foreground max-w-3xl mx-auto mb-8">
+                Enterprise-grade simulation, optimization, and analysis tools designed for aerospace engineers who demand precision, performance, and innovation.
+              </p>
+            </motion.div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+              {[
+                {
+                  title: 'CFD Solver',
+                  description: 'High-fidelity computational fluid dynamics with turbulence modeling',
+                  icon: Wind,
+                  color: 'from-blue-500 to-cyan-500'
+                },
+                {
+                  title: 'Structural FEM',
+                  description: 'Enterprise-grade finite element analysis with nonlinear dynamics',
+                  icon: Layers,
+                  color: 'from-purple-500 to-pink-500'
+                },
+                {
+                  title: 'Propulsion Design',
+                  description: 'Integrated turbomachinery design with thermodynamic analysis',
+                  icon: Rocket,
+                  color: 'from-orange-500 to-red-500'
+                }
+              ].map((tool, idx) => {
+                const ToolIcon = tool.icon;
+                return (
+                  <motion.div
+                    key={idx}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6, delay: idx * 0.1 }}
+                    viewport={{ once: true }}
+                    className="group relative bg-aerospace-dark/50 border border-aerospace-blue/20 rounded-lg p-6 hover:border-aerospace-blue/60 transition-all duration-300"
+                  >
+                    <div className={`p-3 bg-gradient-to-br ${tool.color} rounded-lg w-fit mb-4`}>
+                      <ToolIcon className="w-6 h-6 text-white" />
+                    </div>
+                    <h3 className="font-heading text-lg font-bold text-foreground mb-2 group-hover:text-aerospace-blue transition-colors">
+                      {tool.title}
+                    </h3>
+                    <p className="font-paragraph text-sm text-foreground/70">
+                      {tool.description}
+                    </p>
+                  </motion.div>
+                );
+              })}
+            </div>
+
+            <div className="text-center">
+              <Link
+                to="/advanced-tools"
+                className="group relative inline-flex items-center justify-center px-12 py-6 bg-gradient-to-r from-aerospace-blue to-aerospace-accent text-white font-mono text-sm uppercase tracking-wider hover:shadow-2xl transition-all duration-300 rounded-lg shadow-xl hover:-translate-y-1"
+              >
+                <span className="relative z-10 flex items-center gap-2">
+                  Explore Advanced Tools
+                  <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+                </span>
+              </Link>
+            </div>
+          </div>
+        </section>
+
         {/* ANTI-GOALS SECTION */}
         <section className="w-full py-32 bg-aerospace-dark border-t border-secondary/20">
           <div className="w-full max-w-[120rem] mx-auto px-6 md:px-12 lg:px-16">

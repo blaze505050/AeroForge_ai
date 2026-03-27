@@ -11,6 +11,7 @@ import APIDocPage from '@/components/pages/APIDocPage';
 import VirtualLabPage from '@/components/pages/VirtualLabPage';
 import ToolsPage from '@/components/pages/ToolsPage';
 import OptimizationPage from '@/components/pages/OptimizationPage';
+import AdvancedToolsPage from '@/components/pages/AdvancedToolsPage';
 
 // Layout component that includes ScrollToTop
 function Layout() {
@@ -89,6 +90,13 @@ const router = createBrowserRouter([
         element: <OptimizationPage />,
         routeMetadata: {
           pageIdentifier: 'optimization',
+        },
+      },
+      {
+        path: "advanced-tools",
+        element: <AdvancedToolsPage />,
+        routeMetadata: {
+          pageIdentifier: 'advanced-tools',
         },
       },
       {
