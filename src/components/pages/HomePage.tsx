@@ -5,6 +5,7 @@ import { CheckCircle2, Layers, ShieldCheck, Cpu, Terminal, XCircle, ChevronRight
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import HelpTooltip from '@/components/HelpTooltip';
+import PremiumToolsSection from '@/components/PremiumToolsSection';
 import { Image } from '@/components/ui/image';
 import { BaseCrudService } from '@/integrations';
 import { CaseStudies, KnowledgeBaseArticles, ResearchPapers } from '@/entities';
@@ -292,6 +293,9 @@ export default function HomePage() {
             </div>
           </div>
         </section>
+
+        {/* PREMIUM TOOLS SECTION */}
+        <PremiumToolsSection />
 
         {/* ANTI-GOALS SECTION */}
         <section className="w-full py-32 bg-aerospace-dark border-t border-secondary/20">
