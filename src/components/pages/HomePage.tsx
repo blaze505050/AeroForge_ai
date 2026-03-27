@@ -386,6 +386,163 @@ export default function HomePage() {
           </div>
         </section>
 
+        {/* PREMIUM CONVERSION SECTION */}
+        <section className="w-full py-32 bg-gradient-to-br from-aerospace-dark via-primary to-aerospace-dark border-t border-secondary/20 relative overflow-hidden">
+          <div className="absolute inset-0 opacity-20">
+            <div className="absolute top-0 left-0 w-96 h-96 bg-aerospace-blue rounded-full blur-3xl" />
+            <div className="absolute bottom-0 right-0 w-96 h-96 bg-aerospace-accent rounded-full blur-3xl" />
+          </div>
+
+          <div className="w-full max-w-[120rem] mx-auto px-6 md:px-12 lg:px-16 relative z-10">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+              {/* Left: Value Proposition */}
+              <motion.div
+                initial={{ opacity: 0, x: -40 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.8 }}
+                viewport={{ once: true }}
+                className="space-y-8"
+              >
+                <div>
+                  <div className="flex items-center gap-3 mb-4">
+                    <Award className="w-6 h-6 text-aerospace-blue" />
+                    <span className="font-mono text-xs uppercase tracking-widest text-aerospace-blue font-semibold">
+                      Premium Features
+                    </span>
+                  </div>
+                  <h2 className="font-heading text-4xl md:text-5xl font-bold text-foreground mb-4">
+                    Unlock Enterprise Power
+                  </h2>
+                  <p className="font-paragraph text-lg text-foreground/70">
+                    Get access to advanced simulation tools, real-time optimization, and enterprise support designed for professional aerospace engineers.
+                  </p>
+                </div>
+
+                <div className="space-y-4">
+                  {[
+                    { icon: Zap, label: 'Real-Time Optimization', desc: 'Multi-objective design optimization with instant feedback' },
+                    { icon: Brain, label: 'AI-Powered Analysis', desc: 'Machine learning-enhanced design suggestions and predictions' },
+                    { icon: Gauge, label: 'Advanced Simulations', desc: 'CFD, FEM, and propulsion analysis in one platform' },
+                    { icon: Lock, label: 'Enterprise Security', desc: 'ISO 27001 certified with role-based access control' },
+                    { icon: TrendingUp, label: 'Performance Monitoring', desc: 'Real-time metrics and optimization tracking' },
+                    { icon: Users, label: 'Team Collaboration', desc: 'Multi-user projects with version control' }
+                  ].map((item, idx) => {
+                    const Icon = item.icon;
+                    return (
+                      <motion.div
+                        key={idx}
+                        initial={{ opacity: 0, x: -20 }}
+                        whileInView={{ opacity: 1, x: 0 }}
+                        transition={{ duration: 0.6, delay: idx * 0.05 }}
+                        viewport={{ once: true }}
+                        className="flex items-start gap-4 p-4 bg-primary/40 border border-aerospace-blue/20 rounded-lg hover:border-aerospace-blue/50 transition-all duration-300 group cursor-pointer"
+                      >
+                        <div className="p-2 bg-aerospace-blue/20 rounded-lg group-hover:bg-aerospace-blue/30 transition-colors">
+                          <Icon className="w-5 h-5 text-aerospace-blue" />
+                        </div>
+                        <div>
+                          <p className="font-mono text-sm font-semibold text-aerospace-blue">{item.label}</p>
+                          <p className="font-paragraph text-xs text-foreground/60">{item.desc}</p>
+                        </div>
+                      </motion.div>
+                    );
+                  })}
+                </div>
+              </motion.div>
+
+              {/* Right: Pricing & CTA */}
+              <motion.div
+                initial={{ opacity: 0, x: 40 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.8 }}
+                viewport={{ once: true }}
+                className="space-y-8"
+              >
+                <div className="relative bg-gradient-to-br from-aerospace-blue/20 to-aerospace-accent/20 border-2 border-aerospace-blue/50 rounded-xl p-8 md:p-12 shadow-2xl hover:border-aerospace-blue/80 transition-all duration-300">
+                  <div className="absolute -top-4 -right-4 bg-gradient-to-r from-aerospace-blue to-aerospace-accent text-white px-4 py-2 rounded-full font-mono text-xs font-bold uppercase tracking-wider">
+                    Most Popular
+                  </div>
+
+                  <div className="space-y-6">
+                    <div>
+                      <h3 className="font-heading text-3xl font-bold text-foreground mb-2">
+                        Professional Plan
+                      </h3>
+                      <p className="font-paragraph text-sm text-foreground/70">
+                        Everything you need for professional aerospace design
+                      </p>
+                    </div>
+
+                    <div className="space-y-2">
+                      <div className="flex items-baseline gap-2">
+                        <span className="font-heading text-5xl font-bold text-aerospace-blue">$99</span>
+                        <span className="font-mono text-sm text-foreground/60">/month</span>
+                      </div>
+                      <p className="font-paragraph text-xs text-foreground/50">
+                        Billed annually: $990/year (Save 17%)
+                      </p>
+                    </div>
+
+                    <div className="space-y-3 pt-4 border-t border-aerospace-blue/30">
+                      {[
+                        'Unlimited design projects',
+                        'Advanced CFD & FEM tools',
+                        'Real-time optimization engine',
+                        'AI-powered suggestions',
+                        'Priority support (24/7)',
+                        'Team collaboration (up to 10 users)',
+                        'Custom integrations',
+                        'Advanced analytics & reporting'
+                      ].map((feature, idx) => (
+                        <div key={idx} className="flex items-center gap-3">
+                          <CheckCircle2 className="w-4 h-4 text-aerospace-success flex-shrink-0" />
+                          <span className="font-paragraph text-sm text-foreground/80">{feature}</span>
+                        </div>
+                      ))}
+                    </div>
+
+                    <div className="pt-6 space-y-3">
+                      <Link
+                        to="/advanced-tools"
+                        className="w-full group relative inline-flex items-center justify-center px-8 py-4 bg-gradient-to-r from-aerospace-blue to-aerospace-accent text-white font-mono text-sm uppercase tracking-wider hover:shadow-2xl transition-all duration-300 rounded-lg shadow-xl hover:-translate-y-1"
+                      >
+                        <span className="relative z-10 flex items-center gap-2">
+                          Start Free Trial
+                          <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+                        </span>
+                      </Link>
+                      <p className="font-mono text-xs text-center text-foreground/50">
+                        14-day free trial • No credit card required
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="space-y-3 text-center">
+                  <p className="font-paragraph text-sm text-foreground/70">
+                    Join 500+ aerospace engineers already using AeroForge Premium
+                  </p>
+                  <div className="flex items-center justify-center gap-4">
+                    <div className="flex -space-x-2">
+                      {[1, 2, 3, 4].map((i) => (
+                        <div
+                          key={i}
+                          className="w-8 h-8 rounded-full bg-gradient-to-br from-aerospace-blue to-aerospace-accent border-2 border-primary flex items-center justify-center text-white text-xs font-bold"
+                        >
+                          {i}
+                        </div>
+                      ))}
+                    </div>
+                    <span className="font-mono text-xs text-aerospace-blue font-semibold">
+                      +500 Active Users
+                    </span>
+                  </div>
+                </div>
+              </motion.div>
+            </div>
+          </div>
+        </section>
+
         {/* ANTI-GOALS SECTION */}
         <section className="w-full py-32 bg-aerospace-dark border-t border-secondary/20">
           <div className="w-full max-w-[120rem] mx-auto px-6 md:px-12 lg:px-16">

@@ -1,6 +1,6 @@
 import { Link, useLocation } from 'react-router-dom';
 import { useState } from 'react';
-import { Menu, X, Shield, Award } from 'lucide-react';
+import { Menu, X, Shield, Award, Crown, Zap } from 'lucide-react';
 import { Image } from '@/components/ui/image';
 
 export default function Header() {
@@ -14,7 +14,7 @@ export default function Header() {
     { path: '/', label: 'Home' },
     { path: '/compiler', label: 'Compiler' },
     { path: '/tools', label: 'Tools' },
-    { path: '/advanced-tools', label: 'Advanced Tools' },
+    { path: '/advanced-tools', label: 'Advanced Tools', isPremium: true },
     { path: '/optimization', label: 'Optimization' },
     { path: '/results', label: 'Results' },
     { path: '/architecture', label: 'Architecture' },
@@ -65,12 +65,13 @@ export default function Header() {
               <Link
                 key={link.path}
                 to={link.path}
-                className={`font-paragraph text-sm font-semibold py-2 px-4 rounded-md transition-colors ${
+                className={`font-paragraph text-sm font-semibold py-2 px-4 rounded-md transition-colors flex items-center gap-2 ${
                   isActive(link.path)
                     ? 'text-aerospace-blue bg-secondary/15'
                     : 'text-foreground hover:text-aerospace-blue hover:bg-secondary/10'
-                }`}
+                } ${link.isPremium ? 'bg-gradient-to-r from-aerospace-blue/20 to-aerospace-accent/20 border border-aerospace-blue/40 hover:border-aerospace-blue/70' : ''}`}
               >
+                {link.isPremium && <Crown className="w-4 h-4 text-aerospace-blue" />}
                 {link.label}
               </Link>
             ))}
@@ -95,12 +96,13 @@ export default function Header() {
                   key={link.path}
                   to={link.path}
                   onClick={() => setIsMenuOpen(false)}
-                  className={`px-4 py-2.5 text-sm font-paragraph rounded transition-colors ${
+                  className={`px-4 py-2.5 text-sm font-paragraph rounded transition-colors flex items-center gap-2 ${
                     isActive(link.path)
                       ? 'text-aerospace-blue font-semibold bg-secondary/15'
                       : 'text-foreground hover:text-aerospace-blue hover:bg-secondary/10'
-                  }`}
+                  } ${link.isPremium ? 'bg-gradient-to-r from-aerospace-blue/20 to-aerospace-accent/20 border border-aerospace-blue/40' : ''}`}
                 >
+                  {link.isPremium && <Crown className="w-4 h-4 text-aerospace-blue" />}
                   {link.label}
                 </Link>
               ))}
