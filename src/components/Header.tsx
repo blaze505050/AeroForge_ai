@@ -12,15 +12,10 @@ export default function Header() {
   // Simplified navigation - only core pages
   const navLinks = [
     { path: '/', label: 'Home' },
-    { path: '/compiler', label: 'Compiler' },
     { path: '/tools', label: 'Tools' },
-    { path: '/advanced-tools', label: 'Advanced Tools', isPremium: true },
-    { path: '/optimization', label: 'Optimization' },
-    { path: '/results', label: 'Results' },
-    { path: '/architecture', label: 'Architecture' },
-    { path: '/dsl-docs', label: 'DSL Docs' },
-    { path: '/api', label: 'API' },
+    { path: '/documentation', label: 'Documentation' },
     { path: '/virtual-lab', label: 'Virtual Lab' },
+    { path: '/advanced-tools', label: 'Advanced Tools', isPremium: true },
   ];
   
   return (

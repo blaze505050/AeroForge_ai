@@ -5,7 +5,7 @@ import {
   Wind, Database, Wrench, Zap, Download, Cpu, Calculator, 
   Microscope, Beaker, Gauge, Layers, Rocket, Brain, Workflow,
   BarChart3, GitBranch, Target, Lightbulb, Settings, Play, Users,
-  Thermometer, Navigation, Satellite, ChevronDown, Code, Zap as ZapIcon
+  Thermometer, Navigation, Satellite, ChevronDown, Code, Zap as ZapIcon, TrendingUp
 } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';

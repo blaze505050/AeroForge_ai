@@ -3,14 +3,9 @@ import { createBrowserRouter, RouterProvider, Navigate, Outlet } from 'react-rou
 import { ScrollToTop } from '@/lib/scroll-to-top';
 import ErrorPage from '@/integrations/errorHandlers/ErrorPage';
 import HomePage from '@/components/pages/HomePage';
-import CompilerPage from '@/components/pages/CompilerSplitPage';
-import ResultsPage from '@/components/pages/ResultsPage';
-import ArchitecturePage from '@/components/pages/ArchitecturePage';
-import DSLDocsPage from '@/components/pages/DSLDocsPage';
-import APIDocPage from '@/components/pages/APIDocPage';
 import VirtualLabPage from '@/components/pages/VirtualLabPage';
 import ToolsPage from '@/components/pages/ToolsPage';
-import OptimizationPage from '@/components/pages/OptimizationPage';
+import DocumentationPage from '@/components/pages/DocumentationPage';
 import AdvancedToolsPage from '@/components/pages/AdvancedToolsPage';
 
 // Layout component that includes ScrollToTop
@@ -37,48 +32,6 @@ const router = createBrowserRouter([
         },
       },
       {
-        path: "compiler",
-        element: <CompilerPage />,
-        routeMetadata: {
-          pageIdentifier: 'compiler',
-        },
-      },
-      {
-        path: "results",
-        element: <ResultsPage />,
-        routeMetadata: {
-          pageIdentifier: 'results',
-        },
-      },
-      {
-        path: "architecture",
-        element: <ArchitecturePage />,
-        routeMetadata: {
-          pageIdentifier: 'architecture',
-        },
-      },
-      {
-        path: "dsl-docs",
-        element: <DSLDocsPage />,
-        routeMetadata: {
-          pageIdentifier: 'dsl-docs',
-        },
-      },
-      {
-        path: "api",
-        element: <APIDocPage />,
-        routeMetadata: {
-          pageIdentifier: 'api',
-        },
-      },
-      {
-        path: "virtual-lab",
-        element: <VirtualLabPage />,
-        routeMetadata: {
-          pageIdentifier: 'virtual-lab',
-        },
-      },
-      {
         path: "tools",
         element: <ToolsPage />,
         routeMetadata: {
@@ -86,10 +39,17 @@ const router = createBrowserRouter([
         },
       },
       {
-        path: "optimization",
-        element: <OptimizationPage />,
+        path: "documentation",
+        element: <DocumentationPage />,
         routeMetadata: {
-          pageIdentifier: 'optimization',
+          pageIdentifier: 'documentation',
+        },
+      },
+      {
+        path: "virtual-lab",
+        element: <VirtualLabPage />,
+        routeMetadata: {
+          pageIdentifier: 'virtual-lab',
         },
       },
       {
