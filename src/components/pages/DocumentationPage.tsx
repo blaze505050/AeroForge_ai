@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { BaseCrudService } from '@/integrations';
-import { CorePhilosophy, ArchitecturePrinciples, AntiGoals, AeroForgeDSL, ExecutionLog } from '@/entities';
+import { CorePhilosophy, ArchitecturePrinciples, AntiGoals } from '@/entities';
 import { Code2, CheckCircle2, AlertTriangle, Server, Database, Lock, ArrowRight, Check, X, Download, Copy, AlertCircle } from 'lucide-react';
 
 export default function DocumentationPage() {
@@ -51,7 +51,6 @@ export default function DocumentationPage() {
     }
   };
 
-  const dsl = result as AeroForgeDSL;
   const jsonString = result ? JSON.stringify(result, null, 2) : '';
   const errors = passedErrors || (result?.errors) || (result?.error ? [result.error] : []);
 
@@ -452,10 +451,10 @@ export default function DocumentationPage() {
                     )}
 
                     {/* JSON Output */}
-                    {dsl && (
+                    {result && (
                       <div>
                         <div className="flex items-center justify-between mb-4">
-                          <h3 className="font-heading text-lg font-bold text-foreground">Compiled DSL</h3>
+                          <h3 className="font-heading text-lg font-bold text-foreground">Compiled Result</h3>
                           <div className="flex gap-2">
                             <button
                               onClick={handleCopy}
