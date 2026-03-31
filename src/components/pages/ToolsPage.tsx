@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { Code2, Wind, Brain, ArrowRight, Download } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Code2, Wind, Brain, ArrowRight, Download, X, ExternalLink } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Image } from '@/components/ui/image';
@@ -18,16 +18,103 @@ interface Template {
   type: 'mechanical' | 'aerospace' | 'robotics';
 }
 
-const CATEGORY_ICONS: Record<string, any> = {
-  'Mechanical': Code2,
-  'Aerospace': Wind,
-  'Robotics': Brain,
-};
+function TemplateModal({ template, onClose }: { template: Template | null; onClose: () => void }) {
+  if (!template) return null;
+
+  return (
+    <AnimatePresence>
+      {template && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          onClick={onClose}
+          className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+        >
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.95, y: 20 }}
+            onClick={(e) => e.stopPropagation()}
+            className="bg-primary border border-aerospace-blue/30 rounded-lg max-w-2xl w-full max-h-[80vh] overflow-y-auto shadow-2xl"
+          >
+            {/* Header */}
+            <div className="sticky top-0 flex items-center justify-between p-6 border-b border-aerospace-blue/20 bg-primary/95 backdrop-blur">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-aerospace-blue/15 rounded-lg">
+                  <template.icon className="w-5 h-5 text-aerospace-blue" />
+                </div>
+                <div>
+                  <h2 className="font-heading text-xl font-bold text-foreground">{template.name}</h2>
+                  <p className="font-mono text-xs text-aerospace-blue uppercase tracking-widest">{template.category}</p>
+                </div>
+              </div>
+              <button
+                onClick={onClose}
+                className="p-2 hover:bg-aerospace-blue/10 rounded-lg transition-colors"
+              >
+                <X className="w-5 h-5 text-foreground/60" />
+              </button>
+            </div>
+
+            {/* Content */}
+            <div className="p-6 space-y-6">
+              {template.image && (
+                <div className="relative h-64 rounded-lg overflow-hidden border border-aerospace-blue/20">
+                  <Image
+                    src={template.image}
+                    alt={template.name}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              )}
+
+              <div>
+                <h3 className="font-heading text-sm font-bold text-aerospace-blue uppercase tracking-widest mb-2">
+                  Description
+                </h3>
+                <p className="font-paragraph text-foreground/80 leading-relaxed">
+                  {template.description || 'No description available'}
+                </p>
+              </div>
+
+              <div className="pt-4 border-t border-aerospace-blue/20 flex gap-3">
+                {template.fileUrl && (
+                  <>
+                    <a
+                      href={template.fileUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex-1 px-4 py-3 bg-aerospace-blue text-white font-mono text-sm font-semibold rounded-lg hover:bg-aerospace-accent transition-colors flex items-center justify-center gap-2"
+                    >
+                      <Download className="w-4 h-4" />
+                      Download
+                    </a>
+                    <a
+                      href={template.fileUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="px-4 py-3 bg-aerospace-blue/10 border border-aerospace-blue/30 text-aerospace-blue font-mono text-sm font-semibold rounded-lg hover:bg-aerospace-blue/20 transition-colors flex items-center justify-center gap-2"
+                    >
+                      <ExternalLink className="w-4 h-4" />
+                      Open
+                    </a>
+                  </>
+                )}
+              </div>
+            </div>
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+}
 
 export default function ToolsPage() {
   const [templates, setTemplates] = useState<Template[]>([]);
   const [selectedTab, setSelectedTab] = useState<'mechanical' | 'aerospace' | 'robotics'>('mechanical');
   const [isLoading, setIsLoading] = useState(true);
+  const [selectedTemplate, setSelectedTemplate] = useState<Template | null>(null);
 
   useEffect(() => {
     const loadTemplates = async () => {
@@ -85,9 +172,7 @@ export default function ToolsPage() {
   const filteredTemplates = templates.filter(t => t.type === selectedTab);
 
   const handleExplore = (template: Template) => {
-    if (template.fileUrl) {
-      window.open(template.fileUrl, '_blank');
-    }
+    setSelectedTemplate(template);
   };
 
   const tabs = [
@@ -110,17 +195,17 @@ export default function ToolsPage() {
               className="text-center"
             >
               <h1 className="font-heading text-4xl md:text-5xl font-bold text-foreground mb-3">
-                Design Templates & Tools
+                Templates & Tools
               </h1>
               <p className="font-paragraph text-base text-secondary-foreground max-w-2xl mx-auto">
-                Explore templates and tools across mechanical, aerospace, and robotics disciplines.
+                Explore templates across mechanical, aerospace, and robotics disciplines.
               </p>
             </motion.div>
           </div>
         </section>
 
         {/* Tabs Section */}
-        <section className="w-full py-12 bg-aerospace-dark border-b border-secondary/20">
+        <section className="w-full py-8 bg-aerospace-dark border-b border-secondary/20">
           <div className="w-full max-w-[120rem] mx-auto px-6 md:px-12 lg:px-16">
             <div className="flex flex-wrap gap-3 justify-center">
               {tabs.map((tab) => {
@@ -212,17 +297,8 @@ export default function ToolsPage() {
                           onClick={() => handleExplore(template)}
                           className="w-full px-3 py-2 bg-aerospace-blue/10 border border-aerospace-blue/30 text-aerospace-blue hover:bg-aerospace-blue/20 hover:border-aerospace-blue/60 transition-all rounded font-mono text-xs font-semibold flex items-center justify-center gap-2 group/btn"
                         >
-                          {template.fileUrl ? (
-                            <>
-                              <Download className="w-3 h-3" />
-                              Download
-                            </>
-                          ) : (
-                            <>
-                              <ArrowRight className="w-3 h-3 group-hover/btn:translate-x-0.5 transition-transform" />
-                              Explore
-                            </>
-                          )}
+                          <ArrowRight className="w-3 h-3 group-hover/btn:translate-x-0.5 transition-transform" />
+                          Explore
                         </button>
                       </div>
                     </motion.div>
@@ -235,6 +311,9 @@ export default function ToolsPage() {
       </main>
 
       <Footer />
+
+      {/* Modal */}
+      <TemplateModal template={selectedTemplate} onClose={() => setSelectedTemplate(null)} />
     </div>
   );
 }
