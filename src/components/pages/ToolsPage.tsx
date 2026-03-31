@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Code2, Wind, Brain, ArrowRight, Download, X, ExternalLink } from 'lucide-react';
+import { Code2, Wind, Brain, ArrowRight, Download, X, ExternalLink, CheckCircle2, AlertCircle } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Image } from '@/components/ui/image';
@@ -16,10 +16,45 @@ interface Template {
   image?: string;
   fileUrl?: string;
   type: 'mechanical' | 'aerospace' | 'robotics';
+  version?: string;
 }
 
 function TemplateModal({ template, onClose }: { template: Template | null; onClose: () => void }) {
+  const [isDownloading, setIsDownloading] = useState(false);
+  const [downloadStatus, setDownloadStatus] = useState<'idle' | 'downloading' | 'success' | 'error'>('idle');
+
   if (!template) return null;
+
+  const handleDownload = async () => {
+    if (!template.fileUrl) return;
+    
+    setIsDownloading(true);
+    setDownloadStatus('downloading');
+    
+    try {
+      const response = await fetch(template.fileUrl);
+      if (!response.ok) throw new Error('Download failed');
+      
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${template.name.replace(/\s+/g, '-').toLowerCase()}.zip`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+      
+      setDownloadStatus('success');
+      setTimeout(() => setDownloadStatus('idle'), 2000);
+    } catch (error) {
+      console.error('Download error:', error);
+      setDownloadStatus('error');
+      setTimeout(() => setDownloadStatus('idle'), 2000);
+    } finally {
+      setIsDownloading(false);
+    }
+  };
 
   return (
     <AnimatePresence>
@@ -78,18 +113,32 @@ function TemplateModal({ template, onClose }: { template: Template | null; onClo
                 </p>
               </div>
 
+              {template.version && (
+                <div className="p-3 bg-aerospace-blue/10 border border-aerospace-blue/20 rounded-lg">
+                  <p className="font-mono text-xs text-aerospace-blue">Version: {template.version}</p>
+                </div>
+              )}
+
               <div className="pt-4 border-t border-aerospace-blue/20 flex gap-3">
-                {template.fileUrl && (
+                {template.fileUrl ? (
                   <>
-                    <a
-                      href={template.fileUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex-1 px-4 py-3 bg-aerospace-blue text-white font-mono text-sm font-semibold rounded-lg hover:bg-aerospace-accent transition-colors flex items-center justify-center gap-2"
+                    <button
+                      onClick={handleDownload}
+                      disabled={isDownloading}
+                      className={`flex-1 px-4 py-3 font-mono text-sm font-semibold rounded-lg flex items-center justify-center gap-2 transition-all ${
+                        downloadStatus === 'success'
+                          ? 'bg-aerospace-success text-white'
+                          : downloadStatus === 'error'
+                          ? 'bg-aerospace-danger text-white'
+                          : 'bg-aerospace-blue text-white hover:bg-aerospace-accent'
+                      } ${isDownloading ? 'opacity-75 cursor-not-allowed' : ''}`}
                     >
-                      <Download className="w-4 h-4" />
-                      Download
-                    </a>
+                      {downloadStatus === 'downloading' && <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />}
+                      {downloadStatus === 'success' && <CheckCircle2 className="w-4 h-4" />}
+                      {downloadStatus === 'error' && <AlertCircle className="w-4 h-4" />}
+                      {downloadStatus === 'idle' && <Download className="w-4 h-4" />}
+                      {downloadStatus === 'downloading' ? 'Downloading...' : downloadStatus === 'success' ? 'Downloaded!' : downloadStatus === 'error' ? 'Failed' : 'Download'}
+                    </button>
                     <a
                       href={template.fileUrl}
                       target="_blank"
@@ -100,6 +149,10 @@ function TemplateModal({ template, onClose }: { template: Template | null; onClo
                       Open
                     </a>
                   </>
+                ) : (
+                  <div className="w-full px-4 py-3 bg-secondary/20 border border-secondary/30 text-foreground/60 font-mono text-sm rounded-lg text-center">
+                    No download available
+                  </div>
                 )}
               </div>
             </div>
@@ -135,6 +188,7 @@ export default function ToolsPage() {
             image: t.previewImage,
             fileUrl: t.templateFileUrl,
             type: 'mechanical' as const,
+            version: t.version,
           })),
           ...aerospace.items.map((t) => ({
             id: t._id,

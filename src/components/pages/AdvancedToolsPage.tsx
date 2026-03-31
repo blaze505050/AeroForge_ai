@@ -1,15 +1,17 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   Zap, Code2, Database, Lightbulb, Award, TrendingUp, Brain, Wind, Users, Microscope,
   Cloud, Gauge, Workflow, Lock, Globe, BarChart3, GitBranch, Target, ArrowRight,
   Cpu, Rocket, Sparkles, Layers, ShieldCheck, CheckCircle2, Terminal, Flame,
   Radio, Compass, Hexagon, Wand2, Sigma, Infinity, Beaker, Radar, Satellite,
-  Zap as Lightning, Droplet, Thermometer, Waves, Crosshair, Sliders
+  Zap as Lightning, Droplet, Thermometer, Waves, Crosshair, Sliders, Download, X, ExternalLink, AlertCircle
 } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Image } from '@/components/ui/image';
+import { BaseCrudService } from '@/integrations';
+import { CFDDatasets, Simulations } from '@/entities';
 
 interface AdvancedTool {
   id: string;
@@ -409,9 +411,178 @@ const ADVANCED_TOOLS: AdvancedTool[] = [
   }
 ];
 
+interface DatasetModal {
+  id: string;
+  name: string;
+  description: string;
+  category: string;
+  modelFile?: string;
+  downloadUrl?: string;
+  parameters?: string;
+}
+
+function DatasetDetailModal({ dataset, onClose }: { dataset: DatasetModal | null; onClose: () => void }) {
+  const [isDownloading, setIsDownloading] = useState(false);
+  const [downloadStatus, setDownloadStatus] = useState<'idle' | 'downloading' | 'success' | 'error'>('idle');
+
+  if (!dataset) return null;
+
+  const handleDownload = async (url: string) => {
+    if (!url) return;
+    
+    setIsDownloading(true);
+    setDownloadStatus('downloading');
+    
+    try {
+      const response = await fetch(url);
+      if (!response.ok) throw new Error('Download failed');
+      
+      const blob = await response.blob();
+      const urlObj = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = urlObj;
+      a.download = `${dataset.name.replace(/\s+/g, '-').toLowerCase()}.zip`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(urlObj);
+      document.body.removeChild(a);
+      
+      setDownloadStatus('success');
+      setTimeout(() => setDownloadStatus('idle'), 2000);
+    } catch (error) {
+      console.error('Download error:', error);
+      setDownloadStatus('error');
+      setTimeout(() => setDownloadStatus('idle'), 2000);
+    } finally {
+      setIsDownloading(false);
+    }
+  };
+
+  return (
+    <AnimatePresence>
+      {dataset && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          onClick={onClose}
+          className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+        >
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.95, y: 20 }}
+            onClick={(e) => e.stopPropagation()}
+            className="bg-primary border border-aerospace-blue/30 rounded-lg max-w-2xl w-full max-h-[80vh] overflow-y-auto shadow-2xl"
+          >
+            {/* Header */}
+            <div className="sticky top-0 flex items-center justify-between p-6 border-b border-aerospace-blue/20 bg-primary/95 backdrop-blur">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-aerospace-blue/15 rounded-lg">
+                  <Database className="w-5 h-5 text-aerospace-blue" />
+                </div>
+                <div>
+                  <h2 className="font-heading text-xl font-bold text-foreground">{dataset.name}</h2>
+                  <p className="font-mono text-xs text-aerospace-blue uppercase tracking-widest">{dataset.category}</p>
+                </div>
+              </div>
+              <button
+                onClick={onClose}
+                className="p-2 hover:bg-aerospace-blue/10 rounded-lg transition-colors"
+              >
+                <X className="w-5 h-5 text-foreground/60" />
+              </button>
+            </div>
+
+            {/* Content */}
+            <div className="p-6 space-y-6">
+              <div>
+                <h3 className="font-heading text-sm font-bold text-aerospace-blue uppercase tracking-widest mb-2">
+                  Description
+                </h3>
+                <p className="font-paragraph text-foreground/80 leading-relaxed">
+                  {dataset.description || 'No description available'}
+                </p>
+              </div>
+
+              {dataset.parameters && (
+                <div className="p-4 bg-aerospace-blue/10 border border-aerospace-blue/20 rounded-lg">
+                  <h3 className="font-heading text-sm font-bold text-aerospace-blue uppercase tracking-widest mb-2">
+                    Simulation Parameters
+                  </h3>
+                  <p className="font-mono text-xs text-foreground/70 whitespace-pre-wrap">{dataset.parameters}</p>
+                </div>
+              )}
+
+              <div className="pt-4 border-t border-aerospace-blue/20 flex gap-3">
+                {dataset.modelFile && (
+                  <button
+                    onClick={() => handleDownload(dataset.modelFile!)}
+                    disabled={isDownloading}
+                    className={`flex-1 px-4 py-3 font-mono text-sm font-semibold rounded-lg flex items-center justify-center gap-2 transition-all ${
+                      downloadStatus === 'success'
+                        ? 'bg-aerospace-success text-white'
+                        : downloadStatus === 'error'
+                        ? 'bg-aerospace-danger text-white'
+                        : 'bg-aerospace-blue text-white hover:bg-aerospace-accent'
+                    } ${isDownloading ? 'opacity-75 cursor-not-allowed' : ''}`}
+                  >
+                    {downloadStatus === 'downloading' && <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />}
+                    {downloadStatus === 'success' && <CheckCircle2 className="w-4 h-4" />}
+                    {downloadStatus === 'error' && <AlertCircle className="w-4 h-4" />}
+                    {downloadStatus === 'idle' && <Download className="w-4 h-4" />}
+                    {downloadStatus === 'downloading' ? 'Downloading...' : downloadStatus === 'success' ? 'Downloaded!' : downloadStatus === 'error' ? 'Failed' : 'Download Model'}
+                  </button>
+                )}
+                {dataset.downloadUrl && (
+                  <a
+                    href={dataset.downloadUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="px-4 py-3 bg-aerospace-blue/10 border border-aerospace-blue/30 text-aerospace-blue font-mono text-sm font-semibold rounded-lg hover:bg-aerospace-blue/20 transition-colors flex items-center justify-center gap-2"
+                  >
+                    <ExternalLink className="w-4 h-4" />
+                    View Data
+                  </a>
+                )}
+              </div>
+            </div>
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+}
+
 export default function AdvancedToolsPage() {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [hoveredTool, setHoveredTool] = useState<string | null>(null);
+  const [cfdDatasets, setCfdDatasets] = useState<DatasetModal[]>([]);
+  const [selectedDataset, setSelectedDataset] = useState<DatasetModal | null>(null);
+  const [isLoadingDatasets, setIsLoadingDatasets] = useState(true);
+
+  useEffect(() => {
+    const loadDatasets = async () => {
+      try {
+        const result = await BaseCrudService.getAll<CFDDatasets>('cfddatasets', [], { limit: 50 });
+        const datasets = result.items.map((item) => ({
+          id: item._id,
+          name: item.datasetName || 'CFD Dataset',
+          description: item.description || '',
+          category: item.category || 'General',
+          modelFile: item.modelFile,
+          downloadUrl: item.dataDownloadUrl,
+          parameters: item.simulationParameters,
+        }));
+        setCfdDatasets(datasets);
+      } catch (error) {
+        console.error('Error loading CFD datasets:', error);
+      } finally {
+        setIsLoadingDatasets(false);
+      }
+    };
+    loadDatasets();
+  }, []);
 
   const categories = useMemo(
     () => [...new Set(ADVANCED_TOOLS.map((t) => t.category))],
@@ -639,6 +810,72 @@ export default function AdvancedToolsPage() {
           </div>
         </section>
 
+        {/* CFD Datasets Section */}
+        {!isLoadingDatasets && cfdDatasets.length > 0 && (
+          <section className="w-full py-24 bg-primary border-t border-secondary/20">
+            <div className="w-full max-w-[120rem] mx-auto px-6 md:px-12 lg:px-16">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6 }}
+                viewport={{ once: true }}
+                className="mb-16"
+              >
+                <div className="flex items-center gap-3 mb-4">
+                  <Database className="w-6 h-6 text-aerospace-blue" />
+                  <span className="font-mono text-sm uppercase tracking-widest text-aerospace-blue">
+                    Datasets & Resources
+                  </span>
+                </div>
+                <h2 className="font-heading text-4xl md:text-5xl font-bold text-foreground mb-4">
+                  CFD Datasets & Models
+                </h2>
+                <p className="font-paragraph text-lg text-secondary-foreground max-w-3xl">
+                  Download and explore real-world CFD datasets, simulation models, and benchmark cases for your research and development.
+                </p>
+              </motion.div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {cfdDatasets.map((dataset, idx) => (
+                  <motion.div
+                    key={dataset.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6, delay: idx * 0.1 }}
+                    viewport={{ once: true }}
+                    className="group relative bg-gradient-to-br from-aerospace-dark/60 to-aerospace-dark/40 border border-aerospace-blue/20 rounded-lg overflow-hidden hover:border-aerospace-blue/60 transition-all duration-300 shadow-lg hover:shadow-xl flex flex-col p-6"
+                  >
+                    <div className="flex items-start justify-between mb-4">
+                      <div className="p-3 bg-aerospace-blue/15 rounded-lg group-hover:bg-aerospace-blue/30 transition-colors">
+                        <Database className="w-6 h-6 text-aerospace-blue" />
+                      </div>
+                      <span className="font-mono text-xs px-2 py-1 bg-aerospace-accent/20 text-aerospace-accent rounded-full">
+                        {dataset.category}
+                      </span>
+                    </div>
+
+                    <h3 className="font-heading text-lg font-bold text-foreground mb-2 group-hover:text-aerospace-blue transition-colors line-clamp-2">
+                      {dataset.name}
+                    </h3>
+
+                    <p className="font-paragraph text-sm text-foreground/70 mb-4 flex-1 line-clamp-3">
+                      {dataset.description}
+                    </p>
+
+                    <button
+                      onClick={() => setSelectedDataset(dataset)}
+                      className="w-full px-4 py-2 bg-aerospace-blue/10 border border-aerospace-blue/30 text-aerospace-blue hover:bg-aerospace-blue/20 hover:border-aerospace-blue/60 transition-all rounded-lg font-mono text-sm font-semibold flex items-center justify-center gap-2 group/btn"
+                    >
+                      <Download className="w-4 h-4" />
+                      Download
+                    </button>
+                  </motion.div>
+                ))}
+              </div>
+            </div>
+          </section>
+        )}
+
         {/* Capabilities Section */}
         <section className="w-full py-24 bg-primary border-t border-secondary/20">
           <div className="w-full max-w-[120rem] mx-auto px-6 md:px-12 lg:px-16">
@@ -751,6 +988,9 @@ export default function AdvancedToolsPage() {
       </main>
 
       <Footer />
+
+      {/* Dataset Modal */}
+      <DatasetDetailModal dataset={selectedDataset} onClose={() => setSelectedDataset(null)} />
     </div>
   );
 }
