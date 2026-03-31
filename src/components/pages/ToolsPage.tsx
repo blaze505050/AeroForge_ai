@@ -32,25 +32,51 @@ function TemplateModal({ template, onClose }: { template: Template | null; onClo
     setDownloadStatus('downloading');
     
     try {
-      const response = await fetch(template.fileUrl);
-      if (!response.ok) throw new Error('Download failed');
+      // Try direct download first
+      const response = await fetch(template.fileUrl, {
+        method: 'GET',
+        headers: {
+          'Accept': '*/*',
+        },
+      });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
       
       const blob = await response.blob();
+      
+      // Create download link
       const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `${template.name.replace(/\s+/g, '-').toLowerCase()}.zip`;
-      document.body.appendChild(a);
-      a.click();
-      window.URL.revokeObjectURL(url);
-      document.body.removeChild(a);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `${template.name.replace(/\\s+/g, '-').toLowerCase()}.zip`;
+      link.style.display = 'none';
+      
+      document.body.appendChild(link);
+      link.click();
+      
+      // Cleanup
+      setTimeout(() => {
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(url);
+      }, 100);
       
       setDownloadStatus('success');
       setTimeout(() => setDownloadStatus('idle'), 2000);
     } catch (error) {
       console.error('Download error:', error);
-      setDownloadStatus('error');
-      setTimeout(() => setDownloadStatus('idle'), 2000);
+      
+      // Fallback: try opening in new tab if direct download fails
+      try {
+        window.open(template.fileUrl, '_blank');
+        setDownloadStatus('success');
+        setTimeout(() => setDownloadStatus('idle'), 2000);
+      } catch (fallbackError) {
+        console.error('Fallback download error:', fallbackError);
+        setDownloadStatus('error');
+        setTimeout(() => setDownloadStatus('idle'), 3000);
+      }
     } finally {
       setIsDownloading(false);
     }
