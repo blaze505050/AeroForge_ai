@@ -4,7 +4,6 @@ import { ScrollToTop } from '@/lib/scroll-to-top';
 import ErrorPage from '@/integrations/errorHandlers/ErrorPage';
 import HomePage from '@/components/pages/HomePage';
 import VirtualLabPage from '@/components/pages/VirtualLabPage';
-import ToolsPage from '@/components/pages/ToolsPage';
 import DocumentationPage from '@/components/pages/DocumentationPage';
 import AdvancedToolsPage from '@/components/pages/AdvancedToolsPage';
 
@@ -29,13 +28,6 @@ const router = createBrowserRouter([
         element: <HomePage />,
         routeMetadata: {
           pageIdentifier: 'home',
-        },
-      },
-      {
-        path: "tools",
-        element: <ToolsPage />,
-        routeMetadata: {
-          pageIdentifier: 'tools',
         },
       },
       {
