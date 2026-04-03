@@ -27,19 +27,19 @@ export default function Footer() {
     {
       title: 'Company',
       links: [
-        { label: 'About', external: true, href: '#' },
-        { label: 'Blog', external: true, href: '#' },
+        { label: 'About', external: true, href: 'https://aeroforge.ai/about' },
+        { label: 'Blog', external: true, href: 'https://aeroforge.ai/blog' },
         { label: 'Contact', external: true, href: 'mailto:info@aeroforge.ai' },
-        { label: 'Status', external: true, href: '#' }
+        { label: 'Status', external: true, href: 'https://status.aeroforge.ai' }
       ]
     },
     {
       title: 'Legal',
       links: [
-        { label: 'Privacy', external: true, href: '#' },
-        { label: 'Terms', external: true, href: '#' },
-        { label: 'Security', external: true, href: '#' },
-        { label: 'Compliance', external: true, href: '#' }
+        { label: 'Privacy', external: true, href: 'https://aeroforge.ai/privacy' },
+        { label: 'Terms', external: true, href: 'https://aeroforge.ai/terms' },
+        { label: 'Security', external: true, href: 'https://aeroforge.ai/security' },
+        { label: 'Compliance', external: true, href: 'https://aeroforge.ai/compliance' }
       ]
     }
   ];
@@ -118,13 +118,13 @@ export default function Footer() {
 
             {/* Legal Links */}
             <div className="flex gap-6 text-sm">
-              <a href="#" className="font-paragraph text-secondary-foreground hover:text-aerospace-blue transition-colors">
+              <a href="https://aeroforge.ai/privacy" className="font-paragraph text-secondary-foreground hover:text-aerospace-blue transition-colors">
                 Privacy Policy
               </a>
-              <a href="#" className="font-paragraph text-secondary-foreground hover:text-aerospace-blue transition-colors">
+              <a href="https://aeroforge.ai/terms" className="font-paragraph text-secondary-foreground hover:text-aerospace-blue transition-colors">
                 Terms of Service
               </a>
-              <a href="#" className="font-paragraph text-secondary-foreground hover:text-aerospace-blue transition-colors">
+              <a href="https://aeroforge.ai/security" className="font-paragraph text-secondary-foreground hover:text-aerospace-blue transition-colors">
                 Security
               </a>
             </div>
