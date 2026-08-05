@@ -10,6 +10,9 @@ import {
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { VIRTUAL_LAB_MODULES, getModuleStatistics } from '@/services/virtualLabModules';
+import InteractiveSimulationPanel from '@/components/InteractiveSimulationPanel';
+import AdvancedPhysicsVisualizer from '@/components/AdvancedPhysicsVisualizer';
+import ValidationReportPanel from '@/components/ValidationReportPanel';
 
 interface LabTool {
   id: string;
