@@ -454,6 +454,236 @@ const labTools: LabTool[] = [
     isActive: true,
     order: 29,
   },
+  
+  // ===== SPECIALIZED LABORATORIES =====
+  // Aerospace & Flight Systems
+  {
+    id: 'aircraft-uav-design',
+    title: 'Aircraft & UAV Design Studio',
+    description: 'Integrated platform for aircraft and unmanned aerial vehicle design with aerodynamic optimization',
+    icon: <Rocket className="w-8 h-8" />,
+    category: 'Specialized Laboratories',
+    subcategory: 'Aerospace & Flight Systems',
+    features: ['Aircraft Design', 'UAV Configuration', 'Aerodynamic Optimization', 'Performance Prediction'],
+    color: 'from-sky-500 to-blue-600',
+    path: '/aircraft-uav-design',
+    isActive: true,
+    order: 30,
+  },
+  
+  {
+    id: 'flight-simulator',
+    title: 'Flight Simulation Engine',
+    description: 'High-fidelity flight dynamics simulator with real-time physics and control systems',
+    icon: <Navigation className="w-8 h-8" />,
+    category: 'Specialized Laboratories',
+    subcategory: 'Aerospace & Flight Systems',
+    features: ['Flight Dynamics', 'Control Systems', 'Real-time Simulation', 'Autopilot Testing'],
+    color: 'from-cyan-500 to-blue-500',
+    path: '/flight-simulator',
+    isActive: true,
+    order: 31,
+  },
+  
+  {
+    id: 'virtual-wind-tunnel',
+    title: 'Virtual Wind Tunnel',
+    description: 'Advanced CFD-based wind tunnel for aerodynamic testing and flow visualization',
+    icon: <Wind className="w-8 h-8" />,
+    category: 'Specialized Laboratories',
+    subcategory: 'Aerospace & Flight Systems',
+    features: ['Flow Visualization', 'Pressure Distribution', 'Force Measurement', 'Parametric Studies'],
+    color: 'from-blue-500 to-indigo-600',
+    path: '/virtual-wind-tunnel',
+    isActive: true,
+    order: 32,
+  },
+  
+  {
+    id: 'terrain-mission-sim',
+    title: '3D Terrain & Mission Simulator',
+    description: 'Real-time 3D environment for mission planning, terrain analysis, and flight path optimization',
+    icon: <Satellite className="w-8 h-8" />,
+    category: 'Specialized Laboratories',
+    subcategory: 'Aerospace & Flight Systems',
+    features: ['3D Terrain Rendering', 'Mission Planning', 'Path Optimization', 'Real-time Visualization'],
+    color: 'from-green-500 to-emerald-600',
+    path: '/terrain-mission-simulator',
+    isActive: true,
+    order: 33,
+  },
+  
+  // Industrial Mechanical Engineering
+  {
+    id: 'digital-twin-lab',
+    title: 'Digital Twin Laboratory',
+    description: 'Real-time digital twins for rotating machinery, pumps, valves, compressors, and HVAC systems',
+    icon: <Database className="w-8 h-8" />,
+    category: 'Specialized Laboratories',
+    subcategory: 'Industrial Mechanical Engineering',
+    features: ['Real-time Telemetry', 'Condition Monitoring', 'Predictive Maintenance', 'Performance Analytics'],
+    color: 'from-purple-500 to-pink-500',
+    path: '/digital-twin-lab',
+    isActive: true,
+    order: 34,
+  },
+  
+  {
+    id: 'plc-dcs-testing',
+    title: 'PLC/DCS Testing Platform',
+    description: 'Comprehensive platform for programmable logic controller and distributed control system testing',
+    icon: <Cpu className="w-8 h-8" />,
+    category: 'Specialized Laboratories',
+    subcategory: 'Industrial Mechanical Engineering',
+    features: ['PLC Simulation', 'DCS Integration', 'Logic Testing', 'Safety Validation'],
+    color: 'from-orange-500 to-red-500',
+    path: '/plc-dcs-testing',
+    isActive: true,
+    order: 35,
+  },
+  
+  {
+    id: 'hvac-systems-lab',
+    title: 'HVAC Systems Laboratory',
+    description: 'Advanced simulation for heating, ventilation, and air conditioning system design and optimization',
+    icon: <Thermometer className="w-8 h-8" />,
+    category: 'Specialized Laboratories',
+    subcategory: 'Industrial Mechanical Engineering',
+    features: ['Thermal Analysis', 'Flow Simulation', 'System Optimization', 'Energy Efficiency'],
+    color: 'from-blue-500 to-cyan-500',
+    path: '/hvac-systems-lab',
+    isActive: true,
+    order: 36,
+  },
+  
+  // Advanced Dynamics & Robotics
+  {
+    id: 'multibody-dynamics',
+    title: 'Multibody Dynamics Engine',
+    description: 'Real-time simulation of complex mechanical systems with rigid body dynamics and constraints',
+    icon: <Layers className="w-8 h-8" />,
+    category: 'Specialized Laboratories',
+    subcategory: 'Advanced Dynamics & Robotics',
+    features: ['Rigid Body Dynamics', 'Constraint Solving', 'Contact Detection', 'Real-time Visualization'],
+    color: 'from-red-500 to-pink-500',
+    path: '/multibody-dynamics',
+    isActive: true,
+    order: 37,
+  },
+  
+  {
+    id: 'hydraulics-powertrain',
+    title: 'Hydraulics & Powertrain Simulator',
+    description: 'Advanced simulation for hydraulic systems, powertrains, and fluid power applications',
+    icon: <Zap className="w-8 h-8" />,
+    category: 'Specialized Laboratories',
+    subcategory: 'Advanced Dynamics & Robotics',
+    features: ['Hydraulic Modeling', 'Powertrain Analysis', 'Fluid Dynamics', 'System Integration'],
+    color: 'from-yellow-500 to-amber-500',
+    path: '/hydraulics-powertrain',
+    isActive: true,
+    order: 38,
+  },
+  
+  {
+    id: 'robotics-lab',
+    title: 'Robotics & Automation Lab',
+    description: 'Comprehensive platform for robot design, kinematics, dynamics, and control system development',
+    icon: <Wrench className="w-8 h-8" />,
+    category: 'Specialized Laboratories',
+    subcategory: 'Advanced Dynamics & Robotics',
+    features: ['Robot Kinematics', 'Dynamics Simulation', 'Path Planning', 'Control Development'],
+    color: 'from-indigo-500 to-purple-600',
+    path: '/robotics-lab',
+    isActive: true,
+    order: 39,
+  },
+  
+  // Manufacturing & Digital Thread
+  {
+    id: 'digital-thread-hub',
+    title: 'Digital Thread Management Hub',
+    description: 'Unified platform for managing digital thread across product lifecycle from design to manufacturing',
+    icon: <GitBranch className="w-8 h-8" />,
+    category: 'Specialized Laboratories',
+    subcategory: 'Manufacturing & Digital Thread',
+    features: ['Lifecycle Management', 'Data Integration', 'Version Control', 'Traceability'],
+    color: 'from-teal-500 to-cyan-600',
+    path: '/digital-thread-hub',
+    isActive: true,
+    order: 40,
+  },
+  
+  {
+    id: 'industry-4-0-lab',
+    title: 'Industry 4.0 Smart Manufacturing',
+    description: 'Advanced platform for smart manufacturing, IoT integration, and Industry 4.0 implementation',
+    icon: <TrendingUp className="w-8 h-8" />,
+    category: 'Specialized Laboratories',
+    subcategory: 'Manufacturing & Digital Thread',
+    features: ['IoT Integration', 'Real-time Monitoring', 'Predictive Analytics', 'Process Optimization'],
+    color: 'from-green-500 to-emerald-600',
+    path: '/industry-4-0-lab',
+    isActive: true,
+    order: 41,
+  },
+  
+  {
+    id: 'vr-ar-engineering',
+    title: 'VR/AR Engineering Environment',
+    description: 'Immersive virtual and augmented reality platform for design review, assembly, and training',
+    icon: <Lightbulb className="w-8 h-8" />,
+    category: 'Specialized Laboratories',
+    subcategory: 'Manufacturing & Digital Thread',
+    features: ['VR Visualization', 'AR Overlay', 'Assembly Simulation', 'Training Modules'],
+    color: 'from-pink-500 to-rose-600',
+    path: '/vr-ar-engineering',
+    isActive: true,
+    order: 42,
+  },
+  
+  // Mechanism & Kinematics
+  {
+    id: 'mechanism-design-studio',
+    title: 'Mechanism Design Studio',
+    description: 'Advanced CAD-based platform for mechanism design, kinematics analysis, and optimization',
+    icon: <Wrench className="w-8 h-8" />,
+    category: 'Specialized Laboratories',
+    subcategory: 'Mechanism & Kinematics',
+    features: ['Mechanism Synthesis', 'Kinematics Analysis', 'Motion Simulation', 'Optimization'],
+    color: 'from-slate-600 to-gray-700',
+    path: '/mechanism-design-studio',
+    isActive: true,
+    order: 43,
+  },
+  
+  {
+    id: 'kinematics-solver',
+    title: 'Advanced Kinematics Solver',
+    description: 'Comprehensive kinematics and inverse kinematics solver for complex mechanical systems',
+    icon: <Calculator className="w-8 h-8" />,
+    category: 'Specialized Laboratories',
+    subcategory: 'Mechanism & Kinematics',
+    features: ['Forward Kinematics', 'Inverse Kinematics', 'Trajectory Planning', 'Singularity Analysis'],
+    color: 'from-amber-500 to-yellow-600',
+    path: '/kinematics-solver',
+    isActive: true,
+    order: 44,
+  },
+  
+  {
+    id: 'digital-human-modeling',
+    title: 'Digital Human Modeling Lab',
+    description: 'Ergonomic analysis and digital human modeling for product design and workplace optimization',
+    icon: <Users className="w-8 h-8" />,
+    category: 'Specialized Laboratories',
+    subcategory: 'Mechanism & Kinematics',
+    features: ['Ergonomic Analysis', 'Posture Simulation', 'Reach Analysis', 'Comfort Assessment'],
+    color: 'from-rose-500 to-pink-600',
+    path: '/digital-human-modeling',
+    isActive: true,
+    order: 45,
+  },
 ];
 
 // Sort tools by order
@@ -498,7 +728,8 @@ export default function VirtualLabPage() {
     'Products',
     'Advanced Modules',
     'Research',
-    'Core Tools'
+    'Core Tools',
+    'Specialized Laboratories'
   ];
   
   const categories = categoryOrder.filter(cat => 
@@ -918,6 +1149,7 @@ export default function VirtualLabPage() {
                         {category === 'Research' && 'Advanced research and development tools'}
                         {category === 'Elite Suite' && 'Enterprise-grade optimization and collaboration'}
                         {category === 'Core Tools' && 'Essential aerospace design and simulation tools'}
+                        {category === 'Specialized Laboratories' && 'World-class virtual engineering labs for aerospace, mechanical, and manufacturing'}
                       </p>
                     </div>
                     
@@ -1156,7 +1388,7 @@ export default function VirtualLabPage() {
                 {
                   step: '1',
                   title: 'Select Tool',
-                  desc: 'Choose from 29+ integrated aerospace tools across 5 categories',
+                  desc: 'Choose from 45+ integrated aerospace and mechanical tools across 6 categories',
                 },
                 {
                   step: '2',
