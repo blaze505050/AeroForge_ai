@@ -10,45 +10,27 @@ import {
   Settings,
   Share2,
   Download,
-  Plus,
-  X,
 } from 'lucide-react';
 import { useProjectStore } from '@/stores/projectStore';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import CommandCenterSidebar from '@/components/CommandCenterSidebar';
+import AICopilotSidebar from '@/components/AICopilotSidebar';
+import EngineeringNotebook from '@/components/EngineeringNotebook';
+import SimulationManager from '@/components/SimulationManager';
+import DatasetManager from '@/components/DatasetManager';
+import ResultsViewer from '@/components/ResultsViewer';
+import ValidationReportGenerator from '@/components/ValidationReportGenerator';
 
 export default function ProjectWorkspacePage() {
   const { projectId } = useParams<{ projectId: string }>();
   const { currentProject, workspace, updateWorkspaceTab } = useProjectStore();
   const [notebookContent, setNotebookContent] = useState('');
-  const [isLoading, setIsLoading] = useState(true);
+  const [showCopilot, setShowCopilot] = useState(true);
 
   useEffect(() => {
     // Load project workspace data
-    setIsLoading(false);
-    setNotebookContent(`# ${currentProject?.name || 'Project'} - Engineering Notebook
-
-## Project Overview
-${currentProject?.description || 'Add project description here'}
-
-## Design Requirements
-- [ ] Requirement 1
-- [ ] Requirement 2
-- [ ] Requirement 3
-
-## Design Approach
-Document your design methodology and approach here.
-
-## Simulation Plan
-Outline the simulations you plan to run.
-
-## Results & Analysis
-Document your findings and analysis.
-
-## Conclusions
-Summarize your conclusions and next steps.
-`);
+    setNotebookContent(`# ${currentProject?.name || 'Project'} - Engineering Notebook\n\n## Project Overview\n${currentProject?.description || 'Add project description here'}\n\n## Design Requirements\n- [ ] Requirement 1\n- [ ] Requirement 2\n- [ ] Requirement 3\n\n## Design Approach\nDocument your design methodology and approach here.\n\n## Simulation Plan\nOutline the simulations you plan to run.\n\n## Results & Analysis\nDocument your findings and analysis.\n\n## Conclusions\nSummarize your conclusions and next steps.\n`);
   }, [currentProject]);
 
   const tabs = [
@@ -127,85 +109,36 @@ Summarize your conclusions and next steps.
               exit={{ opacity: 0, y: -20 }}
             >
               {activeTab === 'notebook' && (
-                <div className="bg-primary border border-secondary/20 rounded-lg overflow-hidden">
-                  <div className="p-6 border-b border-secondary/20 flex items-center justify-between">
-                    <h2 className="text-lg font-bold text-foreground">Engineering Notebook</h2>
-                    <button className="flex items-center gap-2 px-4 py-2 bg-aerospace-blue/10 hover:bg-aerospace-blue/20 text-aerospace-blue rounded-lg transition-colors">
-                      <Plus className="w-4 h-4" />
-                      Add Section
-                    </button>
-                  </div>
-                  <textarea
-                    value={notebookContent}
-                    onChange={(e) => setNotebookContent(e.target.value)}
-                    className="w-full h-96 p-6 bg-aerospace-dark text-foreground font-mono text-sm focus:outline-none resize-none"
-                    placeholder="# Engineering Notebook
-
-Document your design process, assumptions, and findings here..."
-                  />
-                </div>
+                <EngineeringNotebook projectId={projectId!} initialContent={notebookContent} />
               )}
 
               {activeTab === 'simulations' && (
-                <div className="bg-primary border border-secondary/20 rounded-lg p-6">
-                  <div className="flex items-center justify-between mb-6">
-                    <h2 className="text-lg font-bold text-foreground">Simulations</h2>
-                    <button className="flex items-center gap-2 px-4 py-2 bg-aerospace-blue hover:bg-aerospace-accent text-white rounded-lg transition-colors">
-                      <Plus className="w-4 h-4" />
-                      New Simulation
-                    </button>
-                  </div>
-                  <div className="text-center py-12">
-                    <Cpu className="w-12 h-12 text-secondary-foreground mx-auto mb-4 opacity-50" />
-                    <p className="text-secondary-foreground">No simulations yet</p>
-                    <p className="text-sm text-secondary-foreground mt-2">Create your first simulation to get started</p>
-                  </div>
-                </div>
+                <SimulationManager projectId={projectId!} />
               )}
 
               {activeTab === 'datasets' && (
-                <div className="bg-primary border border-secondary/20 rounded-lg p-6">
-                  <div className="flex items-center justify-between mb-6">
-                    <h2 className="text-lg font-bold text-foreground">Datasets</h2>
-                    <button className="flex items-center gap-2 px-4 py-2 bg-aerospace-blue hover:bg-aerospace-accent text-white rounded-lg transition-colors">
-                      <Plus className="w-4 h-4" />
-                      Upload Dataset
-                    </button>
-                  </div>
-                  <div className="text-center py-12">
-                    <Database className="w-12 h-12 text-secondary-foreground mx-auto mb-4 opacity-50" />
-                    <p className="text-secondary-foreground">No datasets yet</p>
-                    <p className="text-sm text-secondary-foreground mt-2">Upload geometry, meshes, or results files</p>
-                  </div>
-                </div>
+                <DatasetManager projectId={projectId!} />
               )}
 
               {activeTab === 'results' && (
-                <div className="bg-primary border border-secondary/20 rounded-lg p-6">
-                  <h2 className="text-lg font-bold text-foreground mb-6">Results</h2>
-                  <div className="text-center py-12">
-                    <BarChart3 className="w-12 h-12 text-secondary-foreground mx-auto mb-4 opacity-50" />
-                    <p className="text-secondary-foreground">No results yet</p>
-                    <p className="text-sm text-secondary-foreground mt-2">Run simulations to generate results</p>
-                  </div>
-                </div>
+                <ResultsViewer projectId={projectId!} />
               )}
 
               {activeTab === 'validation' && (
-                <div className="bg-primary border border-secondary/20 rounded-lg p-6">
-                  <h2 className="text-lg font-bold text-foreground mb-6">Validation</h2>
-                  <div className="text-center py-12">
-                    <CheckCircle2 className="w-12 h-12 text-secondary-foreground mx-auto mb-4 opacity-50" />
-                    <p className="text-secondary-foreground">No validation reports yet</p>
-                    <p className="text-sm text-secondary-foreground mt-2">Validation reports will appear here</p>
-                  </div>
-                </div>
+                <ValidationReportGenerator projectId={projectId!} />
               )}
             </motion.div>
           </div>
         </main>
       </div>
       <Footer />
+
+      {/* AI Copilot Sidebar */}
+      <AICopilotSidebar
+        projectId={projectId!}
+        isOpen={showCopilot}
+        onToggle={setShowCopilot}
+      />
     </div>
   );
 }
