@@ -12,10 +12,10 @@ export default function Header() {
   // Simplified navigation - only core pages
   const navLinks = [
     { path: '/', label: 'Home' },
+    { path: '/dashboard', label: 'Dashboard' },
+    { path: '/projects', label: 'Projects' },
     { path: '/compiler', label: 'Compiler' },
     { path: '/documentation', label: 'Documentation' },
-    { path: '/virtual-lab', label: 'Virtual Lab' },
-    { path: '/advanced-tools', label: 'Advanced Tools', isPremium: true },
   ];
   
   return (
