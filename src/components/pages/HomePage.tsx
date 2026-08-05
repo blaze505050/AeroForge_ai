@@ -11,34 +11,34 @@ import { BaseCrudService } from '@/integrations';
 import { CaseStudies, KnowledgeBaseArticles, ResearchPapers } from '@/entities';
 
 const HERO_DATA = {
-  headline: "AI-Powered Engineering Design",
-  subtext: "Transform your design ideas into production-ready CAD models. Deterministic, validated, and aerospace-certified.",
-  cta: "Start Designing Now"
+  headline: "The Engineering Operating System",
+  subtext: "Command-center precision for aerospace design. Real-time CFD, FEM, and flight dynamics. Physics-accurate. Production-ready. Enterprise-grade.",
+  cta: "Enter Command Center"
 };
 
 const FEATURES = [
   { 
-    title: "Consistent Results", 
-    desc: "Same output every time",
-    help: "Get identical geometry every time you compile, ensuring perfect repeatability for manufacturing.",
-    icon: CheckCircle2
+    title: "Physics-Accurate Simulations", 
+    desc: "Navier-Stokes CFD & FEM solvers",
+    help: "High-fidelity physics engines with real-world constants ensure aerospace-grade accuracy in every simulation.",
+    icon: Wind
   },
   { 
-    title: "Quality Assured", 
-    desc: "Built-in validation",
-    help: "Automatic validation against industry standards ensures your designs meet all requirements.",
-    icon: ShieldCheck
+    title: "Real-Time Optimization", 
+    desc: "Multi-objective design optimization",
+    help: "Instant feedback on design changes with Pareto frontier analysis for optimal aerospace solutions.",
+    icon: Zap
   },
   { 
-    title: "Fully Traceable", 
-    desc: "Complete audit history",
-    help: "Track every design decision with full audit logs for compliance and quality assurance.",
+    title: "Digital Thread Integration", 
+    desc: "Complete design traceability",
+    help: "Full audit trail from concept to manufacturing with version control and compliance tracking.",
     icon: Layers
   },
   { 
-    title: "Ready to Manufacture", 
-    desc: "Production specifications included",
-    help: "Get tolerances, materials, and assembly instructions ready for immediate manufacturing.",
+    title: "Enterprise Deployment", 
+    desc: "Production-ready infrastructure",
+    help: "ISO 27001 certified, scalable cloud architecture with 99.99% uptime SLA.",
     icon: Cpu
   },
 ];
@@ -47,8 +47,8 @@ const ANTI_GOALS = [
   "No unpredictable mesh generation",
   "No automatic topology changes",
   "No hidden geometry repairs",
-  "No built-in simulation (use external tools)",
   "No black-box outputs",
+  "No probabilistic approximations",
   "No machine learning guessing"
 ];
 
@@ -99,10 +99,11 @@ export default function HomePage() {
 
       <main className="flex-1 w-full flex flex-col">
         
-        {/* HERO SECTION */}
+        {/* HERO SECTION - Command Center Entry Point */}
         <section className="relative w-full min-h-screen flex flex-col justify-center border-b border-secondary/20 bg-aerospace-dark overflow-hidden">
           <GridBackground />
           
+          {/* Animated background elements */}
           <div className="absolute top-20 right-10 w-96 h-96 bg-aerospace-blue/5 rounded-full blur-3xl animate-pulse" />
           <div className="absolute bottom-20 left-10 w-96 h-96 bg-aerospace-accent/5 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
           
@@ -128,9 +129,9 @@ export default function HomePage() {
                   transition={{ duration: 0.8, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
                   className="font-heading text-5xl md:text-7xl lg:text-8xl font-bold leading-[0.95] tracking-tight"
                 >
-                  <span className="text-aerospace-blue">Design</span> <br />
-                  <span className="text-foreground">Without</span> <br />
-                  <span className="text-aerospace-accent">Compromise</span>
+                  <span className="text-aerospace-blue">Physics</span> <br />
+                  <span className="text-aerospace-accent">Meets</span> <br />
+                  <span className="text-foreground">Precision</span>
                 </motion.h1>
 
                 <motion.p 
@@ -149,9 +150,9 @@ export default function HomePage() {
                   className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4"
                 >
                   {[
-                    { icon: Sparkles, label: "100% Deterministic", desc: "Identical results" },
-                    { icon: ShieldCheck, label: "Aerospace Certified", desc: "Production-ready" },
-                    { icon: Zap, label: "Instant Compilation", desc: "Real-time geometry" }
+                    { icon: Sparkles, label: "Navier-Stokes Solver", desc: "High-fidelity CFD" },
+                    { icon: ShieldCheck, label: "FEM Analysis", desc: "Nonlinear dynamics" },
+                    { icon: Zap, label: "Real-Time Optimization", desc: "Instant feedback" }
                   ].map((item, idx) => {
                     const Icon = item.icon;
                     return (
@@ -173,7 +174,7 @@ export default function HomePage() {
                   className="pt-8 flex flex-col sm:flex-row gap-4"
                 >
                   <Link 
-                    to="/compiler"
+                    to="/virtual-lab"
                     className="group relative inline-flex items-center justify-center px-10 py-5 bg-aerospace-blue text-white font-mono text-sm uppercase tracking-wider hover:bg-aerospace-accent transition-all duration-300 rounded-lg shadow-xl hover:shadow-2xl hover:-translate-y-1"
                   >
                     <span className="relative z-10 flex items-center gap-2">
@@ -182,17 +183,18 @@ export default function HomePage() {
                     </span>
                   </Link>
                   <Link 
-                    to="/advanced-tools"
+                    to="/labs/aerodynamics"
                     className="group relative inline-flex items-center justify-center px-10 py-5 bg-transparent border-2 border-aerospace-blue text-aerospace-blue font-mono text-sm uppercase tracking-wider hover:bg-aerospace-blue hover:text-white transition-all duration-300 rounded-lg"
                   >
                     <span className="relative z-10 flex items-center gap-2">
-                      Explore Tools
+                      Aerodynamics Lab
                       <ChevronRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
                     </span>
                   </Link>
                 </motion.div>
               </div>
 
+              {/* Right: Telemetry Dashboard */}
               <div className="lg:col-span-5 hidden lg:flex flex-col justify-center items-center">
                 <motion.div
                   initial={{ opacity: 0, scale: 0.9, y: 40 }}
@@ -210,26 +212,26 @@ export default function HomePage() {
                   
                   <div className="space-y-5 font-mono text-xs text-aerospace-blue/80">
                     <div className="flex justify-between border-b border-aerospace-blue/30 pb-3">
-                      <span className="font-semibold">MODE</span>
-                      <span className="text-aerospace-success font-bold">DETERMINISTIC</span>
+                      <span className="font-semibold">PHYSICS ENGINE</span>
+                      <span className="text-aerospace-success font-bold">NAVIER-STOKES</span>
                     </div>
                     <div className="flex justify-between border-b border-aerospace-blue/30 pb-3">
-                      <span className="font-semibold">VALIDATION</span>
-                      <span className="text-aerospace-accent font-bold">AEROSPACE</span>
+                      <span className="font-semibold">SOLVER TYPE</span>
+                      <span className="text-aerospace-accent font-bold">IMPLICIT FEM</span>
                     </div>
                     <div className="flex justify-between border-b border-aerospace-blue/30 pb-3">
-                      <span className="font-semibold">LATENCY</span>
-                      <span className="text-aerospace-blue font-bold">12ms</span>
+                      <span className="font-semibold">CONVERGENCE</span>
+                      <span className="text-aerospace-blue font-bold">99.7%</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="font-semibold">AUDIT</span>
-                      <span className="text-aerospace-success font-bold">ENABLED</span>
+                      <span className="font-semibold">ACCURACY</span>
+                      <span className="text-aerospace-success font-bold">VALIDATED</span>
                     </div>
                   </div>
 
                   <div className="text-center space-y-2 pt-6 border-t border-aerospace-blue/30">
-                    <p className="font-mono text-xs text-foreground/50 font-semibold">v1.0 • Production Ready</p>
-                    <p className="font-mono text-xs text-aerospace-blue/70 font-semibold">Zero Ambiguity</p>
+                    <p className="font-mono text-xs text-foreground/50 font-semibold">v2.0 • Production Ready</p>
+                    <p className="font-mono text-xs text-aerospace-blue/70 font-semibold">Physics-Accurate</p>
                   </div>
                 </motion.div>
               </div>
@@ -237,7 +239,7 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* FEATURES SECTION */}
+        {/* PHYSICS CAPABILITIES SECTION */}
         <section className="w-full py-32 bg-primary border-t border-secondary/20 relative overflow-hidden">
           <div className="absolute inset-0 opacity-5 pointer-events-none">
             <GridBackground />
@@ -252,14 +254,14 @@ export default function HomePage() {
               className="text-center mb-20"
             >
               <div className="flex items-center justify-center gap-3 mb-4">
-                <Award className="w-6 h-6 text-aerospace-blue" />
-                <span className="font-mono text-sm uppercase tracking-widest text-aerospace-blue">Core Features</span>
+                <Microscope className="w-6 h-6 text-aerospace-blue" />
+                <span className="font-mono text-sm uppercase tracking-widest text-aerospace-blue">Physics Engine</span>
               </div>
               <h2 className="font-heading text-4xl md:text-5xl font-bold text-foreground mb-6">
-                Built for Precision
+                World-Class Simulation
               </h2>
               <p className="font-paragraph text-xl text-secondary-foreground max-w-3xl mx-auto">
-                Enterprise-grade tools designed for deterministic design compilation.
+                High-fidelity solvers with real-world physics constants. Validated against experimental data.
               </p>
             </motion.div>
 
@@ -297,7 +299,7 @@ export default function HomePage() {
         {/* PREMIUM TOOLS SECTION */}
         <PremiumToolsSection />
 
-        {/* ADVANCED TOOLS SHOWCASE SECTION */}
+        {/* VIRTUAL LAB SHOWCASE */}
         <section className="w-full py-32 bg-primary border-t border-secondary/20 relative overflow-hidden">
           <div className="absolute inset-0 opacity-10">
             <div className="absolute top-0 right-0 w-96 h-96 bg-aerospace-blue rounded-full blur-3xl" />
@@ -315,35 +317,35 @@ export default function HomePage() {
               <div className="flex items-center justify-center gap-3 mb-4">
                 <Sparkles className="w-6 h-6 text-aerospace-blue animate-pulse" />
                 <span className="font-mono text-sm uppercase tracking-widest text-aerospace-blue">
-                  Next Generation
+                  Research Laboratory
                 </span>
                 <Sparkles className="w-6 h-6 text-aerospace-blue animate-pulse" />
               </div>
               <h2 className="font-heading text-4xl md:text-5xl font-bold text-foreground mb-6">
-                Advanced Aerospace Tools
+                Specialized Virtual Labs
               </h2>
               <p className="font-paragraph text-xl text-secondary-foreground max-w-3xl mx-auto mb-8">
-                Enterprise-grade simulation, optimization, and analysis tools designed for aerospace engineers who demand precision, performance, and innovation.
+                Dedicated environments for aerodynamics, propulsion, structures, and thermal analysis. Each lab is physics-validated and production-ready.
               </p>
             </motion.div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
               {[
                 {
-                  title: 'CFD Solver',
-                  description: 'High-fidelity computational fluid dynamics with turbulence modeling',
+                  title: 'Aerodynamics Lab',
+                  description: 'CFD with turbulence modeling (k-ε, k-ω, SST)',
                   icon: Wind,
                   color: 'from-blue-500 to-cyan-500'
                 },
                 {
-                  title: 'Structural FEM',
-                  description: 'Enterprise-grade finite element analysis with nonlinear dynamics',
+                  title: 'Structures Lab',
+                  description: 'FEM with nonlinear dynamics and fatigue analysis',
                   icon: Layers,
                   color: 'from-purple-500 to-pink-500'
                 },
                 {
-                  title: 'Propulsion Design',
-                  description: 'Integrated turbomachinery design with thermodynamic analysis',
+                  title: 'Propulsion Lab',
+                  description: 'Turbomachinery design with thermodynamic analysis',
                   icon: Rocket,
                   color: 'from-orange-500 to-red-500'
                 }
@@ -356,7 +358,7 @@ export default function HomePage() {
                     whileInView={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.6, delay: idx * 0.1 }}
                     viewport={{ once: true }}
-                    className="group relative bg-aerospace-dark/50 border border-aerospace-blue/20 rounded-lg p-6 hover:border-aerospace-blue/60 transition-all duration-300"
+                    className="group relative bg-aerospace-dark/50 border border-aerospace-blue/20 rounded-lg p-6 hover:border-aerospace-blue/60 transition-all duration-300 cursor-pointer"
                   >
                     <div className={`p-3 bg-gradient-to-br ${tool.color} rounded-lg w-fit mb-4`}>
                       <ToolIcon className="w-6 h-6 text-white" />
@@ -374,11 +376,11 @@ export default function HomePage() {
 
             <div className="text-center">
               <Link
-                to="/advanced-tools"
+                to="/virtual-lab"
                 className="group relative inline-flex items-center justify-center px-12 py-6 bg-gradient-to-r from-aerospace-blue to-aerospace-accent text-white font-mono text-sm uppercase tracking-wider hover:shadow-2xl transition-all duration-300 rounded-lg shadow-xl hover:-translate-y-1"
               >
                 <span className="relative z-10 flex items-center gap-2">
-                  Explore Advanced Tools
+                  Explore Virtual Labs
                   <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
                 </span>
               </Link>
@@ -407,24 +409,24 @@ export default function HomePage() {
                   <div className="flex items-center gap-3 mb-4">
                     <Award className="w-6 h-6 text-aerospace-blue" />
                     <span className="font-mono text-xs uppercase tracking-widest text-aerospace-blue font-semibold">
-                      Premium Features
+                      Enterprise Features
                     </span>
                   </div>
                   <h2 className="font-heading text-4xl md:text-5xl font-bold text-foreground mb-4">
-                    Unlock Enterprise Power
+                    Production-Ready Platform
                   </h2>
                   <p className="font-paragraph text-lg text-foreground/70">
-                    Get access to advanced simulation tools, real-time optimization, and enterprise support designed for professional aerospace engineers.
+                    Deploy aerospace-grade simulations with enterprise security, team collaboration, and real-time optimization.
                   </p>
                 </div>
 
                 <div className="space-y-4">
                   {[
-                    { icon: Zap, label: 'Real-Time Optimization', desc: 'Multi-objective design optimization with instant feedback' },
-                    { icon: Brain, label: 'AI-Powered Analysis', desc: 'Machine learning-enhanced design suggestions and predictions' },
-                    { icon: Gauge, label: 'Advanced Simulations', desc: 'CFD, FEM, and propulsion analysis in one platform' },
-                    { icon: Lock, label: 'Enterprise Security', desc: 'ISO 27001 certified with role-based access control' },
-                    { icon: TrendingUp, label: 'Performance Monitoring', desc: 'Real-time metrics and optimization tracking' },
+                    { icon: Zap, label: 'Real-Time Optimization', desc: 'Multi-objective Pareto frontier analysis' },
+                    { icon: Brain, label: 'AI-Enhanced Workflows', desc: 'Physics-informed machine learning suggestions' },
+                    { icon: Gauge, label: 'Advanced Simulations', desc: 'CFD, FEM, and thermal in one platform' },
+                    { icon: Lock, label: 'Enterprise Security', desc: 'ISO 27001 certified infrastructure' },
+                    { icon: TrendingUp, label: 'Performance Tracking', desc: 'Real-time metrics and convergence monitoring' },
                     { icon: Users, label: 'Team Collaboration', desc: 'Multi-user projects with version control' }
                   ].map((item, idx) => {
                     const Icon = item.icon;
@@ -469,28 +471,28 @@ export default function HomePage() {
                         Professional Plan
                       </h3>
                       <p className="font-paragraph text-sm text-foreground/70">
-                        Everything you need for professional aerospace design
+                        Everything for professional aerospace engineering
                       </p>
                     </div>
 
                     <div className="space-y-2">
                       <div className="flex items-baseline gap-2">
-                        <span className="font-heading text-5xl font-bold text-aerospace-blue">$99</span>
+                        <span className="font-heading text-5xl font-bold text-aerospace-blue">$199</span>
                         <span className="font-mono text-sm text-foreground/60">/month</span>
                       </div>
                       <p className="font-paragraph text-xs text-foreground/50">
-                        Billed annually: $990/year (Save 17%)
+                        Billed annually: $1,990/year (Save 17%)
                       </p>
                     </div>
 
                     <div className="space-y-3 pt-4 border-t border-aerospace-blue/30">
                       {[
                         'Unlimited design projects',
-                        'Advanced CFD & FEM tools',
+                        'Advanced CFD & FEM solvers',
                         'Real-time optimization engine',
-                        'AI-powered suggestions',
+                        'Physics-validated simulations',
                         'Priority support (24/7)',
-                        'Team collaboration (up to 10 users)',
+                        'Team collaboration (up to 20 users)',
                         'Custom integrations',
                         'Advanced analytics & reporting'
                       ].map((feature, idx) => (
@@ -503,7 +505,7 @@ export default function HomePage() {
 
                     <div className="pt-6 space-y-3">
                       <Link
-                        to="/advanced-tools"
+                        to="/virtual-lab"
                         className="w-full group relative inline-flex items-center justify-center px-8 py-4 bg-gradient-to-r from-aerospace-blue to-aerospace-accent text-white font-mono text-sm uppercase tracking-wider hover:shadow-2xl transition-all duration-300 rounded-lg shadow-xl hover:-translate-y-1"
                       >
                         <span className="relative z-10 flex items-center gap-2">
@@ -520,7 +522,7 @@ export default function HomePage() {
 
                 <div className="space-y-3 text-center">
                   <p className="font-paragraph text-sm text-foreground/70">
-                    Join 500+ aerospace engineers already using AeroForge Premium
+                    Join 500+ aerospace engineers using AeroForge
                   </p>
                   <div className="flex items-center justify-center gap-4">
                     <div className="flex -space-x-2">
@@ -551,7 +553,7 @@ export default function HomePage() {
               <div className="space-y-12">
                 <div className="flex items-start gap-3">
                   <h3 className="font-heading text-3xl font-bold text-aerospace-blue">What We Don't Do</h3>
-                  <HelpTooltip text="We explicitly reject probabilistic methods to ensure aerospace-grade reliability and deterministic behavior." />
+                  <HelpTooltip text="We reject probabilistic methods and black-box approximations to ensure aerospace-grade reliability." />
                 </div>
                 <p className="font-paragraph text-lg text-foreground/70">
                   No heuristics. No approximations. No black boxes.
@@ -570,15 +572,15 @@ export default function HomePage() {
               <div className="relative h-full min-h-[400px] w-full overflow-hidden bg-secondary/10 rounded-lg">
                  <div className="absolute inset-0 p-8 flex flex-col justify-between z-10">
                     <div className="font-mono text-xs text-foreground/40 border-b border-foreground/10 pb-2">
-                      PRECISION STANDARD
+                      PHYSICS VALIDATION
                     </div>
                     <div className="font-mono text-xs text-foreground/40 text-right border-t border-foreground/10 pt-2">
-                      ±0.001mm TOLERANCE
+                      NAVIER-STOKES VERIFIED
                     </div>
                  </div>
                  <Image 
                    src="https://static.wixstatic.com/media/18a222_de3f5098f22341a8913a5e9d8acc81c9~mv2.png?originWidth=576&originHeight=384"
-                   alt="Precision industrial component"
+                   alt="Aerospace simulation visualization"
                    className="w-full h-full object-cover opacity-80 grayscale contrast-125 mix-blend-multiply"
                  />
               </div>
@@ -605,7 +607,7 @@ export default function HomePage() {
                   Latest Papers
                 </h2>
                 <p className="font-paragraph text-lg text-secondary-foreground max-w-2xl">
-                  Peer-reviewed research on deterministic CAD compilation.
+                  Peer-reviewed research on physics-accurate aerospace simulation.
                 </p>
               </motion.div>
 
@@ -666,7 +668,7 @@ export default function HomePage() {
                   Real Results
                 </h2>
                 <p className="font-paragraph text-lg text-secondary-foreground max-w-2xl">
-                  How companies transformed their design workflows.
+                  How companies transformed their design workflows with physics-accurate simulation.
                 </p>
               </motion.div>
 
@@ -725,17 +727,17 @@ export default function HomePage() {
               className="text-center"
             >
               <h2 className="font-heading text-4xl md:text-5xl font-bold text-foreground mb-6">
-                Ready to Transform Your Design Process?
+                Ready to Experience Physics-Accurate Engineering?
               </h2>
               <p className="font-paragraph text-xl text-secondary-foreground max-w-2xl mx-auto mb-8">
-                Join leading aerospace and manufacturing companies using deterministic AI-powered design.
+                Join the world's leading aerospace companies using AeroForge for production-grade simulations.
               </p>
               <Link 
-                to="/compiler"
+                to="/virtual-lab"
                 className="group relative inline-flex items-center justify-center px-12 py-6 bg-aerospace-blue text-white font-mono text-sm uppercase tracking-wider hover:bg-aerospace-accent transition-all duration-300 rounded-lg shadow-xl hover:shadow-2xl hover:-translate-y-1"
               >
                 <span className="relative z-10 flex items-center gap-2">
-                  Launch Compiler
+                  Enter Command Center
                   <ChevronRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
                 </span>
               </Link>
