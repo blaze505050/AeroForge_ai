@@ -205,8 +205,21 @@ export default function HomePage() {
     : labTools;
 
   const handleToolClick = (tool: LabTool) => {
-    if (tool.path) {
-      navigate(tool.path);
+    // Map tool IDs to their routes
+    const toolRoutes: { [key: string]: string } = {
+      'spatial-intelligence-globe': '/astrolab/spatial-globe',
+      'deep-space-observation': '/astrolab/deep-space-observation',
+      'professional-photometry-suite': '/astrolab/photometry-suite',
+      'astrodynamics-sandbox': '/astrolab/astrodynamics-sandbox',
+      'astrolab-dual-mode-ux': '/astrolab/dual-mode',
+      'satellite-constellation-mapper': '/astrolab/satellite-constellation',
+      'celestial-coordinate-system': '/astrolab/celestial-coordinate',
+      'orbital-mechanics-calculator': '/astrolab/orbital-mechanics',
+    };
+
+    const route = toolRoutes[tool.id];
+    if (route) {
+      navigate(route);
     }
   };
 

@@ -11,6 +11,14 @@ import DashboardPage from '@/components/pages/DashboardPage';
 import ProjectsPage from '@/components/pages/ProjectsPage';
 import ProjectWorkspacePage from '@/components/pages/ProjectWorkspacePage';
 import AerodynamicsLabPage from '@/components/pages/AerodynamicsLabPage';
+import AstroLabSpatialGlobeToolPage from '@/components/pages/AstroLabSpatialGlobeToolPage';
+import AstroLabDeepSpaceObservationPage from '@/components/pages/AstroLabDeepSpaceObservationPage';
+import AstroLabPhotometrySuitePage from '@/components/pages/AstroLabPhotometrySuitePage';
+import AstroLabAstrodynamicsSandboxPage from '@/components/pages/AstroLabAstrodynamicsSandboxPage';
+import AstroLabDualModeExperiencePage from '@/components/pages/AstroLabDualModeExperiencePage';
+import AstroLabSatelliteConstellationPage from '@/components/pages/AstroLabSatelliteConstellationPage';
+import AstroLabCelestialCoordinatePage from '@/components/pages/AstroLabCelestialCoordinatePage';
+import AstroLabOrbitalMechanicsPage from '@/components/pages/AstroLabOrbitalMechanicsPage';
 
 // Layout component that includes ScrollToTop
 function Layout() {
@@ -89,6 +97,62 @@ const router = createBrowserRouter([
         element: <AerodynamicsLabPage />,
         routeMetadata: {
           pageIdentifier: 'aerodynamics-lab',
+        },
+      },
+      {
+        path: "astrolab/spatial-globe",
+        element: <AstroLabSpatialGlobeToolPage />,
+        routeMetadata: {
+          pageIdentifier: 'astrolab-spatial-globe',
+        },
+      },
+      {
+        path: "astrolab/deep-space-observation",
+        element: <AstroLabDeepSpaceObservationPage />,
+        routeMetadata: {
+          pageIdentifier: 'astrolab-deep-space',
+        },
+      },
+      {
+        path: "astrolab/photometry-suite",
+        element: <AstroLabPhotometrySuitePage />,
+        routeMetadata: {
+          pageIdentifier: 'astrolab-photometry',
+        },
+      },
+      {
+        path: "astrolab/astrodynamics-sandbox",
+        element: <AstroLabAstrodynamicsSandboxPage />,
+        routeMetadata: {
+          pageIdentifier: 'astrolab-astrodynamics',
+        },
+      },
+      {
+        path: "astrolab/dual-mode",
+        element: <AstroLabDualModeExperiencePage />,
+        routeMetadata: {
+          pageIdentifier: 'astrolab-dual-mode',
+        },
+      },
+      {
+        path: "astrolab/satellite-constellation",
+        element: <AstroLabSatelliteConstellationPage />,
+        routeMetadata: {
+          pageIdentifier: 'astrolab-satellite',
+        },
+      },
+      {
+        path: "astrolab/celestial-coordinate",
+        element: <AstroLabCelestialCoordinatePage />,
+        routeMetadata: {
+          pageIdentifier: 'astrolab-celestial',
+        },
+      },
+      {
+        path: "astrolab/orbital-mechanics",
+        element: <AstroLabOrbitalMechanicsPage />,
+        routeMetadata: {
+          pageIdentifier: 'astrolab-orbital',
         },
       },
       {
