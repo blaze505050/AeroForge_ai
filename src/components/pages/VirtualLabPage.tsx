@@ -5,7 +5,8 @@ import {
   Wind, Database, Wrench, Zap, Download, Cpu, Calculator, 
   Microscope, Beaker, Gauge, Layers, Rocket, Brain, Workflow,
   BarChart3, GitBranch, Target, Lightbulb, Settings, Play, Users,
-  Thermometer, Navigation, Satellite, ChevronDown, Code, Zap as ZapIcon, TrendingUp
+  Thermometer, Navigation, Satellite, ChevronDown, Code, Zap as ZapIcon, TrendingUp,
+  Globe, Telescope, Radio, Map, Compass, Orbit, Waves, Eye
 } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -684,6 +685,120 @@ const labTools: LabTool[] = [
     isActive: true,
     order: 45,
   },
+  
+  // ===== ASTROLAB - SPATIAL INTELLIGENCE & 3D GLOBE ENGINE =====
+  {
+    id: 'spatial-intelligence-globe',
+    title: 'Spatial Intelligence & 3D Globe Engine',
+    description: 'Real-time 3D geospatial visualization with satellite propagation and orbital mechanics',
+    icon: <Globe className="w-8 h-8" />,
+    category: 'AstroLab',
+    subcategory: 'Spatial Intelligence',
+    features: ['CesiumJS Renderer', 'SGP4 Satellite Propagator', 'Real-time Ephemeris', 'Spatial Filtering'],
+    color: 'from-indigo-500 to-purple-600',
+    path: '/astrolab-spatial-globe',
+    isActive: true,
+    order: 46,
+  },
+  
+  {
+    id: 'deep-space-observation',
+    title: 'Deep-Space Observation & Mapping',
+    description: 'Advanced astronomical survey visualization with multi-spectral layer overlays',
+    icon: <Telescope className="w-8 h-8" />,
+    category: 'AstroLab',
+    subcategory: 'Deep-Space Observation',
+    features: ['Aladin Lite Engine', 'Pan-STARRS/DSS Surveys', 'Coordinate Targeting', 'Multi-Spectral Overlays'],
+    color: 'from-blue-600 to-indigo-700',
+    path: '/astrolab-deep-space',
+    isActive: true,
+    order: 47,
+  },
+  
+  {
+    id: 'professional-photometry-suite',
+    title: 'Professional Analytical & Photometry Suite',
+    description: 'FITS image analysis with photometry tools and NASA HEASARC integration',
+    icon: <Eye className="w-8 h-8" />,
+    category: 'AstroLab',
+    subcategory: 'Analytical Tools',
+    features: ['JS9 Web FITS Analyzer', 'ROI Photometry', 'NASA HEASARC Bridge', 'Image Processing'],
+    color: 'from-cyan-500 to-blue-600',
+    path: '/astrolab-photometry',
+    isActive: true,
+    order: 48,
+  },
+  
+  {
+    id: 'astrodynamics-sandbox',
+    title: 'Astrodynamics & Physics Simulation Sandbox',
+    description: 'Interactive orbital mechanics with N-Body gravity simulation and mission planning',
+    icon: <Orbit className="w-8 h-8" />,
+    category: 'AstroLab',
+    subcategory: 'Astrodynamics',
+    features: ['Pyodide Python Engine', 'N-Body Gravity Simulation', 'Mission Planner', 'Delta-V Calculator'],
+    color: 'from-purple-500 to-pink-600',
+    path: '/astrolab-astrodynamics',
+    isActive: true,
+    order: 49,
+  },
+  
+  {
+    id: 'astrolab-dual-mode-ux',
+    title: 'AstroLab Dual-Mode Experience',
+    description: 'Seamless switching between Student and Professional modes for all astronomical tools',
+    icon: <Radio className="w-8 h-8" />,
+    category: 'AstroLab',
+    subcategory: 'User Experience',
+    features: ['Student Mode', 'Professional Mode', 'Guided Tours', 'Advanced Telemetry'],
+    color: 'from-pink-500 to-rose-600',
+    path: '/astrolab-dual-mode',
+    isActive: true,
+    order: 50,
+  },
+  
+  // ===== ASTROLAB - ADVANCED FEATURES =====
+  {
+    id: 'satellite-constellation-mapper',
+    title: 'Satellite Constellation Mapper',
+    description: 'Real-time mapping of LEO, MEO, GEO satellites with debris tracking',
+    icon: <Satellite className="w-8 h-8" />,
+    category: 'AstroLab',
+    subcategory: 'Satellite Operations',
+    features: ['LEO/MEO/GEO Tracking', 'Debris Detection', 'Collision Avoidance', 'TLE Updates'],
+    color: 'from-green-500 to-emerald-600',
+    path: '/astrolab-constellation',
+    isActive: true,
+    order: 51,
+  },
+  
+  {
+    id: 'celestial-coordinate-system',
+    title: 'Celestial Coordinate System & Ephemeris',
+    description: 'Advanced coordinate transformations and ephemeris data pipeline',
+    icon: <Compass className="w-8 h-8" />,
+    category: 'AstroLab',
+    subcategory: 'Coordinate Systems',
+    features: ['RA/Dec Conversions', 'Ephemeris Calculations', 'CelesTrak Integration', 'JPL Data Pipeline'],
+    color: 'from-yellow-500 to-amber-600',
+    path: '/astrolab-coordinates',
+    isActive: true,
+    order: 52,
+  },
+  
+  {
+    id: 'orbital-mechanics-calculator',
+    title: 'Orbital Mechanics Calculator',
+    description: 'Comprehensive orbital element calculations and trajectory analysis',
+    icon: <Waves className="w-8 h-8" />,
+    category: 'AstroLab',
+    subcategory: 'Orbital Analysis',
+    features: ['Kepler Elements', 'Trajectory Analysis', 'Orbital Decay', 'Perturbation Analysis'],
+    color: 'from-red-500 to-orange-600',
+    path: '/astrolab-orbital-mechanics',
+    isActive: true,
+    order: 53,
+  },
 ];
 
 // Sort tools by order
@@ -722,14 +837,15 @@ export default function VirtualLabPage() {
     setActiveCount(labTools.filter(t => t.isActive).length);
   }, []);
 
-  // Organize categories in order - Elite Suite, Products, Advanced Modules consolidated
+  // Organize categories in order
   const categoryOrder = [
     'Elite Suite',
     'Products',
     'Advanced Modules',
     'Research',
     'Core Tools',
-    'Specialized Laboratories'
+    'Specialized Laboratories',
+    'AstroLab'
   ];
   
   const categories = categoryOrder.filter(cat => 
@@ -771,7 +887,7 @@ export default function VirtualLabPage() {
             </h1>
             
             <p className="font-paragraph text-xl md:text-2xl text-slate-300 max-w-3xl mx-auto mb-8">
-              Integrated tools for aerospace and mechanical design, simulation, and optimization. {activeCount} tools ready to use.
+              Integrated tools for aerospace, mechanical, and astronomical research. {activeCount} tools ready to use.
             </p>
             
             <div className="flex flex-wrap justify-center gap-3 mb-12">
@@ -871,223 +987,7 @@ export default function VirtualLabPage() {
 
         {/* Tools Grid */}
         <section className="w-full max-w-[120rem] mx-auto px-4 py-16">
-          {showModules ? (
-            // Show research modules
-            <div className="space-y-8">
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="text-center mb-12"
-              >
-                <h2 className="font-heading text-4xl md:text-5xl font-bold text-white mb-4">
-                  Advanced Research Modules
-                </h2>
-                <p className="font-paragraph text-xl text-slate-300 max-w-2xl mx-auto">
-                  12 comprehensive aerospace research modules with {moduleStats.subsystems} subsystems,
-                  {moduleStats.tools} tools, {moduleStats.capabilities} capabilities, and {moduleStats.aiEnhancements} AI enhancements
-                </p>
-              </motion.div>
-
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="grid grid-cols-1 gap-6"
-              >
-                {VIRTUAL_LAB_MODULES.map((module, idx) => (
-                  <motion.div
-                    key={module.id}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: idx * 0.05 }}
-                    className="group"
-                  >
-                    <div className="relative bg-slate-800 rounded-xl overflow-hidden border border-slate-700 hover:border-slate-600 transition-all duration-300 hover:shadow-2xl hover:shadow-purple-500/20">
-                      {/* Background gradient */}
-                      <div className={`absolute inset-0 bg-gradient-to-r ${module.color} opacity-0 group-hover:opacity-5 transition-opacity duration-300`} />
-                      
-                      {/* Header */}
-                      <button
-                        onClick={() => setExpandedModule(expandedModule === module.id ? null : module.id)}
-                        className="w-full relative p-6 flex items-start justify-between hover:bg-slate-700/50 transition-colors"
-                      >
-                        <div className="flex items-start gap-4 flex-1 text-left">
-                          <div className={`w-12 h-12 rounded-lg bg-gradient-to-br ${module.color} p-2 flex items-center justify-center text-white flex-shrink-0`}>
-                            {module.icon === 'Wind' && <Wind className="w-6 h-6" />}
-                            {module.icon === 'Zap' && <Zap className="w-6 h-6" />}
-                            {module.icon === 'Cpu' && <Cpu className="w-6 h-6" />}
-                            {module.icon === 'Layers' && <Layers className="w-6 h-6" />}
-                            {module.icon === 'Beaker' && <Beaker className="w-6 h-6" />}
-                            {module.icon === 'Rocket' && <Rocket className="w-6 h-6" />}
-                            {module.icon === 'Satellite' && <Satellite className="w-6 h-6" />}
-                            {module.icon === 'Thermometer' && <Thermometer className="w-6 h-6" />}
-                            {module.icon === 'Navigation' && <Navigation className="w-6 h-6" />}
-                          </div>
-                          <div className="flex-1">
-                            <div className="flex items-center gap-3 mb-2">
-                              <span className="text-sm font-mono text-purple-400 font-semibold">Module {module.number}</span>
-                              <span className="text-xs bg-green-500/20 text-green-400 px-2 py-1 rounded-full">Active</span>
-                            </div>
-                            <h3 className="font-heading text-xl md:text-2xl font-bold text-white mb-2">
-                              {module.title}
-                            </h3>
-                            <p className="font-paragraph text-slate-400 text-sm md:text-base">
-                              {module.description}
-                            </p>
-                          </div>
-                        </div>
-                        <motion.div
-                          animate={{ rotate: expandedModule === module.id ? 180 : 0 }}
-                          className="flex-shrink-0 ml-4"
-                        >
-                          <ChevronDown className="w-6 h-6 text-slate-400" />
-                        </motion.div>
-                      </button>
-
-                      {/* Expanded Content */}
-                      <motion.div
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{
-                          height: expandedModule === module.id ? 'auto' : 0,
-                          opacity: expandedModule === module.id ? 1 : 0,
-                        }}
-                        transition={{ duration: 0.3 }}
-                        className="overflow-hidden"
-                      >
-                        <div className="relative p-6 pt-0 border-t border-slate-700 space-y-6">
-                          {/* Subsystems */}
-                          <div>
-                            <h4 className="font-heading text-lg font-bold text-white mb-3 flex items-center gap-2">
-                              <Code className="w-5 h-5 text-blue-400" />
-                              Subsystems ({module.subsystems.length})
-                            </h4>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                              {module.subsystems.map((subsystem, i) => (
-                                <div key={i} className="bg-slate-700/50 rounded-lg p-3 border border-slate-600">
-                                  <p className="font-paragraph font-semibold text-white text-sm mb-1">
-                                    {subsystem.name}
-                                  </p>
-                                  <p className="font-paragraph text-xs text-slate-400 mb-2">
-                                    {subsystem.description}
-                                  </p>
-                                  <div className="flex flex-wrap gap-1">
-                                    {subsystem.capabilities.map((cap, j) => (
-                                      <span key={j} className="text-xs bg-blue-500/20 text-blue-300 px-2 py-0.5 rounded">
-                                        {cap}
-                                      </span>
-                                    ))}
-                                  </div>
-                                </div>
-                              ))}
-                            </div>
-                          </div>
-
-                          {/* Tools */}
-                          <div>
-                            <h4 className="font-heading text-lg font-bold text-white mb-3 flex items-center gap-2">
-                              <Wrench className="w-5 h-5 text-cyan-400" />
-                              Tools ({module.tools.length})
-                            </h4>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                              {module.tools.map((tool, i) => (
-                                <div key={i} className="bg-slate-700/50 rounded-lg p-3 border border-slate-600">
-                                  <p className="font-paragraph font-semibold text-white text-sm mb-1">
-                                    {tool.name}
-                                  </p>
-                                  <p className="font-paragraph text-xs text-slate-400 mb-2">
-                                    {tool.description}
-                                  </p>
-                                  <span className="text-xs bg-cyan-500/20 text-cyan-300 px-2 py-0.5 rounded">
-                                    {tool.type}
-                                  </span>
-                                </div>
-                              ))}
-                            </div>
-                          </div>
-
-                          {/* Capabilities */}
-                          <div>
-                            <h4 className="font-heading text-lg font-bold text-white mb-3 flex items-center gap-2">
-                              <ZapIcon className="w-5 h-5 text-yellow-400" />
-                              Capabilities ({module.capabilities.length})
-                            </h4>
-                            <div className="space-y-2">
-                              {module.capabilities.map((cap, i) => (
-                                <div key={i} className="bg-slate-700/50 rounded-lg p-3 border border-slate-600">
-                                  <p className="font-paragraph font-semibold text-white text-sm mb-1">
-                                    {cap.name}
-                                  </p>
-                                  <p className="font-paragraph text-xs text-slate-400 mb-2">
-                                    {cap.description}
-                                  </p>
-                                  <span className={`text-xs px-2 py-0.5 rounded ${
-                                    cap.physicsLevel === 'research-grade'
-                                      ? 'bg-red-500/20 text-red-300'
-                                      : cap.physicsLevel === 'advanced'
-                                      ? 'bg-orange-500/20 text-orange-300'
-                                      : 'bg-yellow-500/20 text-yellow-300'
-                                  }`}>
-                                    {cap.physicsLevel}
-                                  </span>
-                                </div>
-                              ))}
-                            </div>
-                          </div>
-
-                          {/* AI Enhancements */}
-                          <div>
-                            <h4 className="font-heading text-lg font-bold text-white mb-3 flex items-center gap-2">
-                              <Brain className="w-5 h-5 text-purple-400" />
-                              AI Enhancements ({module.aiEnhancements.length})
-                            </h4>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                              {module.aiEnhancements.map((ai, i) => (
-                                <div key={i} className="bg-purple-900/30 rounded-lg p-3 border border-purple-500/30">
-                                  <p className="font-paragraph font-semibold text-purple-200 text-sm mb-1">
-                                    {ai.name}
-                                  </p>
-                                  <p className="font-paragraph text-xs text-purple-300/80">
-                                    {ai.description}
-                                  </p>
-                                </div>
-                              ))}
-                            </div>
-                          </div>
-
-                          {/* Cloud Architecture */}
-                          <div>
-                            <h4 className="font-heading text-lg font-bold text-white mb-3 flex items-center gap-2">
-                              <Database className="w-5 h-5 text-green-400" />
-                              Cloud Architecture
-                            </h4>
-                            <div className="bg-slate-700/50 rounded-lg p-4 border border-slate-600 space-y-3">
-                              <div>
-                                <p className="font-paragraph font-semibold text-white text-sm mb-1">Infrastructure</p>
-                                <p className="font-paragraph text-xs text-slate-300">
-                                  {module.cloudArchitecture.infrastructure}
-                                </p>
-                              </div>
-                              <div>
-                                <p className="font-paragraph font-semibold text-white text-sm mb-1">Scalability</p>
-                                <p className="font-paragraph text-xs text-slate-300">
-                                  {module.cloudArchitecture.scalability}
-                                </p>
-                              </div>
-                              <div>
-                                <p className="font-paragraph font-semibold text-white text-sm mb-1">Data Management</p>
-                                <p className="font-paragraph text-xs text-slate-300">
-                                  {module.cloudArchitecture.dataManagement}
-                                </p>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </motion.div>
-                    </div>
-                  </motion.div>
-                ))}
-              </motion.div>
-            </div>
-          ) : !selectedCategory ? (
+          {!selectedCategory ? (
             // Show all tools organized by category
             <div className="space-y-16">
               {/* Physics Engine Info */}
@@ -1150,6 +1050,7 @@ export default function VirtualLabPage() {
                         {category === 'Elite Suite' && 'Enterprise-grade optimization and collaboration'}
                         {category === 'Core Tools' && 'Essential aerospace design and simulation tools'}
                         {category === 'Specialized Laboratories' && 'World-class virtual engineering labs for aerospace, mechanical, and manufacturing'}
+                        {category === 'AstroLab' && 'Advanced astronomical and space research tools with satellite tracking and deep-space observation'}
                       </p>
                     </div>
                     
@@ -1310,8 +1211,7 @@ export default function VirtualLabPage() {
                   </div>
                 </div>
               </motion.div>
-            ))}
-            </motion.div>
+            ))}</motion.div>
           )}
         </section>
 
@@ -1332,7 +1232,7 @@ export default function VirtualLabPage() {
                 {
                   icon: Layers,
                   title: 'Integrated Ecosystem',
-                  description: 'All tools work seamlessly together for complete aerospace design workflows',
+                  description: 'All tools work seamlessly together for complete aerospace, mechanical, and astronomical workflows',
                 },
                 {
                   icon: Gauge,
@@ -1380,7 +1280,7 @@ export default function VirtualLabPage() {
               Get Started in Seconds
             </h2>
             <p className="font-paragraph text-xl text-slate-300 mb-12 max-w-2xl mx-auto">
-              Choose a tool above and start your aerospace research journey. All tools are fully functional and ready to use.
+              Choose a tool above and start your research journey. All tools are fully functional and ready to use.
             </p>
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -1388,7 +1288,7 @@ export default function VirtualLabPage() {
                 {
                   step: '1',
                   title: 'Select Tool',
-                  desc: 'Choose from 45+ integrated aerospace and mechanical tools across 6 categories',
+                  desc: 'Choose from 53+ integrated aerospace, mechanical, and astronomical tools',
                 },
                 {
                   step: '2',
@@ -1437,7 +1337,7 @@ export default function VirtualLabPage() {
               Ready to Launch Your Research?
             </h2>
             <p className="font-paragraph text-xl text-slate-300 mb-8 max-w-2xl mx-auto">
-              Access all aerospace research tools in one unified environment. Start designing, simulating, and optimizing today.
+              Access all aerospace, mechanical, and astronomical research tools in one unified environment. Start designing, simulating, and optimizing today.
             </p>
             <motion.button
               whileHover={{ scale: 1.05 }}
