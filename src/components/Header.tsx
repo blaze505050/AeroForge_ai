@@ -12,6 +12,8 @@ export default function Header() {
   // Simplified navigation - only core pages
   const navLinks = [
     { path: '/', label: 'Home' },
+    { path: '/virtual-lab', label: 'Virtual Lab' },
+    { path: '/labs/aerodynamics', label: 'Aerodynamics Lab' },
     { path: '/dashboard', label: 'Dashboard' },
     { path: '/projects', label: 'Projects' },
     { path: '/compiler', label: 'Compiler' },
