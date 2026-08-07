@@ -20,7 +20,8 @@ export default {
             },
             fontFamily: {
                 heading: "roboto",
-                paragraph: "roboto"
+                paragraph: "roboto",
+                mono: "'JetBrains Mono', 'Courier New', monospace"
             },
             colors: {
                 destructive: '#EF4444',

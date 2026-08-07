@@ -1,496 +1,350 @@
-import React, { useState, useEffect, useRef, useMemo } from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Play, Pause, RotateCcw, Download, Settings, BarChart3, Zap } from 'lucide-react';
+import { ArrowLeft, Download, Settings } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-
-interface OrbitalElements {
-  a: number; // Semi-major axis (km)
-  e: number; // Eccentricity
-  i: number; // Inclination (degrees)
-  Ω: number; // Right ascension of ascending node (degrees)
-  ω: number; // Argument of perigee (degrees)
-  M: number; // Mean anomaly (degrees)
-}
-
-interface OrbitalPosition {
-  x: number;
-  y: number;
-  z: number;
-  vx: number;
-  vy: number;
-  vz: number;
-}
+import ProfessionalDataPanel from '@/components/ProfessionalDataPanel';
+import TelemetryDisplay from '@/components/TelemetryDisplay';
+import EquationDisplay from '@/components/EquationDisplay';
+import { DataFormatter } from '@/services/dataFormatting';
+import { AstronomicalConstants, getOrbitalPeriod, getOrbitalVelocity, getEscapeVelocity } from '@/services/astronomicalConstants';
 
 export default function AstroLabOrbitalMechanicsPage() {
   const navigate = useNavigate();
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [isRunning, setIsRunning] = useState(true);
-  const [time, setTime] = useState(0);
-  const [elements, setElements] = useState<OrbitalElements>({
-    a: 42164, // GEO altitude
-    e: 0.0002,
-    i: 0.1,
-    Ω: 0,
-    ω: 0,
-    M: 0,
-  });
-  const [selectedOrbit, setSelectedOrbit] = useState<'geo' | 'leo' | 'meo' | 'custom'>('geo');
-  const [view3D, setView3D] = useState(false);
-  const [showVelocity, setShowVelocity] = useState(true);
-  const [showEnergy, setShowEnergy] = useState(true);
+  const [semiMajorAxis, setSemiMajorAxis] = useState(6.6e6); // meters (LEO)
+  const [eccentricity, setEccentricity] = useState(0.001);
+  const [inclination, setInclination] = useState(51.6); // degrees
+  const [centralBody, setCentralBody] = useState('earth');
 
-  // Kepler's equation solver (Newton-Raphson)
-  const solveKeplersEquation = (M: number, e: number, tolerance = 1e-6): number => {
-    let E = M;
-    for (let i = 0; i < 100; i++) {
-      const f = E - e * Math.sin(E) - M;
-      const fp = 1 - e * Math.cos(E);
-      const E_new = E - f / fp;
-      if (Math.abs(E_new - E) < tolerance) return E_new;
-      E = E_new;
-    }
-    return E;
-  };
-
-  // Calculate position from orbital elements
-  const calculatePosition = (elements: OrbitalElements, time: number): OrbitalPosition => {
-    const M = (elements.M + (360 * time) / (24 * 3600)) % 360;
-    const M_rad = (M * Math.PI) / 180;
-    const E = solveKeplersEquation(M_rad, elements.e);
-    
-    const i_rad = (elements.i * Math.PI) / 180;
-    const Ω_rad = (elements.Ω * Math.PI) / 180;
-    const ω_rad = (elements.ω * Math.PI) / 180;
-
-    // Position in orbital plane
-    const r = elements.a * (1 - elements.e * Math.cos(E));
-    const x_orb = r * Math.cos(E - elements.e * Math.sin(E));
-    const y_orb = r * Math.sin(E - elements.e * Math.sin(E)) * Math.sqrt(1 - elements.e * elements.e);
-
-    // Velocity in orbital plane
-    const n = Math.sqrt(398600.4418 / (elements.a * elements.a * elements.a));
-    const vx_orb = -n * elements.a * Math.sin(E);
-    const vy_orb = n * elements.a * Math.sqrt(1 - elements.e * elements.e) * Math.cos(E);
-
-    // Transform to inertial frame
-    const cos_ω = Math.cos(ω_rad);
-    const sin_ω = Math.sin(ω_rad);
-    const cos_Ω = Math.cos(Ω_rad);
-    const sin_Ω = Math.sin(Ω_rad);
-    const cos_i = Math.cos(i_rad);
-    const sin_i = Math.sin(i_rad);
-
-    const x = (cos_ω * cos_Ω - sin_ω * sin_Ω * cos_i) * x_orb + (-sin_ω * cos_Ω - cos_ω * sin_Ω * cos_i) * y_orb;
-    const y = (cos_ω * sin_Ω + sin_ω * cos_Ω * cos_i) * x_orb + (-sin_ω * sin_Ω + cos_ω * cos_Ω * cos_i) * y_orb;
-    const z = sin_ω * sin_i * x_orb + cos_ω * sin_i * y_orb;
-
-    const vx = (cos_ω * cos_Ω - sin_ω * sin_Ω * cos_i) * vx_orb + (-sin_ω * cos_Ω - cos_ω * sin_Ω * cos_i) * vy_orb;
-    const vy = (cos_ω * sin_Ω + sin_ω * cos_Ω * cos_i) * vx_orb + (-sin_ω * sin_Ω + cos_ω * cos_Ω * cos_i) * vy_orb;
-    const vz = sin_ω * sin_i * vx_orb + cos_ω * sin_i * vy_orb;
-
-    return { x, y, z, vx, vy, vz };
-  };
-
-  const position = useMemo(() => calculatePosition(elements, time), [elements, time]);
-
-  const metrics = useMemo(() => {
-    const r = Math.sqrt(position.x ** 2 + position.y ** 2 + position.z ** 2);
-    const v = Math.sqrt(position.vx ** 2 + position.vy ** 2 + position.vz ** 2);
-    const a = elements.a;
-    const period = 2 * Math.PI * Math.sqrt((a ** 3) / 398600.4418);
-    const apogee = a * (1 + elements.e);
-    const perigee = a * (1 - elements.e);
-    const ke = 0.5 * v * v;
-    const pe = -398600.4418 / r;
-    const te = ke + pe;
-
-    return { r, v, period, apogee, perigee, ke, pe, te };
-  }, [position, elements]);
-
-  useEffect(() => {
-    if (!isRunning) return;
-    const interval = setInterval(() => {
-      setTime(t => t + 10);
-    }, 50);
-    return () => clearInterval(interval);
-  }, [isRunning]);
-
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-
-    const width = canvas.width;
-    const height = canvas.height;
-    const centerX = width / 2;
-    const centerY = height / 2;
-    const scale = Math.min(width, height) / (elements.a * 3);
-
-    // Background
-    const bgGradient = ctx.createLinearGradient(0, 0, width, height);
-    bgGradient.addColorStop(0, '#0B0E14');
-    bgGradient.addColorStop(1, '#131924');
-    ctx.fillStyle = bgGradient;
-    ctx.fillRect(0, 0, width, height);
-
-    // Stars
-    ctx.fillStyle = '#FFFFFF';
-    ctx.globalAlpha = 0.6;
-    for (let i = 0; i < 200; i++) {
-      const x = Math.sin(i * 12.9898) * 43758.5453 % width;
-      const y = Math.cos(i * 78.233) * 43758.5453 % height;
-      ctx.fillRect(x, y, 1.5, 1.5);
-    }
-    ctx.globalAlpha = 1;
-
-    // Earth
-    ctx.fillStyle = '#1a5a7a';
-    ctx.beginPath();
-    ctx.arc(centerX, centerY, 6371 * scale, 0, Math.PI * 2);
-    ctx.fill();
-
-    // Orbit ellipse
-    ctx.strokeStyle = '#00F0FF';
-    ctx.globalAlpha = 0.3;
-    ctx.lineWidth = 2;
-    ctx.beginPath();
-    const a_px = elements.a * scale;
-    const b_px = elements.a * Math.sqrt(1 - elements.e * elements.e) * scale;
-    const c_px = elements.a * elements.e * scale;
-
-    for (let angle = 0; angle < Math.PI * 2; angle += 0.01) {
-      const x = centerX + a_px * Math.cos(angle) * Math.cos(elements.Ω * Math.PI / 180) - b_px * Math.sin(angle) * Math.sin(elements.Ω * Math.PI / 180);
-      const y = centerY + a_px * Math.cos(angle) * Math.sin(elements.Ω * Math.PI / 180) + b_px * Math.sin(angle) * Math.cos(elements.Ω * Math.PI / 180);
-      if (angle === 0) ctx.moveTo(x, y);
-      else ctx.lineTo(x, y);
-    }
-    ctx.closePath();
-    ctx.stroke();
-    ctx.globalAlpha = 1;
-
-    // Satellite position
-    const sat_x = centerX + position.x * scale;
-    const sat_y = centerY - position.y * scale;
-
-    // Glow
-    ctx.fillStyle = '#00F0FF';
-    ctx.globalAlpha = 0.2;
-    ctx.beginPath();
-    ctx.arc(sat_x, sat_y, 15, 0, Math.PI * 2);
-    ctx.fill();
-
-    // Satellite
-    ctx.fillStyle = '#00F0FF';
-    ctx.globalAlpha = 1;
-    ctx.beginPath();
-    ctx.arc(sat_x, sat_y, 6, 0, Math.PI * 2);
-    ctx.fill();
-
-    // Velocity vector
-    if (showVelocity) {
-      const scale_v = 0.0001;
-      const vx_px = position.vx * scale_v;
-      const vy_px = position.vy * scale_v;
-      ctx.strokeStyle = '#FF007A';
-      ctx.lineWidth = 2;
-      ctx.beginPath();
-      ctx.moveTo(sat_x, sat_y);
-      ctx.lineTo(sat_x + vx_px, sat_y - vy_px);
-      ctx.stroke();
-    }
-
-    // Apogee and perigee markers
-    ctx.strokeStyle = '#F59E0B';
-    ctx.globalAlpha = 0.5;
-    ctx.lineWidth = 1;
-    ctx.beginPath();
-    ctx.arc(centerX + metrics.apogee * scale, centerY, 4, 0, Math.PI * 2);
-    ctx.stroke();
-    ctx.beginPath();
-    ctx.arc(centerX - metrics.perigee * scale, centerY, 4, 0, Math.PI * 2);
-    ctx.stroke();
-
-    ctx.globalAlpha = 1;
-  }, [position, elements, showVelocity, metrics]);
-
-  const loadPreset = (preset: string) => {
-    setSelectedOrbit(preset as any);
-    setTime(0);
-    
-    if (preset === 'leo') {
-      setElements({
-        a: 6678,
-        e: 0.0005,
-        i: 51.6,
-        Ω: 0,
-        ω: 0,
-        M: 0,
-      });
-    } else if (preset === 'meo') {
-      setElements({
-        a: 26560,
-        e: 0.0,
-        i: 55,
-        Ω: 0,
-        ω: 0,
-        M: 0,
-      });
-    } else if (preset === 'custom') {
-      setElements({
-        a: 42164,
-        e: 0.0002,
-        i: 0.1,
-        Ω: 0,
-        ω: 0,
-        M: 0,
-      });
-    } else {
-      setElements({
-        a: 42164,
-        e: 0.0002,
-        i: 0.1,
-        Ω: 0,
-        ω: 0,
-        M: 0,
-      });
+  // Get gravitational parameter based on central body
+  const getGM = () => {
+    switch (centralBody) {
+      case 'sun':
+        return AstronomicalConstants.STANDARD_GRAVITATIONAL_PARAMETER_SUN;
+      case 'moon':
+        return AstronomicalConstants.STANDARD_GRAVITATIONAL_PARAMETER_MOON;
+      case 'earth':
+      default:
+        return AstronomicalConstants.STANDARD_GRAVITATIONAL_PARAMETER_EARTH;
     }
   };
 
-  const handleExport = () => {
-    const data = {
-      timestamp: new Date().toISOString(),
-      elements,
-      position,
-      metrics,
-    };
-    
-    const json = JSON.stringify(data, null, 2);
-    const blob = new Blob([json], { type: 'application/json' });
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `orbital-elements-${new Date().toISOString().split('T')[0]}.json`;
-    a.click();
+  const GM = getGM();
+
+  // Calculate orbital elements
+  const orbitalPeriod = getOrbitalPeriod(semiMajorAxis, GM / AstronomicalConstants.GRAVITATIONAL_CONSTANT);
+  const orbitalVelocity = getOrbitalVelocity(semiMajorAxis, GM / AstronomicalConstants.GRAVITATIONAL_CONSTANT);
+  const escapeVelocity = getEscapeVelocity(semiMajorAxis, GM / AstronomicalConstants.GRAVITATIONAL_CONSTANT);
+
+  // Calculate periapsis and apoapsis
+  const periapsis = semiMajorAxis * (1 - eccentricity);
+  const apoapsis = semiMajorAxis * (1 + eccentricity);
+
+  // Get central body radius
+  const getCentralBodyRadius = () => {
+    switch (centralBody) {
+      case 'sun':
+        return AstronomicalConstants.SOLAR_RADIUS;
+      case 'moon':
+        return AstronomicalConstants.MOON_RADIUS;
+      case 'earth':
+      default:
+        return AstronomicalConstants.EARTH_RADIUS;
+    }
+  };
+
+  const centralBodyRadius = getCentralBodyRadius();
+  const periapsisAltitude = periapsis - centralBodyRadius;
+  const apoapsisAltitude = apoapsis - centralBodyRadius;
+
+  // Calculate specific orbital energy
+  const specificEnergy = -(GM / (2 * semiMajorAxis));
+
+  // Calculate specific angular momentum
+  const specificAngularMomentum = Math.sqrt(GM * semiMajorAxis * (1 - eccentricity ** 2));
+
+  const telemetryMetrics = [
+    {
+      name: 'Semi-Major Axis',
+      value: DataFormatter.distance(semiMajorAxis),
+      unit: '',
+      status: 'normal' as const,
+      precision: 2,
+    },
+    {
+      name: 'Eccentricity',
+      value: eccentricity,
+      unit: '',
+      status: eccentricity < 1 ? ('normal' as const) : ('critical' as const),
+      min: 0,
+      max: 1,
+      precision: 4,
+    },
+    {
+      name: 'Inclination',
+      value: inclination,
+      unit: '°',
+      status: 'normal' as const,
+      min: 0,
+      max: 180,
+      precision: 2,
+    },
+    {
+      name: 'Orbital Period',
+      value: DataFormatter.orbitalPeriod(orbitalPeriod),
+      unit: '',
+      status: 'normal' as const,
+      precision: 2,
+    },
+    {
+      name: 'Orbital Velocity',
+      value: DataFormatter.velocity(orbitalVelocity),
+      unit: '',
+      status: 'normal' as const,
+      precision: 2,
+    },
+  ];
+
+  const orbitalElementsData = {
+    'Semi-Major Axis': DataFormatter.distance(semiMajorAxis),
+    'Eccentricity': eccentricity.toFixed(6),
+    'Inclination': `${inclination.toFixed(2)}°`,
+    'Periapsis Distance': DataFormatter.distance(periapsis),
+    'Apoapsis Distance': DataFormatter.distance(apoapsis),
+    'Periapsis Altitude': DataFormatter.distance(periapsisAltitude),
+    'Apoapsis Altitude': DataFormatter.distance(apoapsisAltitude),
+  };
+
+  const dynamicsData = {
+    'Orbital Period': DataFormatter.orbitalPeriod(orbitalPeriod),
+    'Orbital Velocity': DataFormatter.velocity(orbitalVelocity),
+    'Escape Velocity': DataFormatter.velocity(escapeVelocity),
+    'Specific Energy': DataFormatter.scientific(specificEnergy, 3),
+    'Specific Angular Momentum': DataFormatter.scientific(specificAngularMomentum, 3),
+    'Mean Motion': `${(2 * Math.PI / orbitalPeriod).toFixed(6)} rad/s`,
   };
 
   return (
     <div className="min-h-screen bg-[#0B0E14] text-foreground flex flex-col">
       <Header />
-      
+
       <main className="flex-1 w-full max-w-[120rem] mx-auto px-6 py-8">
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-8">
           {/* Header */}
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <button onClick={() => navigate('/astrolab')} className="p-2 hover:bg-[#131924] rounded-lg transition">
-                <ArrowLeft size={20} className="text-[#00F0FF]" />
+            <div>
+              <button
+                onClick={() => navigate('/astrolab')}
+                className="flex items-center gap-2 text-secondary-foreground hover:text-[#00F0FF] transition-colors mb-4 font-mono text-sm"
+              >
+                <ArrowLeft size={16} />
+                Back to AstroLab
               </button>
-              <div>
-                <h1 className="text-4xl font-bold text-[#00F0FF] font-mono">Orbital Mechanics</h1>
-                <p className="text-secondary-foreground text-sm">Keplerian elements & orbital dynamics calculator</p>
-              </div>
+              <h1 className="text-4xl font-bold text-[#00F0FF] font-mono">ORBITAL MECHANICS</h1>
+              <p className="text-secondary-foreground font-mono text-sm mt-2">Keplerian Elements & Orbital Dynamics Analysis</p>
             </div>
-            <div className="flex items-center gap-2">
-              <button onClick={handleExport} className="p-2 hover:bg-[#131924] rounded-lg transition" title="Export data">
-                <Download size={20} className="text-[#00F0FF]" />
+            <div className="flex gap-2">
+              <button className="p-3 bg-[#131924]/60 border border-[#00F0FF]/20 rounded hover:border-[#00F0FF]/50 transition-colors">
+                <Download size={18} className="text-[#00F0FF]" />
               </button>
-              <button className="p-2 hover:bg-[#131924] rounded-lg transition" title="Settings">
-                <Settings size={20} className="text-[#00F0FF]" />
+              <button className="p-3 bg-[#131924]/60 border border-[#00F0FF]/20 rounded hover:border-[#00F0FF]/50 transition-colors">
+                <Settings size={18} className="text-[#00F0FF]" />
               </button>
             </div>
           </div>
 
-          {/* Main Content */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* Canvas */}
-            <div className="lg:col-span-2 space-y-4">
-              <div className="bg-[#131924]/60 backdrop-blur-md border border-[#00F0FF33] rounded-lg overflow-hidden">
-                <canvas
-                  ref={canvasRef}
-                  width={800}
-                  height={500}
-                  className="w-full"
-                />
-              </div>
-
-              {/* Controls */}
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          {/* Central Body Selection */}
+          <div className="bg-[#131924]/60 backdrop-blur-md border border-[#00F0FF]/20 rounded p-6">
+            <h3 className="text-sm font-bold text-[#00F0FF] font-mono mb-4">CENTRAL BODY</h3>
+            <div className="grid grid-cols-3 gap-3">
+              {[
+                { id: 'earth', label: 'Earth', mass: AstronomicalConstants.EARTH_MASS },
+                { id: 'moon', label: 'Moon', mass: AstronomicalConstants.MOON_MASS },
+                { id: 'sun', label: 'Sun', mass: AstronomicalConstants.SOLAR_MASS },
+              ].map((body) => (
                 <button
-                  onClick={() => setIsRunning(!isRunning)}
-                  className="flex items-center justify-center gap-2 px-4 py-2 bg-[#00F0FF]/20 text-[#00F0FF] border border-[#00F0FF] rounded-lg hover:bg-[#00F0FF]/30 transition font-mono text-sm"
-                >
-                  {isRunning ? <Pause size={16} /> : <Play size={16} />}
-                  {isRunning ? 'Pause' : 'Play'}
-                </button>
-                <button
-                  onClick={() => {
-                    setTime(0);
-                  }}
-                  className="flex items-center justify-center gap-2 px-4 py-2 bg-[#FF007A]/20 text-[#FF007A] border border-[#FF007A] rounded-lg hover:bg-[#FF007A]/30 transition font-mono text-sm"
-                >
-                  <RotateCcw size={16} />
-                  Reset
-                </button>
-                <button
-                  onClick={() => setShowVelocity(!showVelocity)}
-                  className={`flex items-center justify-center gap-2 px-4 py-2 border rounded-lg transition font-mono text-sm ${
-                    showVelocity
-                      ? 'bg-[#10B981]/20 text-[#10B981] border-[#10B981]'
-                      : 'bg-[#475569]/20 text-secondary-foreground border-[#475569]'
+                  key={body.id}
+                  onClick={() => setCentralBody(body.id)}
+                  className={`py-3 px-4 rounded border font-mono text-sm transition-all ${
+                    centralBody === body.id
+                      ? 'bg-[#00F0FF]/20 border-[#00F0FF] text-[#00F0FF]'
+                      : 'bg-[#0B0E14] border-[#00F0FF]/20 text-secondary-foreground hover:border-[#00F0FF]/50'
                   }`}
                 >
-                  Velocity
+                  <div className="font-bold">{body.label}</div>
+                  <div className="text-xs text-secondary-foreground mt-1">{DataFormatter.mass(body.mass)}</div>
                 </button>
-                <button
-                  onClick={() => setShowEnergy(!showEnergy)}
-                  className={`flex items-center justify-center gap-2 px-4 py-2 border rounded-lg transition font-mono text-sm ${
-                    showEnergy
-                      ? 'bg-[#A78BFA]/20 text-[#A78BFA] border-[#A78BFA]'
-                      : 'bg-[#475569]/20 text-secondary-foreground border-[#475569]'
-                  }`}
-                >
-                  Energy
-                </button>
-              </div>
+              ))}
+            </div>
+          </div>
 
-              {/* Presets */}
-              <div className="bg-[#131924]/60 backdrop-blur-md border border-[#00F0FF33] rounded-lg p-4">
-                <h3 className="text-sm font-mono font-bold text-[#00F0FF] mb-3">Orbit Presets</h3>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-                  {(['geo', 'leo', 'meo', 'custom'] as const).map(p => (
-                    <button
-                      key={p}
-                      onClick={() => loadPreset(p)}
-                      className={`px-3 py-2 rounded text-xs font-mono transition ${
-                        selectedOrbit === p
-                          ? 'bg-[#00F0FF]/30 text-[#00F0FF] border border-[#00F0FF]'
-                          : 'bg-[#0B0E14]/50 text-secondary-foreground border border-[#475569] hover:border-[#00F0FF]'
-                      }`}
-                    >
-                      {p === 'geo' && 'GEO'}
-                      {p === 'leo' && 'LEO'}
-                      {p === 'meo' && 'MEO'}
-                      {p === 'custom' && 'Custom'}
-                    </button>
-                  ))}
-                </div>
+          {/* Orbital Parameters */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="bg-[#131924]/60 backdrop-blur-md border border-[#00F0FF]/20 rounded p-6">
+              <h3 className="text-sm font-bold text-[#00F0FF] font-mono mb-4">SEMI-MAJOR AXIS</h3>
+              <input
+                type="range"
+                min="6.4e6"
+                max="4e7"
+                step="1e5"
+                value={semiMajorAxis}
+                onChange={(e) => setSemiMajorAxis(parseFloat(e.target.value))}
+                className="w-full"
+              />
+              <div className="text-sm font-mono text-[#00F0FF] mt-3">{DataFormatter.distance(semiMajorAxis)}</div>
+              <div className="text-xs text-secondary-foreground mt-1 font-mono">Range: 6.4e6 - 4e7 m</div>
+            </div>
+
+            <div className="bg-[#131924]/60 backdrop-blur-md border border-[#00F0FF]/20 rounded p-6">
+              <h3 className="text-sm font-bold text-[#00F0FF] font-mono mb-4">ECCENTRICITY</h3>
+              <input
+                type="range"
+                min="0"
+                max="0.99"
+                step="0.01"
+                value={eccentricity}
+                onChange={(e) => setEccentricity(parseFloat(e.target.value))}
+                className="w-full"
+              />
+              <div className="text-sm font-mono text-[#00F0FF] mt-3">{eccentricity.toFixed(4)}</div>
+              <div className="text-xs text-secondary-foreground mt-1 font-mono">
+                {eccentricity < 0.1 ? 'Circular' : eccentricity < 0.5 ? 'Elliptical' : 'Highly Eccentric'}
               </div>
             </div>
 
-            {/* Right Panel */}
-            <div className="space-y-4">
-              {/* Orbital Elements */}
-              <div className="bg-[#131924]/60 backdrop-blur-md border border-[#00F0FF33] rounded-lg p-4">
-                <h3 className="text-sm font-mono font-bold text-[#00F0FF] mb-4">Keplerian Elements</h3>
-                
-                <div className="space-y-3 text-xs font-mono">
-                  <div>
-                    <label className="text-secondary-foreground block mb-1">
-                      Semi-major axis: <span className="text-[#00F0FF]">{elements.a.toFixed(0)} km</span>
-                    </label>
-                    <input
-                      type="range"
-                      min="6378"
-                      max="100000"
-                      value={elements.a}
-                      onChange={(e) => setElements({ ...elements, a: parseFloat(e.target.value) })}
-                      className="w-full"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="text-secondary-foreground block mb-1">
-                      Eccentricity: <span className="text-[#FF007A]">{elements.e.toFixed(4)}</span>
-                    </label>
-                    <input
-                      type="range"
-                      min="0"
-                      max="0.5"
-                      step="0.001"
-                      value={elements.e}
-                      onChange={(e) => setElements({ ...elements, e: parseFloat(e.target.value) })}
-                      className="w-full"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="text-secondary-foreground block mb-1">
-                      Inclination: <span className="text-[#F59E0B]">{elements.i.toFixed(2)}°</span>
-                    </label>
-                    <input
-                      type="range"
-                      min="0"
-                      max="180"
-                      step="0.1"
-                      value={elements.i}
-                      onChange={(e) => setElements({ ...elements, i: parseFloat(e.target.value) })}
-                      className="w-full"
-                    />
-                  </div>
-                </div>
+            <div className="bg-[#131924]/60 backdrop-blur-md border border-[#00F0FF]/20 rounded p-6">
+              <h3 className="text-sm font-bold text-[#00F0FF] font-mono mb-4">INCLINATION</h3>
+              <input
+                type="range"
+                min="0"
+                max="180"
+                step="1"
+                value={inclination}
+                onChange={(e) => setInclination(parseFloat(e.target.value))}
+                className="w-full"
+              />
+              <div className="text-sm font-mono text-[#00F0FF] mt-3">{inclination.toFixed(2)}°</div>
+              <div className="text-xs text-secondary-foreground mt-1 font-mono">
+                {inclination === 0 ? 'Equatorial' : inclination === 90 ? 'Polar' : 'Inclined'}
               </div>
+            </div>
+          </div>
 
-              {/* Calculated Metrics */}
-              <div className="bg-[#131924]/60 backdrop-blur-md border border-[#00F0FF33] rounded-lg p-4">
-                <h3 className="text-sm font-mono font-bold text-[#00F0FF] mb-4 flex items-center gap-2">
-                  <BarChart3 size={14} />
-                  Metrics
-                </h3>
-                
-                <div className="space-y-2 text-xs font-mono">
-                  <div className="bg-[#0B0E14] p-2 rounded border border-[#00F0FF33]">
-                    <div className="text-secondary-foreground">Period</div>
-                    <div className="text-[#00F0FF] font-bold">{(metrics.period / 3600).toFixed(2)} hours</div>
-                  </div>
+          {/* Telemetry Display */}
+          <TelemetryDisplay metrics={telemetryMetrics} title="ORBITAL PARAMETERS" />
 
-                  <div className="grid grid-cols-2 gap-2">
-                    <div className="bg-[#0B0E14] p-2 rounded border border-[#FF007A33]">
-                      <div className="text-secondary-foreground text-[10px]">Apogee</div>
-                      <div className="text-[#FF007A] font-bold">{metrics.apogee.toFixed(0)} km</div>
-                    </div>
-                    <div className="bg-[#0B0E14] p-2 rounded border border-[#F59E0B33]">
-                      <div className="text-secondary-foreground text-[10px]">Perigee</div>
-                      <div className="text-[#F59E0B] font-bold">{metrics.perigee.toFixed(0)} km</div>
-                    </div>
-                  </div>
+          {/* Data Panels */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <ProfessionalDataPanel
+              title="ORBITAL ELEMENTS"
+              data={orbitalElementsData}
+              format="table"
+              precision={3}
+              copyable
+              downloadable
+            />
+            <ProfessionalDataPanel
+              title="ORBITAL DYNAMICS"
+              data={dynamicsData}
+              format="table"
+              precision={3}
+              copyable
+              downloadable
+            />
+          </div>
 
-                  <div className="bg-[#0B0E14] p-2 rounded border border-[#A78BFA33]">
-                    <div className="text-secondary-foreground">Velocity</div>
-                    <div className="text-[#A78BFA] font-bold">{metrics.v.toFixed(2)} km/s</div>
-                  </div>
+          {/* Fundamental Equations */}
+          <div className="space-y-6">
+            <EquationDisplay
+              title="KEPLER'S THIRD LAW"
+              latex="T^2 = \\frac{4\\pi^2}{GM} a^3"
+              description="Relationship between orbital period and semi-major axis"
+              variables={{
+                'T': 'Orbital period',
+                'a': 'Semi-major axis',
+                'G': 'Gravitational constant',
+                'M': 'Central body mass',
+              }}
+            />
 
-                  {showEnergy && (
-                    <>
-                      <div className="bg-[#0B0E14] p-2 rounded border border-[#10B98133]">
-                        <div className="text-secondary-foreground text-[10px]">Total Energy</div>
-                        <div className="text-[#10B981] font-bold">{metrics.te.toFixed(0)} J/kg</div>
-                      </div>
-                    </>
-                  )}
-                </div>
+            <EquationDisplay
+              title="ORBITAL VELOCITY"
+              latex="v = \\sqrt{\\frac{GM}{r}}"
+              description="Velocity required for circular orbit at distance r"
+              variables={{
+                'v': 'Orbital velocity',
+                'r': 'Orbital radius',
+                'G': 'Gravitational constant',
+                'M': 'Central body mass',
+              }}
+            />
+
+            <EquationDisplay
+              title="ESCAPE VELOCITY"
+              latex="v_{esc} = \\sqrt{\\frac{2GM}{r}}"
+              description="Minimum velocity to escape gravitational field"
+              variables={{
+                'v_esc': 'Escape velocity',
+                'r': 'Distance from center',
+                'G': 'Gravitational constant',
+                'M': 'Central body mass',
+              }}
+            />
+
+            <EquationDisplay
+              title="SPECIFIC ORBITAL ENERGY"
+              latex="\\varepsilon = -\\frac{GM}{2a}"
+              description="Energy per unit mass in orbit"
+              variables={{
+                'ε': 'Specific orbital energy',
+                'a': 'Semi-major axis',
+                'G': 'Gravitational constant',
+                'M': 'Central body mass',
+              }}
+            />
+
+            <EquationDisplay
+              title="SPECIFIC ANGULAR MOMENTUM"
+              latex="h = \\sqrt{GM \\cdot a(1-e^2)}"
+              description="Angular momentum per unit mass"
+              variables={{
+                'h': 'Specific angular momentum',
+                'a': 'Semi-major axis',
+                'e': 'Eccentricity',
+                'G': 'Gravitational constant',
+                'M': 'Central body mass',
+              }}
+            />
+          </div>
+
+          {/* Standards & References */}
+          <div className="bg-[#131924]/60 backdrop-blur-md border border-[#10B981]/20 rounded p-6">
+            <h3 className="text-sm font-bold text-[#10B981] font-mono mb-4">STANDARDS & REFERENCES</h3>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+              <div className="flex items-center gap-2 text-xs font-mono">
+                <div className="w-2 h-2 rounded-full bg-[#10B981]" />
+                <span className="text-secondary-foreground">Keplerian Elements</span>
               </div>
-
-              {/* Position */}
-              <div className="bg-[#131924]/60 backdrop-blur-md border border-[#00F0FF33] rounded-lg p-4">
-                <h3 className="text-sm font-mono font-bold text-[#00F0FF] mb-3">Position</h3>
-                <div className="space-y-1 text-xs font-mono text-secondary-foreground">
-                  <div className="flex justify-between">
-                    <span>X:</span>
-                    <span className="text-[#00F0FF]">{position.x.toFixed(0)} km</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Y:</span>
-                    <span className="text-[#00F0FF]">{position.y.toFixed(0)} km</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Z:</span>
-                    <span className="text-[#00F0FF]">{position.z.toFixed(0)} km</span>
-                  </div>
-                </div>
+              <div className="flex items-center gap-2 text-xs font-mono">
+                <div className="w-2 h-2 rounded-full bg-[#10B981]" />
+                <span className="text-secondary-foreground">Two-Body Problem</span>
+              </div>
+              <div className="flex items-center gap-2 text-xs font-mono">
+                <div className="w-2 h-2 rounded-full bg-[#10B981]" />
+                <span className="text-secondary-foreground">ISO 9001:2015</span>
+              </div>
+              <div className="flex items-center gap-2 text-xs font-mono">
+                <div className="w-2 h-2 rounded-full bg-[#10B981]" />
+                <span className="text-secondary-foreground">IEEE 754 Precision</span>
+              </div>
+              <div className="flex items-center gap-2 text-xs font-mono">
+                <div className="w-2 h-2 rounded-full bg-[#10B981]" />
+                <span className="text-secondary-foreground">J2000.0 Epoch</span>
+              </div>
+              <div className="flex items-center gap-2 text-xs font-mono">
+                <div className="w-2 h-2 rounded-full bg-[#10B981]" />
+                <span className="text-secondary-foreground">UTC Timescale</span>
               </div>
             </div>
           </div>
