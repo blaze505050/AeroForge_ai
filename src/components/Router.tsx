@@ -23,6 +23,9 @@ import AstroLabComplete from '@/components/AstroLabComplete';
 import AstroLabPage from '@/components/pages/AstroLabPage';
 import PremiumAstroLabSuite from '@/components/PremiumAstroLabSuite';
 import UniverseViewerPage from '@/components/pages/UniverseViewerPage';
+import ExoplanetHabitabilityPage from '@/components/pages/ExoplanetHabitabilityPage';
+import BlackHoleSimulatorPage from '@/components/pages/BlackHoleSimulatorPage';
+import CMBExplorerPage from '@/components/pages/CMBExplorerPage';
 
 // Layout component that includes ScrollToTop
 function Layout() {
@@ -185,6 +188,27 @@ const router = createBrowserRouter([
         element: <UniverseViewerPage />,
         routeMetadata: {
           pageIdentifier: 'universe-viewer',
+        },
+      },
+      {
+        path: "exoplanet-habitability",
+        element: <ExoplanetHabitabilityPage />,
+        routeMetadata: {
+          pageIdentifier: 'exoplanet-habitability',
+        },
+      },
+      {
+        path: "black-hole-simulator",
+        element: <BlackHoleSimulatorPage />,
+        routeMetadata: {
+          pageIdentifier: 'black-hole-simulator',
+        },
+      },
+      {
+        path: "cmb-explorer",
+        element: <CMBExplorerPage />,
+        routeMetadata: {
+          pageIdentifier: 'cmb-explorer',
         },
       },
       {
