@@ -21,6 +21,7 @@ import AstroLabCelestialCoordinatePage from '@/components/pages/AstroLabCelestia
 import AstroLabOrbitalMechanicsPage from '@/components/pages/AstroLabOrbitalMechanicsPage';
 import AstroLabComplete from '@/components/AstroLabComplete';
 import AstroLabPage from '@/components/pages/AstroLabPage';
+import PremiumAstroLabSuite from '@/components/PremiumAstroLabSuite';
 
 // Layout component that includes ScrollToTop
 function Layout() {
@@ -169,6 +170,13 @@ const router = createBrowserRouter([
         element: <AstroLabPage />,
         routeMetadata: {
           pageIdentifier: 'astrolab-main',
+        },
+      },
+      {
+        path: "premium-astrolab",
+        element: <PremiumAstroLabSuite />,
+        routeMetadata: {
+          pageIdentifier: 'premium-astrolab',
         },
       },
       {

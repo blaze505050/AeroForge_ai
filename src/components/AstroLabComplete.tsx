@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Clock, Zap, Globe } from 'lucide-react';
+import { Clock, Zap, Globe, TrendingUp, Radio, AlertCircle } from 'lucide-react';
 
 export default function AstroLabComplete() {
   const [currentModule, setCurrentModule] = useState('spatial-globe');

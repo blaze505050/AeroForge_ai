@@ -30,6 +30,15 @@ const AstroLabPage: React.FC = () => {
 
   const modules = [
     {
+      id: 'premium-suite',
+      label: 'Premium Mission Control',
+      icon: Zap,
+      description: 'Ultra-high-quality Mission Control with advanced analytics & real-time telemetry',
+      path: '/premium-astrolab',
+      color: '#FF007A',
+      category: 'Premium',
+    },
+    {
       id: 'spatial-globe',
       label: 'Spatial Globe',
       icon: Globe,
