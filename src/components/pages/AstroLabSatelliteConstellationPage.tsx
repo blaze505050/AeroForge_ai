@@ -1,56 +1,36 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Play, Pause, RotateCcw, AlertTriangle, Eye } from 'lucide-react';
-import { Satellite as SatelliteIcon } from 'lucide-react';
+import { ArrowLeft, Download, Settings, Satellite } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 
-interface Satellite {
-  id: string;
+interface ConstellationData {
   name: string;
-  lat: number;
-  lon: number;
   altitude: number;
-  type: 'LEO' | 'MEO' | 'GEO';
-  velocity: number;
-  period: number;
+  shell: string;
+  count: number;
   color: string;
+  coverage: number;
 }
 
 export default function AstroLabSatelliteConstellationPage() {
   const navigate = useNavigate();
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [isRunning, setIsRunning] = useState(true);
-  const [time, setTime] = useState(0);
-  const [selectedSatellite, setSelectedSatellite] = useState<Satellite | null>(null);
-  const [satellites, setSatellites] = useState<Satellite[]>([
-    // LEO Satellites
-    { id: 'iss', name: 'ISS', lat: 0, lon: 0, altitude: 408, type: 'LEO', velocity: 7.66, period: 92.68, color: '#3B82F6' },
-    { id: 'hubble', name: 'Hubble', lat: 10, lon: 45, altitude: 547, type: 'LEO', velocity: 7.54, period: 96.97, color: '#8B5CF6' },
-    { id: 'starlink1', name: 'Starlink-1', lat: -20, lon: 90, altitude: 550, type: 'LEO', velocity: 7.54, period: 97, color: '#10B981' },
-    { id: 'starlink2', name: 'Starlink-2', lat: 30, lon: 180, altitude: 550, type: 'LEO', velocity: 7.54, period: 97, color: '#10B981' },
-    // MEO Satellites
-    { id: 'gps1', name: 'GPS-1', lat: 0, lon: 0, altitude: 20200, type: 'MEO', velocity: 3.87, period: 718, color: '#F59E0B' },
-    { id: 'gps2', name: 'GPS-2', lat: 0, lon: 120, altitude: 20200, type: 'MEO', velocity: 3.87, period: 718, color: '#F59E0B' },
-    // GEO Satellites
-    { id: 'goes16', name: 'GOES-16', lat: 0, lon: -75, altitude: 35786, type: 'GEO', velocity: 3.07, period: 1436, color: '#EF4444' },
-    { id: 'goes17', name: 'GOES-17', lat: 0, lon: -137, altitude: 35786, type: 'GEO', velocity: 3.07, period: 1436, color: '#EF4444' },
-  ]);
+  const [selectedShell, setSelectedShell] = useState<string>('LEO');
+  const canvasRef = React.useRef<HTMLCanvasElement>(null);
+  const [rotation, setRotation] = useState(0);
 
-  const propagateSatellite = (sat: Satellite, timeStep: number): Satellite => {
-    const meanMotion = (2 * Math.PI) / (sat.period * 60);
-    const newLon = (sat.lon + (360 * timeStep) / (sat.period * 60)) % 360;
-    const latVariation = Math.sin((meanMotion * timeStep) % (2 * Math.PI)) * (sat.type === 'LEO' ? 30 : 5);
+  const constellations: ConstellationData[] = [
+    { name: 'LEO', altitude: 400, shell: 'LEO', count: 8000, color: '#00F0FF', coverage: 98 },
+    { name: 'MEO', altitude: 20000, shell: 'MEO', count: 600, color: '#F59E0B', coverage: 85 },
+    { name: 'GEO', altitude: 35786, shell: 'GEO', count: 500, color: '#A78BFA', coverage: 100 },
+  ];
 
-    return {
-      ...sat,
-      lon: newLon,
-      lat: latVariation,
-    };
-  };
+  useEffect(() => {
+    const interval = setInterval(() => setRotation(r => (r + 0.5) % 360), 50);
+    return () => clearInterval(interval);
+  }, []);
 
-  // Draw constellation map
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -62,305 +42,209 @@ export default function AstroLabSatelliteConstellationPage() {
     const height = canvas.height;
     const centerX = width / 2;
     const centerY = height / 2;
-    const radius = Math.min(width, height) / 2.5;
 
     // Clear canvas
-    ctx.fillStyle = '#0F172A';
+    ctx.fillStyle = '#0B0E14';
     ctx.fillRect(0, 0, width, height);
 
     // Draw stars
-    ctx.fillStyle = '#E2E8F0';
+    ctx.fillStyle = '#FFFFFF';
     for (let i = 0; i < 100; i++) {
       const x = Math.random() * width;
       const y = Math.random() * height;
-      const size = Math.random() * 1.5;
+      const size = Math.random() * 1;
       ctx.fillRect(x, y, size, size);
     }
 
-    // Draw Earth
-    ctx.fillStyle = '#1E40AF';
-    ctx.beginPath();
-    ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
-    ctx.fill();
-
-    // Draw continents
-    ctx.fillStyle = '#10B981';
-    const continents = [
-      { x: 0.3, y: 0.4, w: 0.2, h: 0.15 },
-      { x: 0.6, y: 0.3, w: 0.25, h: 0.2 },
-      { x: 0.1, y: 0.6, w: 0.15, h: 0.2 },
+    // Draw orbital shells
+    const shells = [
+      { radius: 60, color: '#00F0FF', label: 'LEO' },
+      { radius: 100, color: '#F59E0B', label: 'MEO' },
+      { radius: 140, color: '#A78BFA', label: 'GEO' },
     ];
-    continents.forEach(cont => {
-      ctx.fillRect(
-        centerX + (cont.x - 0.5) * radius * 2,
-        centerY + (cont.y - 0.5) * radius * 2,
-        cont.w * radius * 2,
-        cont.h * radius * 2
-      );
-    });
 
-    // Draw grid
-    ctx.strokeStyle = '#0EA5E9';
-    ctx.lineWidth = 0.5;
-    ctx.globalAlpha = 0.3;
-    for (let lat = -90; lat <= 90; lat += 30) {
-      for (let lon = -180; lon <= 180; lon += 30) {
-        const x = centerX + (lon / 180) * radius;
-        const y = centerY + (lat / 90) * radius;
-        ctx.fillStyle = '#0EA5E9';
-        ctx.fillRect(x - 1, y - 1, 2, 2);
-      }
-    }
-    ctx.globalAlpha = 1;
-
-    // Draw satellites
-    satellites.forEach((sat) => {
-      const x = centerX + (sat.lon / 180) * radius;
-      const y = centerY + (sat.lat / 90) * radius;
-
-      // Orbital shell (for reference)
-      if (sat === satellites[0]) {
-        ctx.strokeStyle = '#0EA5E9';
-        ctx.lineWidth = 1;
-        ctx.globalAlpha = 0.1;
-        ctx.beginPath();
-        ctx.arc(centerX, centerY, radius * (sat.altitude / 35786), 0, Math.PI * 2);
-        ctx.stroke();
-        ctx.globalAlpha = 1;
-      }
-
-      // Satellite trail
-      ctx.strokeStyle = sat.color;
-      ctx.lineWidth = 1;
+    shells.forEach(shell => {
+      ctx.strokeStyle = shell.color;
       ctx.globalAlpha = 0.3;
-      ctx.beginPath();
-      ctx.arc(x, y, sat.altitude / 5000, 0, Math.PI * 2);
-      ctx.stroke();
-      ctx.globalAlpha = 1;
-
-      // Satellite point
-      ctx.fillStyle = sat === selectedSatellite ? '#F59E0B' : sat.color;
-      ctx.beginPath();
-      ctx.arc(x, y, 5, 0, Math.PI * 2);
-      ctx.fill();
-
-      // Glow
-      ctx.strokeStyle = sat.color;
       ctx.lineWidth = 1;
-      ctx.globalAlpha = 0.3;
       ctx.beginPath();
-      ctx.arc(x, y, 10, 0, Math.PI * 2);
+      ctx.arc(centerX, centerY, shell.radius, 0, Math.PI * 2);
       ctx.stroke();
       ctx.globalAlpha = 1;
 
       // Label
-      ctx.fillStyle = '#E2E8F0';
-      ctx.font = '11px monospace';
-      ctx.fillText(sat.name, x + 10, y - 10);
+      ctx.fillStyle = shell.color;
+      ctx.font = 'bold 12px monospace';
+      ctx.fillText(shell.label, centerX + shell.radius + 5, centerY - 5);
     });
 
-    // Draw info
-    ctx.fillStyle = '#0EA5E9';
-    ctx.font = 'bold 12px monospace';
-    ctx.fillText(`Satellites: ${satellites.length} | Time: ${Math.floor(time)} min`, 20, 30);
+    // Draw Earth
+    const gradient = ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, 20);
+    gradient.addColorStop(0, '#1a3a52');
+    gradient.addColorStop(1, '#0d5a3d');
+    ctx.fillStyle = gradient;
+    ctx.beginPath();
+    ctx.arc(centerX, centerY, 20, 0, Math.PI * 2);
+    ctx.fill();
 
-    // Draw legend
-    const legendY = height - 80;
-    ctx.font = '11px monospace';
-    ctx.fillStyle = '#3B82F6';
-    ctx.fillText('● LEO', 20, legendY);
-    ctx.fillStyle = '#F59E0B';
-    ctx.fillText('● MEO', 100, legendY);
-    ctx.fillStyle = '#EF4444';
-    ctx.fillText('● GEO', 180, legendY);
-  }, [time, satellites, selectedSatellite]);
+    // Draw satellites
+    const drawSatellites = (count: number, radius: number, color: string) => {
+      for (let i = 0; i < Math.min(count, 50); i++) {
+        const angle = ((i / count) * 360 + rotation) * (Math.PI / 180);
+        const x = centerX + radius * Math.cos(angle);
+        const y = centerY + radius * Math.sin(angle);
 
-  // Animation loop
-  useEffect(() => {
-    if (!isRunning) return;
+        ctx.fillStyle = color;
+        ctx.beginPath();
+        ctx.arc(x, y, 3, 0, Math.PI * 2);
+        ctx.fill();
 
-    const interval = setInterval(() => {
-      setTime(prev => prev + 1);
-      setSatellites(prev => prev.map(sat => propagateSatellite(sat, time + 1)));
-    }, 100);
+        // Glow
+        ctx.strokeStyle = color;
+        ctx.globalAlpha = 0.3;
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.arc(x, y, 5, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.globalAlpha = 1;
+      }
+    };
 
-    return () => clearInterval(interval);
-  }, [isRunning, time]);
+    drawSatellites(8000, 60, '#00F0FF');
+    drawSatellites(600, 100, '#F59E0B');
+    drawSatellites(500, 140, '#A78BFA');
+  }, [rotation]);
+
+  const selected = constellations.find(c => c.shell === selectedShell);
 
   return (
-    <div className="min-h-screen bg-aerospace-dark text-foreground font-paragraph flex flex-col">
+    <div className="min-h-screen bg-[#0B0E14] text-foreground flex flex-col">
       <Header />
-
-      <main className="flex-1 w-full flex flex-col">
-        {/* Header */}
-        <section className="w-full bg-primary border-b border-secondary/20 py-8">
-          <div className="w-full max-w-[120rem] mx-auto px-6 md:px-12 lg:px-16">
-            <button
-              onClick={() => navigate('/')}
-              className="flex items-center gap-2 text-aerospace-blue hover:text-aerospace-accent transition-colors mb-6"
-            >
-              <ArrowLeft className="w-4 h-4" />
-              Back to Home
-            </button>
-            <div className="flex items-start justify-between">
+      
+      <main className="flex-1 w-full max-w-[120rem] mx-auto px-6 py-8">
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
+          {/* Header */}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <button onClick={() => navigate('/astrolab')} className="p-2 hover:bg-[#131924] rounded-lg transition">
+                <ArrowLeft size={20} className="text-[#00F0FF]" />
+              </button>
               <div>
-                <h1 className="font-heading text-4xl md:text-5xl font-bold text-foreground mb-4">
-                  Satellite Constellation Mapper
-                </h1>
-                <p className="font-paragraph text-lg text-secondary-foreground max-w-3xl">
-                  Real-time mapping of LEO, MEO, and GEO satellites. Track constellations, detect collisions, and analyze orbital debris.
-                </p>
+                <h1 className="text-4xl font-bold text-[#00F0FF] font-mono">Satellite Constellation Mapper</h1>
+                <p className="text-secondary-foreground text-sm">Real-time orbital shell visualization</p>
               </div>
-              <SatelliteIcon className="w-12 h-12 text-aerospace-blue hidden lg:block" />
+            </div>
+            <div className="flex gap-2">
+              <button className="p-2 hover:bg-[#131924] rounded-lg transition">
+                <Download size={20} className="text-[#00F0FF]" />
+              </button>
+              <button className="p-2 hover:bg-[#131924] rounded-lg transition">
+                <Settings size={20} className="text-[#00F0FF]" />
+              </button>
             </div>
           </div>
-        </section>
 
-        {/* Main Content */}
-        <section className="flex-1 w-full bg-aerospace-dark py-12">
-          <div className="w-full max-w-[120rem] mx-auto px-6 md:px-12 lg:px-16">
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-              {/* Canvas */}
-              <div className="lg:col-span-2">
+          {/* Stats Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {constellations.map((constellation) => (
+              <motion.button
+                key={constellation.shell}
+                onClick={() => setSelectedShell(constellation.shell)}
+                whileHover={{ scale: 1.02 }}
+                className={`p-6 rounded-lg border-2 transition-all text-left ${
+                  selectedShell === constellation.shell
+                    ? `border-[${constellation.color}] bg-[#131924]/60`
+                    : 'border-[#00F0FF33] bg-[#131924]/30 hover:border-[#00F0FF]'
+                }`}
+              >
+                <div className="text-sm font-mono mb-2" style={{ color: constellation.color }}>
+                  {constellation.shell} ({constellation.altitude} km)
+                </div>
+                <div className="text-4xl font-bold font-mono" style={{ color: constellation.color }}>
+                  {constellation.count.toLocaleString()}
+                </div>
+                <div className="text-xs text-secondary-foreground mt-2">Active satellites</div>
+              </motion.button>
+            ))}
+          </div>
+
+          {/* Main Content */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* Canvas */}
+            <div className="lg:col-span-2 bg-[#131924]/60 backdrop-blur-md border border-[#00F0FF33] rounded-lg p-6">
+              <canvas
+                ref={canvasRef}
+                width={500}
+                height={500}
+                className="w-full border border-[#00F0FF33] rounded-lg"
+              />
+            </div>
+
+            {/* Details */}
+            <div className="space-y-4">
+              {selected && (
                 <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="bg-gradient-to-br from-aerospace-dark/60 to-aerospace-dark/40 border border-aerospace-blue/20 rounded-lg p-6 hover:border-aerospace-blue/60 transition-all duration-300 shadow-lg"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="bg-[#131924]/60 backdrop-blur-md border border-[#00F0FF33] rounded-lg p-6"
                 >
-                  <canvas
-                    ref={canvasRef}
-                    width={700}
-                    height={600}
-                    className="w-full bg-aerospace-dark rounded-lg"
-                  />
+                  <h3 className="text-lg font-bold text-[#00F0FF] font-mono mb-4 flex items-center gap-2">
+                    <Satellite size={18} />
+                    {selected.shell} Shell
+                  </h3>
+                  <div className="space-y-4 text-sm font-mono">
+                    <div>
+                      <span className="text-[#FF007A]">Altitude:</span>
+                      <div className="text-[#00F0FF] text-lg font-bold">{selected.altitude} km</div>
+                    </div>
+                    <div>
+                      <span className="text-[#FF007A]">Total Satellites:</span>
+                      <div className="text-[#00F0FF] text-lg font-bold">{selected.count.toLocaleString()}</div>
+                    </div>
+                    <div>
+                      <span className="text-[#FF007A]">Coverage:</span>
+                      <div className="text-[#00F0FF] text-lg font-bold">{selected.coverage}%</div>
+                      <div className="w-full bg-[#0B0E14] rounded-full h-2 mt-2">
+                        <div
+                          className="bg-gradient-to-r from-[#00F0FF] to-[#FF007A] h-2 rounded-full"
+                          style={{ width: `${selected.coverage}%` }}
+                        />
+                      </div>
+                    </div>
+                  </div>
                 </motion.div>
+              )}
+
+              {/* Legend */}
+              <div className="bg-[#131924]/60 backdrop-blur-md border border-[#00F0FF33] rounded-lg p-6">
+                <h3 className="text-sm font-bold text-[#00F0FF] font-mono mb-4">Orbital Shells</h3>
+                <div className="space-y-3">
+                  {constellations.map((constellation) => (
+                    <div key={constellation.shell} className="flex items-center gap-3">
+                      <div
+                        className="w-3 h-3 rounded-full"
+                        style={{ backgroundColor: constellation.color }}
+                      />
+                      <div className="text-xs font-mono">
+                        <div className="text-foreground">{constellation.shell}</div>
+                        <div className="text-secondary-foreground">{constellation.altitude} km</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
 
-              {/* Controls */}
-              <div className="space-y-6">
-                {/* Playback */}
-                <motion.div
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  className="bg-gradient-to-br from-aerospace-dark/60 to-aerospace-dark/40 border border-aerospace-blue/20 rounded-lg p-6"
-                >
-                  <h3 className="font-heading text-lg font-bold text-foreground mb-4">Playback</h3>
-                  <div className="space-y-3">
-                    <button
-                      onClick={() => setIsRunning(!isRunning)}
-                      className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-aerospace-blue text-white rounded-lg hover:bg-aerospace-accent transition-colors"
-                    >
-                      {isRunning ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
-                      {isRunning ? 'Pause' : 'Play'}
-                    </button>
-                    <button
-                      onClick={() => {
-                        setTime(0);
-                        setSatellites(prev => prev.map(sat => ({ ...sat, lon: 0, lat: 0 })));
-                      }}
-                      className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-primary/40 text-aerospace-blue border border-aerospace-blue/20 rounded-lg hover:bg-primary/60 transition-colors"
-                    >
-                      <RotateCcw className="w-4 h-4" />
-                      Reset
-                    </button>
-                  </div>
-                </motion.div>
-
-                {/* Statistics */}
-                <motion.div
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.1 }}
-                  className="bg-gradient-to-br from-aerospace-dark/60 to-aerospace-dark/40 border border-aerospace-blue/20 rounded-lg p-6"
-                >
-                  <h3 className="font-heading text-lg font-bold text-foreground mb-4">Constellation Stats</h3>
-                  <div className="space-y-3 text-sm">
-                    <div className="flex justify-between">
-                      <span className="text-foreground/60">Total Satellites</span>
-                      <span className="text-aerospace-blue font-bold">{satellites.length}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-foreground/60">LEO Satellites</span>
-                      <span className="text-blue-400 font-bold">{satellites.filter(s => s.type === 'LEO').length}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-foreground/60">MEO Satellites</span>
-                      <span className="text-amber-400 font-bold">{satellites.filter(s => s.type === 'MEO').length}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-foreground/60">GEO Satellites</span>
-                      <span className="text-red-400 font-bold">{satellites.filter(s => s.type === 'GEO').length}</span>
-                    </div>
-                  </div>
-                </motion.div>
-
-                {/* Satellites List */}
-                <motion.div
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.2 }}
-                  className="bg-gradient-to-br from-aerospace-dark/60 to-aerospace-dark/40 border border-aerospace-blue/20 rounded-lg p-6 max-h-96 overflow-y-auto"
-                >
-                  <h3 className="font-heading text-lg font-bold text-foreground mb-4">Satellites</h3>
-                  <div className="space-y-2">
-                    {satellites.map((sat) => (
-                      <button
-                        key={sat.id}
-                        onClick={() => setSelectedSatellite(selectedSatellite?.id === sat.id ? null : sat)}
-                        className={`w-full text-left p-3 rounded-lg transition-all ${
-                          selectedSatellite?.id === sat.id
-                            ? 'bg-aerospace-blue/30 border border-aerospace-blue'
-                            : 'bg-primary/40 border border-aerospace-blue/20 hover:border-aerospace-blue/50'
-                        }`}
-                      >
-                        <div className="flex items-center gap-2">
-                          <div
-                            className="w-2 h-2 rounded-full"
-                            style={{ backgroundColor: sat.color }}
-                          />
-                          <p className="font-mono text-sm font-bold text-aerospace-blue">{sat.name}</p>
-                          <span className="text-xs text-foreground/60 ml-auto">{sat.type}</span>
-                        </div>
-                        <p className="text-xs text-foreground/60 mt-1">Alt: {sat.altitude} km</p>
-                      </button>
-                    ))}
-                  </div>
-                </motion.div>
-
-                {/* Selected Details */}
-                {selectedSatellite && (
-                  <motion.div
-                    initial={{ opacity: 0, x: 20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    className="bg-gradient-to-br from-aerospace-blue/20 to-aerospace-accent/20 border border-aerospace-blue/50 rounded-lg p-6"
-                  >
-                    <h3 className="font-heading text-lg font-bold text-foreground mb-4">
-                      {selectedSatellite.name}
-                    </h3>
-                    <div className="space-y-3 text-sm">
-                      <div>
-                        <p className="text-foreground/60">Type</p>
-                        <p className="font-mono text-aerospace-blue">{selectedSatellite.type}</p>
-                      </div>
-                      <div>
-                        <p className="text-foreground/60">Altitude</p>
-                        <p className="font-mono text-aerospace-blue">{selectedSatellite.altitude} km</p>
-                      </div>
-                      <div>
-                        <p className="text-foreground/60">Velocity</p>
-                        <p className="font-mono text-aerospace-blue">{selectedSatellite.velocity.toFixed(2)} km/s</p>
-                      </div>
-                      <div>
-                        <p className="text-foreground/60">Period</p>
-                        <p className="font-mono text-aerospace-blue">{selectedSatellite.period.toFixed(2)} min</p>
-                      </div>
-                    </div>
-                  </motion.div>
-                )}
+              {/* Info */}
+              <div className="bg-[#131924]/60 backdrop-blur-md border border-[#00F0FF33] rounded-lg p-6">
+                <h3 className="text-sm font-bold text-[#00F0FF] font-mono mb-3">Total Network</h3>
+                <div className="text-3xl font-bold text-[#00F0FF] font-mono">
+                  {constellations.reduce((sum, c) => sum + c.count, 0).toLocaleString()}
+                </div>
+                <div className="text-xs text-secondary-foreground mt-2">Active satellites worldwide</div>
               </div>
             </div>
           </div>
-        </section>
+        </motion.div>
       </main>
 
       <Footer />

@@ -1,308 +1,257 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Copy, Calculator } from 'lucide-react';
+import { ArrowLeft, Download, Settings, Play, Pause, RotateCcw } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 
-interface OrbitalElements {
-  a: number; // Semi-major axis (km)
-  e: number; // Eccentricity
-  i: number; // Inclination (degrees)
-  raan: number; // Right Ascension of Ascending Node (degrees)
-  aop: number; // Argument of Perigee (degrees)
-  ma: number; // Mean Anomaly (degrees)
-}
-
 export default function AstroLabOrbitalMechanicsPage() {
   const navigate = useNavigate();
-  const [elements, setElements] = useState<OrbitalElements>({
-    a: 6678, // ISS altitude
-    e: 0.0006,
-    i: 51.6,
-    raan: 0,
-    aop: 0,
-    ma: 0,
-  });
+  const canvasRef = React.useRef<HTMLCanvasElement>(null);
+  const [a, setA] = useState(6.6e6);
+  const [e, setE] = useState(0.0167);
+  const [i, setI] = useState(0);
+  const [M, setM] = useState(5.972e24);
+  const [isRunning, setIsRunning] = useState(true);
+  const [anomaly, setAnomaly] = useState(0);
 
-  const mu = 398600.4418; // Earth's gravitational parameter (km^3/s^2)
+  useEffect(() => {
+    if (!isRunning) return;
+    const interval = setInterval(() => setAnomaly(a => (a + 2) % 360), 50);
+    return () => clearInterval(interval);
+  }, [isRunning]);
 
-  // Calculate orbital parameters
-  const calculateOrbitalParams = () => {
-    const { a, e, i, raan, aop, ma } = elements;
+  useEffect(() => {
+    if (!canvasRef.current) return;
 
-    // Perigee and Apogee
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    ctx.fillStyle = '#0B0E14';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    const centerX = canvas.width / 2;
+    const centerY = canvas.height / 2;
+    const scale = 1e-7;
+
+    // Draw orbital ellipse
+    ctx.strokeStyle = '#00F0FF';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    const b = a * Math.sqrt(Math.max(0, 1 - e * e));
+    const c = a * e;
+    
+    for (let angle = 0; angle < Math.PI * 2; angle += 0.01) {
+      const r = (a * (1 - e * e)) / (1 + e * Math.cos(angle));
+      const x = centerX + r * Math.cos(angle) * scale;
+      const y = centerY + r * Math.sin(angle) * scale * Math.cos(i * Math.PI / 180);
+      if (angle === 0) ctx.moveTo(x, y);
+      else ctx.lineTo(x, y);
+    }
+    ctx.closePath();
+    ctx.stroke();
+
+    // Draw focal point (empty focus)
+    ctx.strokeStyle = '#FF007A';
+    ctx.globalAlpha = 0.3;
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.arc(centerX + c * scale, centerY, 3, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.globalAlpha = 1;
+
+    // Draw central body (Sun)
+    ctx.fillStyle = '#FFD700';
+    ctx.beginPath();
+    ctx.arc(centerX, centerY, 8, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Draw satellite
+    const trueAnomaly = (anomaly * Math.PI / 180);
+    const r = (a * (1 - e * e)) / (1 + e * Math.cos(trueAnomaly));
+    const satX = centerX + r * Math.cos(trueAnomaly) * scale;
+    const satY = centerY + r * Math.sin(trueAnomaly) * scale * Math.cos(i * Math.PI / 180);
+    
+    ctx.fillStyle = '#00F0FF';
+    ctx.beginPath();
+    ctx.arc(satX, satY, 5, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Draw velocity vector
+    ctx.strokeStyle = '#FF007A';
+    ctx.lineWidth = 2;
+    const vx = -Math.sin(trueAnomaly);
+    const vy = e + Math.cos(trueAnomaly);
+    ctx.beginPath();
+    ctx.moveTo(satX, satY);
+    ctx.lineTo(satX + vx * 30, satY + vy * 30);
+    ctx.stroke();
+
+    // Draw periapsis and apoapsis
+    ctx.strokeStyle = '#A78BFA';
+    ctx.globalAlpha = 0.5;
+    ctx.lineWidth = 1;
+    
+    // Periapsis
     const rp = a * (1 - e);
+    ctx.beginPath();
+    ctx.arc(centerX + rp * scale, centerY, 2, 0, Math.PI * 2);
+    ctx.stroke();
+    
+    // Apoapsis
     const ra = a * (1 + e);
+    ctx.beginPath();
+    ctx.arc(centerX - ra * scale, centerY, 2, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.globalAlpha = 1;
+  }, [a, e, i, M, anomaly]);
 
-    // Orbital period (seconds)
-    const period = 2 * Math.PI * Math.sqrt(Math.pow(a, 3) / mu);
-    const periodMinutes = period / 60;
-    const periodHours = periodMinutes / 60;
-
-    // Mean motion (revolutions per day)
-    const meanMotion = 86400 / period;
-
-    // Orbital velocity at perigee and apogee
-    const vp = Math.sqrt(mu * (2 / rp - 1 / a));
-    const va = Math.sqrt(mu * (2 / ra - 1 / a));
-
-    // Escape velocity at surface
-    const escapeVelocity = Math.sqrt(2 * mu / rp);
-
-    // Semi-latus rectum
-    const p = a * (1 - e * e);
-
-    // Specific orbital energy
-    const energy = -mu / (2 * a);
-
-    return {
-      rp: rp - 6371, // Subtract Earth radius for altitude
-      ra: ra - 6371,
-      period: periodMinutes,
-      periodHours,
-      meanMotion,
-      vp,
-      va,
-      escapeVelocity,
-      p,
-      energy,
-    };
-  };
-
-  const params = calculateOrbitalParams();
-
-  const copyToClipboard = (text: string) => {
-    navigator.clipboard.writeText(text);
-  };
+  const G = 6.674e-11;
+  const T = 2 * Math.PI * Math.sqrt((a ** 3) / (G * M));
+  const vPeriapsis = Math.sqrt(G * M * (2 / a - 2 / (a * (1 - e))));
+  const vApoapsis = Math.sqrt(G * M * (2 / a - 2 / (a * (1 + e))));
+  const rPeriapsis = a * (1 - e);
+  const rApoapsis = a * (1 + e);
+  const semiLatusRectum = a * (1 - e * e);
 
   return (
-    <div className="min-h-screen bg-aerospace-dark text-foreground font-paragraph flex flex-col">
+    <div className="min-h-screen bg-[#0B0E14] text-foreground flex flex-col">
       <Header />
-
-      <main className="flex-1 w-full flex flex-col">
-        {/* Header */}
-        <section className="w-full bg-primary border-b border-secondary/20 py-8">
-          <div className="w-full max-w-[120rem] mx-auto px-6 md:px-12 lg:px-16">
-            <button
-              onClick={() => navigate('/')}
-              className="flex items-center gap-2 text-aerospace-blue hover:text-aerospace-accent transition-colors mb-6"
-            >
-              <ArrowLeft className="w-4 h-4" />
-              Back to Home
-            </button>
-            <div className="flex items-start justify-between">
+      
+      <main className="flex-1 w-full max-w-[120rem] mx-auto px-6 py-8">
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
+          {/* Header */}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <button onClick={() => navigate('/astrolab')} className="p-2 hover:bg-[#131924] rounded-lg transition">
+                <ArrowLeft size={20} className="text-[#00F0FF]" />
+              </button>
               <div>
-                <h1 className="font-heading text-4xl md:text-5xl font-bold text-foreground mb-4">
-                  Orbital Mechanics Calculator
-                </h1>
-                <p className="font-paragraph text-lg text-secondary-foreground max-w-3xl">
-                  Comprehensive orbital element calculations. Analyze Kepler elements, trajectory analysis, and orbital decay.
-                </p>
+                <h1 className="text-4xl font-bold text-[#00F0FF] font-mono">Orbital Mechanics Calculator</h1>
+                <p className="text-secondary-foreground text-sm">Keplerian elements & orbital dynamics</p>
               </div>
-              <Calculator className="w-12 h-12 text-aerospace-blue hidden lg:block" />
+            </div>
+            <div className="flex gap-2">
+              <button className="p-2 hover:bg-[#131924] rounded-lg transition">
+                <Download size={20} className="text-[#00F0FF]" />
+              </button>
+              <button className="p-2 hover:bg-[#131924] rounded-lg transition">
+                <Settings size={20} className="text-[#00F0FF]" />
+              </button>
             </div>
           </div>
-        </section>
 
-        {/* Main Content */}
-        <section className="flex-1 w-full bg-aerospace-dark py-12">
-          <div className="w-full max-w-[120rem] mx-auto px-6 md:px-12 lg:px-16">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              {/* Input Section */}
-              <motion.div
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                className="space-y-6"
-              >
-                <div className="bg-gradient-to-br from-aerospace-dark/60 to-aerospace-dark/40 border border-aerospace-blue/20 rounded-lg p-6">
-                  <h3 className="font-heading text-lg font-bold text-foreground mb-6">Keplerian Elements</h3>
-                  <div className="space-y-4">
-                    {/* Semi-major Axis */}
-                    <div>
-                      <label className="text-xs text-foreground/60 mb-2 block">
-                        Semi-major Axis (a) - km
-                      </label>
-                      <input
-                        type="number"
-                        value={elements.a}
-                        onChange={(e) => setElements({ ...elements, a: parseFloat(e.target.value) })}
-                        className="w-full px-3 py-2 bg-primary/40 border border-aerospace-blue/20 rounded-lg text-foreground focus:outline-none focus:border-aerospace-blue"
-                      />
-                      <p className="text-xs text-foreground/40 mt-1">Altitude: {(elements.a - 6371).toFixed(0)} km</p>
-                    </div>
+          {/* Main Content */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* Canvas */}
+            <div className="lg:col-span-2 bg-[#131924]/60 backdrop-blur-md border border-[#00F0FF33] rounded-lg p-6">
+              <canvas
+                ref={canvasRef}
+                width={500}
+                height={400}
+                className="w-full border border-[#00F0FF33] rounded-lg"
+              />
+              
+              {/* Controls */}
+              <div className="mt-6 flex gap-3 justify-center">
+                <button
+                  onClick={() => setIsRunning(!isRunning)}
+                  className={`px-4 py-2 rounded-lg font-mono text-sm transition-all flex items-center gap-2 ${
+                    isRunning
+                      ? 'bg-[#FF007A]/20 text-[#FF007A] border border-[#FF007A]'
+                      : 'bg-[#00F0FF]/20 text-[#00F0FF] border border-[#00F0FF]'
+                  }`}
+                >
+                  {isRunning ? <Pause size={16} /> : <Play size={16} />}
+                  {isRunning ? 'Pause' : 'Play'}
+                </button>
+                <button
+                  onClick={() => setAnomaly(0)}
+                  className="px-4 py-2 bg-[#131924] text-secondary-foreground border border-[#00F0FF33] rounded-lg font-mono text-sm hover:border-[#00F0FF] transition-all flex items-center gap-2"
+                >
+                  <RotateCcw size={16} />
+                  Reset
+                </button>
+              </div>
+            </div>
 
-                    {/* Eccentricity */}
-                    <div>
-                      <label className="text-xs text-foreground/60 mb-2 block">
-                        Eccentricity (e)
-                      </label>
-                      <input
-                        type="number"
-                        min="0"
-                        max="1"
-                        step="0.0001"
-                        value={elements.e}
-                        onChange={(e) => setElements({ ...elements, e: parseFloat(e.target.value) })}
-                        className="w-full px-3 py-2 bg-primary/40 border border-aerospace-blue/20 rounded-lg text-foreground focus:outline-none focus:border-aerospace-blue"
-                      />
-                    </div>
-
-                    {/* Inclination */}
-                    <div>
-                      <label className="text-xs text-foreground/60 mb-2 block">
-                        Inclination (i) - degrees
-                      </label>
-                      <input
-                        type="number"
-                        min="0"
-                        max="180"
-                        value={elements.i}
-                        onChange={(e) => setElements({ ...elements, i: parseFloat(e.target.value) })}
-                        className="w-full px-3 py-2 bg-primary/40 border border-aerospace-blue/20 rounded-lg text-foreground focus:outline-none focus:border-aerospace-blue"
-                      />
-                    </div>
-
-                    {/* RAAN */}
-                    <div>
-                      <label className="text-xs text-foreground/60 mb-2 block">
-                        RAAN (Ω) - degrees
-                      </label>
-                      <input
-                        type="number"
-                        min="0"
-                        max="360"
-                        value={elements.raan}
-                        onChange={(e) => setElements({ ...elements, raan: parseFloat(e.target.value) })}
-                        className="w-full px-3 py-2 bg-primary/40 border border-aerospace-blue/20 rounded-lg text-foreground focus:outline-none focus:border-aerospace-blue"
-                      />
-                    </div>
-
-                    {/* Argument of Perigee */}
-                    <div>
-                      <label className="text-xs text-foreground/60 mb-2 block">
-                        Argument of Perigee (ω) - degrees
-                      </label>
-                      <input
-                        type="number"
-                        min="0"
-                        max="360"
-                        value={elements.aop}
-                        onChange={(e) => setElements({ ...elements, aop: parseFloat(e.target.value) })}
-                        className="w-full px-3 py-2 bg-primary/40 border border-aerospace-blue/20 rounded-lg text-foreground focus:outline-none focus:border-aerospace-blue"
-                      />
-                    </div>
-
-                    {/* Mean Anomaly */}
-                    <div>
-                      <label className="text-xs text-foreground/60 mb-2 block">
-                        Mean Anomaly (M) - degrees
-                      </label>
-                      <input
-                        type="number"
-                        min="0"
-                        max="360"
-                        value={elements.ma}
-                        onChange={(e) => setElements({ ...elements, ma: parseFloat(e.target.value) })}
-                        className="w-full px-3 py-2 bg-primary/40 border border-aerospace-blue/20 rounded-lg text-foreground focus:outline-none focus:border-aerospace-blue"
-                      />
-                    </div>
+            {/* Controls & Results */}
+            <div className="space-y-4">
+              {/* Keplerian Elements */}
+              <div className="bg-[#131924]/60 backdrop-blur-md border border-[#00F0FF33] rounded-lg p-4">
+                <h3 className="text-sm font-bold text-[#00F0FF] font-mono mb-3">Keplerian Elements</h3>
+                <div className="space-y-3 text-xs">
+                  <div>
+                    <label className="text-[#FF007A]">a (m)</label>
+                    <input
+                      type="number"
+                      value={a}
+                      onChange={(e) => setA(parseFloat(e.target.value))}
+                      className="w-full mt-1 px-2 py-1 bg-[#0B0E14] border border-[#00F0FF33] rounded text-[#00F0FF] font-mono"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-[#FF007A]">e</label>
+                    <input
+                      type="number"
+                      value={e}
+                      onChange={(e) => setE(Math.max(0, Math.min(0.999, parseFloat(e.target.value))))}
+                      step="0.001"
+                      className="w-full mt-1 px-2 py-1 bg-[#0B0E14] border border-[#00F0FF33] rounded text-[#00F0FF] font-mono"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-[#FF007A]">i (°)</label>
+                    <input
+                      type="number"
+                      value={i}
+                      onChange={(e) => setI(parseFloat(e.target.value))}
+                      className="w-full mt-1 px-2 py-1 bg-[#0B0E14] border border-[#00F0FF33] rounded text-[#00F0FF] font-mono"
+                    />
                   </div>
                 </div>
-              </motion.div>
+              </div>
 
-              {/* Output Section */}
-              <motion.div
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.1 }}
-                className="space-y-6"
-              >
-                {/* Orbital Parameters */}
-                <div className="bg-gradient-to-br from-aerospace-blue/20 to-aerospace-accent/20 border border-aerospace-blue/50 rounded-lg p-6">
-                  <h3 className="font-heading text-lg font-bold text-foreground mb-4">Orbital Parameters</h3>
-                  <div className="space-y-3">
-                    {[
-                      { label: 'Perigee Altitude', value: params.rp.toFixed(2), unit: 'km' },
-                      { label: 'Apogee Altitude', value: params.ra.toFixed(2), unit: 'km' },
-                      { label: 'Orbital Period', value: params.period.toFixed(2), unit: 'min' },
-                      { label: 'Period (Hours)', value: params.periodHours.toFixed(4), unit: 'h' },
-                      { label: 'Mean Motion', value: params.meanMotion.toFixed(4), unit: 'rev/day' },
-                    ].map((item, idx) => (
-                      <div key={idx} className="p-3 bg-primary/40 border border-aerospace-blue/20 rounded-lg">
-                        <p className="text-xs text-foreground/60">{item.label}</p>
-                        <div className="flex items-center justify-between mt-1">
-                          <p className="font-mono text-aerospace-blue font-bold">
-                            {item.value} <span className="text-xs">{item.unit}</span>
-                          </p>
-                          <button
-                            onClick={() => copyToClipboard(item.value)}
-                            className="p-1 hover:bg-aerospace-blue/20 rounded transition-colors"
-                          >
-                            <Copy className="w-3 h-3 text-aerospace-blue" />
-                          </button>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
+              {/* Results */}
+              <div className="bg-[#131924]/60 backdrop-blur-md border border-[#00F0FF33] rounded-lg p-4">
+                <h3 className="text-sm font-bold text-[#00F0FF] font-mono mb-3">Orbital Parameters</h3>
+                <div className="space-y-2 text-xs font-mono">
+                  <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="bg-[#0B0E14] p-2 rounded border border-[#00F0FF33]">
+                    <span className="text-[#FF007A]">Period:</span>
+                    <span className="text-[#00F0FF] ml-2">{(T / 3600).toFixed(2)}h</span>
+                  </motion.div>
+                  <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="bg-[#0B0E14] p-2 rounded border border-[#00F0FF33]">
+                    <span className="text-[#FF007A]">r_p:</span>
+                    <span className="text-[#00F0FF] ml-2">{(rPeriapsis / 1e6).toFixed(2)}Mm</span>
+                  </motion.div>
+                  <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="bg-[#0B0E14] p-2 rounded border border-[#00F0FF33]">
+                    <span className="text-[#FF007A]">r_a:</span>
+                    <span className="text-[#00F0FF] ml-2">{(rApoapsis / 1e6).toFixed(2)}Mm</span>
+                  </motion.div>
+                  <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="bg-[#0B0E14] p-2 rounded border border-[#00F0FF33]">
+                    <span className="text-[#FF007A]">v_p:</span>
+                    <span className="text-[#00F0FF] ml-2">{(vPeriapsis / 1000).toFixed(2)}km/s</span>
+                  </motion.div>
+                  <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="bg-[#0B0E14] p-2 rounded border border-[#00F0FF33]">
+                    <span className="text-[#FF007A]">v_a:</span>
+                    <span className="text-[#00F0FF] ml-2">{(vApoapsis / 1000).toFixed(2)}km/s</span>
+                  </motion.div>
+                  <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="bg-[#0B0E14] p-2 rounded border border-[#00F0FF33]">
+                    <span className="text-[#FF007A]">p:</span>
+                    <span className="text-[#00F0FF] ml-2">{(semiLatusRectum / 1e6).toFixed(2)}Mm</span>
+                  </motion.div>
                 </div>
+              </div>
 
-                {/* Velocity Parameters */}
-                <div className="bg-gradient-to-br from-aerospace-accent/20 to-aerospace-blue/20 border border-aerospace-accent/50 rounded-lg p-6">
-                  <h3 className="font-heading text-lg font-bold text-foreground mb-4">Velocity Parameters</h3>
-                  <div className="space-y-3">
-                    {[
-                      { label: 'Velocity at Perigee', value: params.vp.toFixed(3), unit: 'km/s' },
-                      { label: 'Velocity at Apogee', value: params.va.toFixed(3), unit: 'km/s' },
-                      { label: 'Escape Velocity', value: params.escapeVelocity.toFixed(3), unit: 'km/s' },
-                    ].map((item, idx) => (
-                      <div key={idx} className="p-3 bg-primary/40 border border-aerospace-blue/20 rounded-lg">
-                        <p className="text-xs text-foreground/60">{item.label}</p>
-                        <div className="flex items-center justify-between mt-1">
-                          <p className="font-mono text-aerospace-accent font-bold">
-                            {item.value} <span className="text-xs">{item.unit}</span>
-                          </p>
-                          <button
-                            onClick={() => copyToClipboard(item.value)}
-                            className="p-1 hover:bg-aerospace-blue/20 rounded transition-colors"
-                          >
-                            <Copy className="w-3 h-3 text-aerospace-accent" />
-                          </button>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Energy & Other */}
-                <div className="bg-primary/40 border border-aerospace-blue/20 rounded-lg p-6">
-                  <h3 className="font-heading text-lg font-bold text-foreground mb-4">Energy & Geometry</h3>
-                  <div className="space-y-3">
-                    {[
-                      { label: 'Specific Orbital Energy', value: params.energy.toFixed(2), unit: 'km²/s²' },
-                      { label: 'Semi-latus Rectum', value: params.p.toFixed(2), unit: 'km' },
-                    ].map((item, idx) => (
-                      <div key={idx} className="p-3 bg-primary/40 border border-aerospace-blue/20 rounded-lg">
-                        <p className="text-xs text-foreground/60">{item.label}</p>
-                        <div className="flex items-center justify-between mt-1">
-                          <p className="font-mono text-aerospace-blue font-bold">
-                            {item.value} <span className="text-xs">{item.unit}</span>
-                          </p>
-                          <button
-                            onClick={() => copyToClipboard(item.value)}
-                            className="p-1 hover:bg-aerospace-blue/20 rounded transition-colors"
-                          >
-                            <Copy className="w-3 h-3 text-aerospace-blue" />
-                          </button>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </motion.div>
+              {/* Export */}
+              <button className="w-full px-3 py-2 bg-[#00F0FF]/20 text-[#00F0FF] border border-[#00F0FF] rounded font-mono text-xs hover:bg-[#00F0FF]/30 transition-all flex items-center justify-center gap-2">
+                <Download size={14} />
+                Export Sheet
+              </button>
             </div>
           </div>
-        </section>
+        </motion.div>
       </main>
 
       <Footer />

@@ -1,335 +1,195 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Crosshair, BarChart3, Download, Eye } from 'lucide-react';
+import { ArrowLeft, Download, Settings, Play, Pause, RotateCcw } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 
-interface PhotometryData {
-  x: number;
-  y: number;
-  intensity: number;
-  radius: number;
-}
-
 export default function AstroLabPhotometrySuitePage() {
   const navigate = useNavigate();
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [selectedRegion, setSelectedRegion] = useState<PhotometryData | null>(null);
-  const [photometryResults, setPhotometryResults] = useState<PhotometryData[]>([]);
-  const [isDrawing, setIsDrawing] = useState(false);
-  const [startPos, setStartPos] = useState<{ x: number; y: number } | null>(null);
+  const canvasRef = React.useRef<HTMLCanvasElement>(null);
+  const [aperture, setAperture] = useState(50);
+  const [snr, setSNR] = useState(0);
+  const [magnitude, setMagnitude] = useState(0);
+  const [isRunning, setIsRunning] = useState(true);
+  const [exposure, setExposure] = useState(30);
+  const [gain, setGain] = useState(1);
 
-  // Generate synthetic FITS-like image
   useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
+    if (!canvasRef.current) return;
 
+    const canvas = canvasRef.current;
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    const width = canvas.width;
-    const height = canvas.height;
+    // Draw FITS-like image
+    ctx.fillStyle = '#1a1f2e';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    // Create image data
-    const imageData = ctx.createImageData(width, height);
-    const data = imageData.data;
+    // Draw Gaussian star with realistic PSF
+    const centerX = canvas.width / 2;
+    const centerY = canvas.height / 2;
+    const sigma = aperture / 6;
 
-    // Generate synthetic astronomical image with stars
-    for (let i = 0; i < data.length; i += 4) {
-      const pixelIndex = i / 4;
-      const x = pixelIndex % width;
-      const y = Math.floor(pixelIndex / width);
-
-      // Background noise
-      let intensity = Math.random() * 30;
-
-      // Add stars (Gaussian profiles)
-      const stars = [
-        { x: 150, y: 150, brightness: 200, sigma: 15 },
-        { x: 350, y: 200, brightness: 180, sigma: 12 },
-        { x: 250, y: 350, brightness: 220, sigma: 18 },
-        { x: 450, y: 300, brightness: 160, sigma: 10 },
-      ];
-
-      stars.forEach(star => {
-        const dx = x - star.x;
-        const dy = y - star.y;
+    for (let x = 0; x < canvas.width; x++) {
+      for (let y = 0; y < canvas.height; y++) {
+        const dx = x - centerX;
+        const dy = y - centerY;
         const dist = Math.sqrt(dx * dx + dy * dy);
-        const gaussian = star.brightness * Math.exp(-(dist * dist) / (2 * star.sigma * star.sigma));
-        intensity += gaussian;
-      });
-
-      intensity = Math.min(255, intensity);
-
-      data[i] = intensity;
-      data[i + 1] = intensity * 0.9;
-      data[i + 2] = intensity * 0.8;
-      data[i + 3] = 255;
-    }
-
-    ctx.putImageData(imageData, 0, 0);
-
-    // Draw selected region
-    if (selectedRegion) {
-      ctx.strokeStyle = '#F59E0B';
-      ctx.lineWidth = 2;
-      ctx.beginPath();
-      ctx.arc(selectedRegion.x, selectedRegion.y, selectedRegion.radius, 0, Math.PI * 2);
-      ctx.stroke();
-
-      // Crosshair
-      ctx.strokeStyle = '#F59E0B';
-      ctx.lineWidth = 1;
-      ctx.beginPath();
-      ctx.moveTo(selectedRegion.x - 10, selectedRegion.y);
-      ctx.lineTo(selectedRegion.x + 10, selectedRegion.y);
-      ctx.stroke();
-      ctx.beginPath();
-      ctx.moveTo(selectedRegion.x, selectedRegion.y - 10);
-      ctx.lineTo(selectedRegion.x, selectedRegion.y + 10);
-      ctx.stroke();
-    }
-  }, [selectedRegion]);
-
-  const handleCanvasClick = (e: React.MouseEvent<HTMLCanvasElement>) => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-
-    const rect = canvas.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-
-    // Calculate photometry
-    const radius = 30;
-    let totalIntensity = 0;
-    let pixelCount = 0;
-
-    const ctx = canvas.getContext('2d');
-    if (ctx) {
-      const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-      const data = imageData.data;
-
-      for (let i = 0; i < canvas.width; i++) {
-        for (let j = 0; j < canvas.height; j++) {
-          const dx = i - x;
-          const dy = j - y;
-          const dist = Math.sqrt(dx * dx + dy * dy);
-
-          if (dist <= radius) {
-            const pixelIndex = (j * canvas.width + i) * 4;
-            totalIntensity += data[pixelIndex];
-            pixelCount++;
-          }
-        }
+        const intensity = Math.exp(-(dist * dist) / (2 * sigma * sigma)) * gain * (exposure / 30);
+        const value = Math.floor(intensity * 255);
+        ctx.fillStyle = `rgb(${value}, ${Math.floor(value * 0.8)}, ${Math.floor(value * 0.6)})`;
+        ctx.fillRect(x, y, 1, 1);
       }
     }
 
-    const newRegion: PhotometryData = {
-      x,
-      y,
-      intensity: totalIntensity / pixelCount,
-      radius,
-    };
+    // Draw aperture circles
+    ctx.strokeStyle = '#00F0FF';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.arc(centerX, centerY, aperture, 0, Math.PI * 2);
+    ctx.stroke();
 
-    setSelectedRegion(newRegion);
-    setPhotometryResults([...photometryResults, newRegion]);
-  };
+    ctx.strokeStyle = '#FF007A';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.arc(centerX, centerY, aperture * 1.5, 0, Math.PI * 2);
+    ctx.stroke();
 
-  const exportData = () => {
-    let csv = 'X,Y,Intensity,Radius\n';
-    photometryResults.forEach(result => {
-      csv += `${result.x.toFixed(2)},${result.y.toFixed(2)},${result.intensity.toFixed(2)},${result.radius}\n`;
-    });
-
-    const blob = new Blob([csv], { type: 'text/csv' });
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'photometry_data.csv';
-    a.click();
-  };
+    // Calculate metrics
+    const flux = Math.PI * aperture * aperture * 100 * gain * (exposure / 30);
+    const noise = Math.sqrt(flux);
+    setSNR(Math.round(flux / noise));
+    setMagnitude(parseFloat((10 - Math.log10(flux)).toFixed(2)));
+  }, [aperture, gain, exposure]);
 
   return (
-    <div className="min-h-screen bg-aerospace-dark text-foreground font-paragraph flex flex-col">
+    <div className="min-h-screen bg-[#0B0E14] text-foreground flex flex-col">
       <Header />
-
-      <main className="flex-1 w-full flex flex-col">
-        {/* Header */}
-        <section className="w-full bg-primary border-b border-secondary/20 py-8">
-          <div className="w-full max-w-[120rem] mx-auto px-6 md:px-12 lg:px-16">
-            <button
-              onClick={() => navigate('/')}
-              className="flex items-center gap-2 text-aerospace-blue hover:text-aerospace-accent transition-colors mb-6"
-            >
-              <ArrowLeft className="w-4 h-4" />
-              Back to Home
-            </button>
-            <div className="flex items-start justify-between">
+      
+      <main className="flex-1 w-full max-w-[120rem] mx-auto px-6 py-8">
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
+          {/* Header */}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <button onClick={() => navigate('/astrolab')} className="p-2 hover:bg-[#131924] rounded-lg transition">
+                <ArrowLeft size={20} className="text-[#00F0FF]" />
+              </button>
               <div>
-                <h1 className="font-heading text-4xl md:text-5xl font-bold text-foreground mb-4">
-                  Professional Analytical & Photometry Suite
-                </h1>
-                <p className="font-paragraph text-lg text-secondary-foreground max-w-3xl">
-                  FITS image analysis with advanced photometry tools. Measure stellar flux, perform ROI analysis, and export scientific data.
-                </p>
+                <h1 className="text-4xl font-bold text-[#00F0FF] font-mono">Photometry Suite</h1>
+                <p className="text-secondary-foreground text-sm">Professional stellar photometry & aperture analysis</p>
               </div>
-              <Eye className="w-12 h-12 text-aerospace-blue hidden lg:block" />
+            </div>
+            <div className="flex gap-2">
+              <button className="p-2 hover:bg-[#131924] rounded-lg transition">
+                <Download size={20} className="text-[#00F0FF]" />
+              </button>
+              <button className="p-2 hover:bg-[#131924] rounded-lg transition">
+                <Settings size={20} className="text-[#00F0FF]" />
+              </button>
             </div>
           </div>
-        </section>
 
-        {/* Main Content */}
-        <section className="flex-1 w-full bg-aerospace-dark py-12">
-          <div className="w-full max-w-[120rem] mx-auto px-6 md:px-12 lg:px-16">
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-              {/* Canvas */}
-              <div className="lg:col-span-2">
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="bg-gradient-to-br from-aerospace-dark/60 to-aerospace-dark/40 border border-aerospace-blue/20 rounded-lg p-6 hover:border-aerospace-blue/60 transition-all duration-300 shadow-lg"
-                >
-                  <div className="mb-4">
-                    <p className="text-sm text-foreground/60 mb-2">Click on stars to measure photometry</p>
+          {/* Main Content */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* Canvas */}
+            <div className="lg:col-span-2 bg-[#131924]/60 backdrop-blur-md border border-[#00F0FF33] rounded-lg p-6">
+              <div className="space-y-4">
+                <canvas
+                  ref={canvasRef}
+                  width={400}
+                  height={400}
+                  className="w-full border border-[#00F0FF33] rounded-lg"
+                />
+                
+                {/* Image Controls */}
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-xs font-mono text-[#FF007A]">Exposure: {exposure}s</label>
+                    <input
+                      type="range"
+                      min="1"
+                      max="120"
+                      value={exposure}
+                      onChange={(e) => setExposure(parseInt(e.target.value))}
+                      className="w-full mt-2"
+                    />
                   </div>
-                  <canvas
-                    ref={canvasRef}
-                    width={600}
-                    height={500}
-                    onClick={handleCanvasClick}
-                    className="w-full bg-aerospace-dark rounded-lg cursor-crosshair border border-aerospace-blue/20"
-                  />
-                </motion.div>
+                  <div>
+                    <label className="text-xs font-mono text-[#FF007A]">Gain: {gain.toFixed(1)}x</label>
+                    <input
+                      type="range"
+                      min="0.5"
+                      max="3"
+                      step="0.1"
+                      value={gain}
+                      onChange={(e) => setGain(parseFloat(e.target.value))}
+                      className="w-full mt-2"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Controls & Results */}
+            <div className="space-y-4">
+              {/* Aperture Control */}
+              <div className="bg-[#131924]/60 backdrop-blur-md border border-[#00F0FF33] rounded-lg p-6">
+                <h3 className="text-lg font-bold text-[#00F0FF] font-mono mb-4">Aperture Control</h3>
+                <div className="space-y-4">
+                  <div>
+                    <label className="text-sm font-mono text-[#FF007A]">Aperture Radius: {aperture}px</label>
+                    <input
+                      type="range"
+                      min="10"
+                      max="100"
+                      value={aperture}
+                      onChange={(e) => setAperture(parseInt(e.target.value))}
+                      className="w-full mt-2"
+                    />
+                  </div>
+                  <div className="text-xs font-mono text-secondary-foreground">
+                    <div>Sky Annulus: {(aperture * 1.5).toFixed(0)}px</div>
+                    <div>Inner Radius: {(aperture * 0.8).toFixed(0)}px</div>
+                  </div>
+                </div>
               </div>
 
-              {/* Controls */}
-              <div className="space-y-6">
-                {/* Instructions */}
-                <motion.div
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  className="bg-gradient-to-br from-aerospace-dark/60 to-aerospace-dark/40 border border-aerospace-blue/20 rounded-lg p-6"
-                >
-                  <h3 className="font-heading text-lg font-bold text-foreground mb-4 flex items-center gap-2">
-                    <Crosshair className="w-5 h-5 text-aerospace-blue" />
-                    Photometry
-                  </h3>
-                  <div className="space-y-3 text-sm text-foreground/70">
-                    <p>1. Click on a star to measure its flux</p>
-                    <p>2. A circular aperture (30px radius) is applied</p>
-                    <p>3. Total intensity is calculated</p>
-                    <p>4. Results are stored for export</p>
-                  </div>
-                </motion.div>
-
-                {/* Current Selection */}
-                {selectedRegion && (
+              {/* Measurements */}
+              <div className="bg-[#131924]/60 backdrop-blur-md border border-[#00F0FF33] rounded-lg p-6">
+                <h3 className="text-lg font-bold text-[#00F0FF] font-mono mb-4">Measurements</h3>
+                <div className="space-y-3 text-sm font-mono">
                   <motion.div
-                    initial={{ opacity: 0, x: 20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.1 }}
-                    className="bg-gradient-to-br from-aerospace-blue/20 to-aerospace-accent/20 border border-aerospace-blue/50 rounded-lg p-6"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className="bg-[#0B0E14] p-3 rounded border border-[#00F0FF33]"
                   >
-                    <h3 className="font-heading text-lg font-bold text-foreground mb-4">
-                      Current Selection
-                    </h3>
-                    <div className="space-y-3 text-sm">
-                      <div>
-                        <p className="text-foreground/60">Position</p>
-                        <p className="font-mono text-aerospace-blue">
-                          ({selectedRegion.x.toFixed(1)}, {selectedRegion.y.toFixed(1)})
-                        </p>
-                      </div>
-                      <div>
-                        <p className="text-foreground/60">Aperture Radius</p>
-                        <p className="font-mono text-aerospace-blue">{selectedRegion.radius} pixels</p>
-                      </div>
-                      <div>
-                        <p className="text-foreground/60">Total Flux</p>
-                        <p className="font-mono text-aerospace-blue">{selectedRegion.intensity.toFixed(2)} ADU</p>
-                      </div>
-                      <div>
-                        <p className="text-foreground/60">Signal-to-Noise</p>
-                        <p className="font-mono text-aerospace-blue">{(selectedRegion.intensity / 10).toFixed(1)}</p>
-                      </div>
-                    </div>
+                    <span className="text-[#FF007A]">SNR:</span>
+                    <span className="text-[#00F0FF] ml-2 text-lg font-bold">{snr}</span>
                   </motion.div>
-                )}
-
-                {/* Results Summary */}
-                <motion.div
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.2 }}
-                  className="bg-gradient-to-br from-aerospace-dark/60 to-aerospace-dark/40 border border-aerospace-blue/20 rounded-lg p-6"
-                >
-                  <h3 className="font-heading text-lg font-bold text-foreground mb-4 flex items-center gap-2">
-                    <BarChart3 className="w-5 h-5 text-aerospace-blue" />
-                    Results
-                  </h3>
-                  <div className="space-y-2">
-                    <p className="text-sm text-foreground/60">
-                      Measurements: <span className="text-aerospace-blue font-bold">{photometryResults.length}</span>
-                    </p>
-                    {photometryResults.length > 0 && (
-                      <>
-                        <p className="text-sm text-foreground/60">
-                          Avg Flux: <span className="text-aerospace-blue font-bold">
-                            {(photometryResults.reduce((sum, r) => sum + r.intensity, 0) / photometryResults.length).toFixed(2)}
-                          </span> ADU
-                        </p>
-                        <p className="text-sm text-foreground/60">
-                          Max Flux: <span className="text-aerospace-blue font-bold">
-                            {Math.max(...photometryResults.map(r => r.intensity)).toFixed(2)}
-                          </span> ADU
-                        </p>
-                      </>
-                    )}
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className="bg-[#0B0E14] p-3 rounded border border-[#00F0FF33]"
+                  >
+                    <span className="text-[#FF007A]">Magnitude:</span>
+                    <span className="text-[#00F0FF] ml-2 text-lg font-bold">{magnitude.toFixed(2)}</span>
+                  </motion.div>
+                  <div className="bg-[#0B0E14] p-3 rounded border border-[#00F0FF33]">
+                    <span className="text-[#FF007A]">FWHM:</span>
+                    <span className="text-[#00F0FF] ml-2">{(aperture * 0.3).toFixed(1)}"</span>
                   </div>
-                </motion.div>
-
-                {/* Export */}
-                <motion.div
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.3 }}
-                  className="space-y-3"
-                >
-                  <button
-                    onClick={exportData}
-                    disabled={photometryResults.length === 0}
-                    className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-aerospace-blue text-white rounded-lg hover:bg-aerospace-accent transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    <Download className="w-4 h-4" />
-                    Export CSV
-                  </button>
-                  <button
-                    onClick={() => {
-                      setPhotometryResults([]);
-                      setSelectedRegion(null);
-                    }}
-                    className="w-full px-4 py-3 bg-primary/40 text-aerospace-blue border border-aerospace-blue/20 rounded-lg hover:bg-primary/60 transition-colors"
-                  >
-                    Clear All
-                  </button>
-                </motion.div>
-
-                {/* Info */}
-                <motion.div
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.4 }}
-                  className="bg-primary/40 border border-aerospace-blue/20 rounded-lg p-4"
-                >
-                  <p className="text-xs text-foreground/70">
-                    <span className="text-aerospace-blue font-bold">JS9 Engine:</span> Professional FITS analysis with aperture photometry and image processing.
-                  </p>
-                </motion.div>
+                </div>
               </div>
+
+              {/* Export */}
+              <button className="w-full px-4 py-3 bg-[#00F0FF]/20 text-[#00F0FF] border border-[#00F0FF] rounded-lg font-mono text-sm hover:bg-[#00F0FF]/30 transition-all flex items-center justify-center gap-2">
+                <Download size={16} />
+                Export CSV
+              </button>
             </div>
           </div>
-        </section>
+        </motion.div>
       </main>
 
       <Footer />
