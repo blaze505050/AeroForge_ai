@@ -2,6 +2,7 @@ import { MemberProvider } from '@/integrations';
 import { createBrowserRouter, RouterProvider, Navigate, Outlet } from 'react-router-dom';
 import { ScrollToTop } from '@/lib/scroll-to-top';
 import ErrorPage from '@/integrations/errorHandlers/ErrorPage';
+import ErrorBoundary from '@/components/ErrorBoundary';
 import HomePage from '@/components/pages/HomePage';
 import VirtualLabPage from '@/components/pages/VirtualLabPage';
 import DocumentationPage from '@/components/pages/DocumentationPage';
@@ -29,13 +30,13 @@ import CMBExplorerPage from '@/components/pages/CMBExplorerPage';
 import PhysicsAccurateAstroLabPage from '@/components/pages/PhysicsAccurateAstroLabPage';
 import ProfessionalInteractiveLab from '@/components/pages/ProfessionalInteractiveLab';
 
-// Layout component that includes ScrollToTop
+// Layout component that includes ScrollToTop and Error Boundary
 function Layout() {
   return (
-    <>
+    <ErrorBoundary>
       <ScrollToTop />
       <Outlet />
-    </>
+    </ErrorBoundary>
   );
 }
 

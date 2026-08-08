@@ -34,86 +34,125 @@ export default function Advanced3DUniverse({
   const meshesRef = useRef<Map<string, THREE.Mesh>>(new Map());
   const orbitsRef = useRef<Map<string, THREE.Line>>(new Map());
   const trailsRef = useRef<Map<string, Vector3[]>>(new Map());
+  const resizeObserverRef = useRef<ResizeObserver | null>(null);
+  const geometriesRef = useRef<THREE.BufferGeometry[]>([]);
+  const materialsRef = useRef<THREE.Material[]>([]);
 
   const [isRunning, setIsRunning] = useState(false);
   const [simulationTime, setSimulationTime] = useState(0);
   const [selectedBody, setSelectedBody] = useState<CelestialBody | null>(null);
   const [fps, setFps] = useState(60);
+  const [error, setError] = useState<string | null>(null);
   const animationIdRef = useRef<number>();
   const fpsCounterRef = useRef({ frames: 0, lastTime: Date.now() });
 
-  // Initialize Three.js scene
+  // Initialize Three.js scene with error handling
   useEffect(() => {
     if (!containerRef.current) return;
 
-    // Scene setup
-    const scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x000011);
-    scene.fog = new THREE.Fog(0x000011, 1e18, 1e20);
+    try {
+      // Scene setup
+      const scene = new THREE.Scene();
+      scene.background = new THREE.Color(0x000011);
+      scene.fog = new THREE.Fog(0x000011, 1e18, 1e20);
 
-    // Camera setup
-    const camera = new THREE.PerspectiveCamera(
-      75,
-      containerRef.current.clientWidth / containerRef.current.clientHeight,
-      1e8,
-      1e20
-    );
-    camera.position.set(0, 5e11, 5e11);
-    camera.lookAt(0, 0, 0);
+      // Camera setup with safe aspect ratio
+      const width = containerRef.current.clientWidth || window.innerWidth;
+      const height = containerRef.current.clientHeight || window.innerHeight;
+      const camera = new THREE.PerspectiveCamera(
+        75,
+        width / height,
+        1e8,
+        1e20
+      );
+      camera.position.set(0, 5e11, 5e11);
+      camera.lookAt(0, 0, 0);
 
-    // Renderer setup with high quality
-    const renderer = new THREE.WebGLRenderer({ antialias: true, precision: 'highp' });
-    renderer.setSize(containerRef.current.clientWidth, containerRef.current.clientHeight);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    renderer.shadowMap.enabled = true;
-    renderer.shadowMap.type = THREE.PCFShadowShadowMap;
-    containerRef.current.appendChild(renderer.domElement);
-
-    // Lighting
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.3);
-    scene.add(ambientLight);
-
-    const sunLight = new THREE.PointLight(0xffffff, 2, 1e20);
-    sunLight.position.set(0, 0, 0);
-    sunLight.castShadow = true;
-    sunLight.shadow.mapSize.width = 2048;
-    sunLight.shadow.mapSize.height = 2048;
-    scene.add(sunLight);
-
-    // Starfield background
-    const starsGeometry = new THREE.BufferGeometry();
-    const starCount = 10000;
-    const starPositions = new Float32Array(starCount * 3);
-    for (let i = 0; i < starCount * 3; i += 3) {
-      starPositions[i] = (Math.random() - 0.5) * 2e16;
-      starPositions[i + 1] = (Math.random() - 0.5) * 2e16;
-      starPositions[i + 2] = (Math.random() - 0.5) * 2e16;
-    }
-    starsGeometry.setAttribute('position', new THREE.BufferAttribute(starPositions, 3));
-    const starsMaterial = new THREE.PointsMaterial({ color: 0xffffff, size: 1e10 });
-    const stars = new THREE.Points(starsGeometry, starsMaterial);
-    scene.add(stars);
-
-    sceneRef.current = scene;
-    cameraRef.current = camera;
-    rendererRef.current = renderer;
-
-    // Handle window resize
-    const handleResize = () => {
-      if (!containerRef.current) return;
-      const width = containerRef.current.clientWidth;
-      const height = containerRef.current.clientHeight;
-      camera.aspect = width / height;
-      camera.updateProjectionMatrix();
+      // Renderer setup with optimizations
+      const renderer = new THREE.WebGLRenderer({ antialias: true, precision: 'highp', preserveDrawingBuffer: false });
       renderer.setSize(width, height);
-    };
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      renderer.shadowMap.enabled = true;
+      renderer.shadowMap.type = THREE.PCFShadowShadowMap;
+      renderer.outputColorSpace = THREE.SRGBColorSpace;
+      containerRef.current.appendChild(renderer.domElement);
 
-    window.addEventListener('resize', handleResize);
+      // Lighting
+      const ambientLight = new THREE.AmbientLight(0xffffff, 0.3);
+      scene.add(ambientLight);
 
-    return () => {
-      window.removeEventListener('resize', handleResize);
-      containerRef.current?.removeChild(renderer.domElement);
-    };
+      const sunLight = new THREE.PointLight(0xffffff, 2, 1e20);
+      sunLight.position.set(0, 0, 0);
+      sunLight.castShadow = true;
+      sunLight.shadow.mapSize.width = 2048;
+      sunLight.shadow.mapSize.height = 2048;
+      scene.add(sunLight);
+
+      // Starfield background - optimized
+      const starsGeometry = new THREE.BufferGeometry();
+      const starCount = 5000;
+      const starPositions = new Float32Array(starCount * 3);
+      for (let i = 0; i < starCount * 3; i += 3) {
+        starPositions[i] = (Math.random() - 0.5) * 2e16;
+        starPositions[i + 1] = (Math.random() - 0.5) * 2e16;
+        starPositions[i + 2] = (Math.random() - 0.5) * 2e16;
+      }
+      starsGeometry.setAttribute('position', new THREE.BufferAttribute(starPositions, 3));
+      const starsMaterial = new THREE.PointsMaterial({ color: 0xffffff, size: 1e10 });
+      const stars = new THREE.Points(starsGeometry, starsMaterial);
+      scene.add(stars);
+
+      geometriesRef.current.push(starsGeometry);
+      materialsRef.current.push(starsMaterial);
+
+      sceneRef.current = scene;
+      cameraRef.current = camera;
+      rendererRef.current = renderer;
+
+      // Handle window resize with ResizeObserver
+      const handleResize = () => {
+        if (!containerRef.current || !camera || !renderer) return;
+        const w = containerRef.current.clientWidth;
+        const h = containerRef.current.clientHeight;
+        if (w > 0 && h > 0) {
+          camera.aspect = w / h;
+          camera.updateProjectionMatrix();
+          renderer.setSize(w, h);
+        }
+      };
+
+      resizeObserverRef.current = new ResizeObserver(handleResize);
+      resizeObserverRef.current.observe(containerRef.current);
+
+      return () => {
+        if (resizeObserverRef.current) {
+          resizeObserverRef.current.disconnect();
+        }
+        // Cleanup resources
+        geometriesRef.current.forEach(g => g.dispose());
+        materialsRef.current.forEach(m => m.dispose());
+        meshesRef.current.forEach(mesh => {
+          mesh.geometry.dispose();
+          if (Array.isArray(mesh.material)) {
+            mesh.material.forEach(m => m.dispose());
+          } else {
+            mesh.material.dispose();
+          }
+        });
+        orbitsRef.current.forEach(line => {
+          line.geometry.dispose();
+          if (Array.isArray(line.material)) {
+            line.material.forEach(m => m.dispose());
+          } else {
+            line.material.dispose();
+          }
+        });
+        renderer.dispose();
+        containerRef.current?.removeChild(renderer.domElement);
+      };
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to initialize 3D scene');
+    }
   }, []);
 
   // Initialize physics solver with bodies
@@ -174,7 +213,9 @@ export default function Advanced3DUniverse({
     if (!sceneRef.current) return;
 
     for (const body of bodies) {
-      const geometry = new THREE.SphereGeometry(Math.max(body.radius, 1e9), 32, 32);
+      // Optimize geometry segments based on body type
+      const segments = body.type === 'star' ? 16 : 24;
+      const geometry = new THREE.SphereGeometry(Math.max(body.radius, 1e9), segments, segments);
       const material = new THREE.MeshStandardMaterial({
         color: body.color,
         emissive: body.type === 'star' ? body.color : 0x000000,
@@ -191,6 +232,8 @@ export default function Advanced3DUniverse({
 
       sceneRef.current.add(mesh);
       meshesRef.current.set(body.id, mesh);
+      geometriesRef.current.push(geometry);
+      materialsRef.current.push(material);
 
       // Create orbit line
       if (showOrbits) {
@@ -199,67 +242,80 @@ export default function Advanced3DUniverse({
         const orbitLine = new THREE.Line(orbitGeometry, orbitMaterial);
         sceneRef.current.add(orbitLine);
         orbitsRef.current.set(body.id, orbitLine);
+        geometriesRef.current.push(orbitGeometry);
+        materialsRef.current.push(orbitMaterial);
       }
     }
   }, [showOrbits]);
 
-  // Animation loop
+  // Animation loop with proper dependency management
   useEffect(() => {
     if (!rendererRef.current || !sceneRef.current || !cameraRef.current) return;
 
     const animate = () => {
       animationIdRef.current = requestAnimationFrame(animate);
 
-      if (isRunning) {
-        // Step physics simulation
-        for (let i = 0; i < timeScale; i++) {
-          solverRef.current.step();
-        }
-
-        setSimulationTime((t) => t + 1);
-
-        // Update mesh positions and trails
-        const bodies = solverRef.current.getBodies();
-        for (const body of bodies) {
-          const mesh = meshesRef.current.get(body.id);
-          if (mesh) {
-            mesh.position.copy(body.position as any);
+      try {
+        if (isRunning) {
+          // Step physics simulation with error handling
+          try {
+            for (let i = 0; i < Math.max(1, Math.min(timeScale, 10)); i++) {
+              solverRef.current.step();
+            }
+          } catch (err) {
+            console.error('Physics simulation error:', err);
+            setIsRunning(false);
           }
 
-          // Update trail
-          const trail = trailsRef.current.get(body.id);
-          if (trail) {
-            trail.push(body.position.clone());
-            if (trail.length > 500) trail.shift();
+          setSimulationTime((t) => t + 1);
 
-            const orbitLine = orbitsRef.current.get(body.id);
-            if (orbitLine && trail.length > 1) {
-              const positions = new Float32Array(trail.length * 3);
-              for (let i = 0; i < trail.length; i++) {
-                positions[i * 3] = trail[i].x;
-                positions[i * 3 + 1] = trail[i].y;
-                positions[i * 3 + 2] = trail[i].z;
+          // Update mesh positions and trails
+          const bodies = solverRef.current.getBodies();
+          for (const body of bodies) {
+            const mesh = meshesRef.current.get(body.id);
+            if (mesh) {
+              mesh.position.copy(body.position as any);
+            }
+
+            // Update trail with memory management
+            const trail = trailsRef.current.get(body.id);
+            if (trail) {
+              trail.push(body.position.clone());
+              // Limit trail length to prevent memory issues
+              if (trail.length > 300) trail.shift();
+
+              const orbitLine = orbitsRef.current.get(body.id);
+              if (orbitLine && trail.length > 1) {
+                const positions = new Float32Array(trail.length * 3);
+                for (let i = 0; i < trail.length; i++) {
+                  positions[i * 3] = trail[i].x;
+                  positions[i * 3 + 1] = trail[i].y;
+                  positions[i * 3 + 2] = trail[i].z;
+                }
+                orbitLine.geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
               }
-              orbitLine.geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
             }
           }
+
+          if (onSimulationUpdate) {
+            onSimulationUpdate(simulationTime, bodies);
+          }
         }
 
-        if (onSimulationUpdate) {
-          onSimulationUpdate(simulationTime, bodies);
+        // Update FPS counter
+        fpsCounterRef.current.frames++;
+        const now = Date.now();
+        if (now - fpsCounterRef.current.lastTime >= 1000) {
+          setFps(fpsCounterRef.current.frames);
+          fpsCounterRef.current.frames = 0;
+          fpsCounterRef.current.lastTime = now;
         }
-      }
 
-      // Update FPS counter
-      fpsCounterRef.current.frames++;
-      const now = Date.now();
-      if (now - fpsCounterRef.current.lastTime >= 1000) {
-        setFps(fpsCounterRef.current.frames);
-        fpsCounterRef.current.frames = 0;
-        fpsCounterRef.current.lastTime = now;
+        rendererRef.current!.render(sceneRef.current!, cameraRef.current!);
+      } catch (err) {
+        console.error('Animation loop error:', err);
+        setError(err instanceof Error ? err.message : 'Animation error');
       }
-
-      rendererRef.current!.render(sceneRef.current!, cameraRef.current!);
     };
 
     animate();
@@ -291,6 +347,25 @@ export default function Advanced3DUniverse({
 
   return (
     <div className="w-full h-full flex flex-col bg-aerospace-dark">
+      {/* Error State */}
+      {error && (
+        <div className="absolute inset-0 flex items-center justify-center bg-aerospace-dark/90 z-50">
+          <div className="text-center max-w-md">
+            <p className="text-aerospace-danger font-bold mb-2">Simulation Error</p>
+            <p className="text-foreground/70 text-sm mb-4">{error}</p>
+            <button
+              onClick={() => {
+                setError(null);
+                handleReset();
+              }}
+              className="px-4 py-2 bg-aerospace-blue/30 hover:bg-aerospace-blue/50 rounded text-foreground text-sm font-semibold transition-all"
+            >
+              Reset
+            </button>
+          </div>
+        </div>
+      )}
+      
       <div ref={containerRef} className="flex-1 relative" />
 
       {/* Controls */}

@@ -199,6 +199,8 @@ export default function NASAEyesUniverseExplorer() {
   const navigationDurationRef = useRef<number>(0);
   const navigationStartRef = useRef<THREE.Vector3 | null>(null);
   const navigationTargetRef = useRef<NavigationTarget | null>(null);
+  const resizeObserverRef = useRef<ResizeObserver | null>(null);
+  const glowsRef = useRef<THREE.Mesh[]>([]);
 
   const [selectedBody, setSelectedBody] = useState<CelestialBody | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
@@ -209,205 +211,257 @@ export default function NASAEyesUniverseExplorer() {
   const [stats, setStats] = useState({ fps: 0, distance: 0, speed: 0 });
   const [showLegend, setShowLegend] = useState(true);
   const [cameraMode, setCameraMode] = useState<'orbit' | 'follow'>('orbit');
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  // Initialize scene with advanced rendering
+  // Initialize scene with advanced rendering and memory management
   useEffect(() => {
     if (!containerRef.current) return;
 
-    // Scene setup
-    const scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x000814);
-    scene.fog = new THREE.Fog(0x000814, 1e18, 1e20);
-    sceneRef.current = scene;
+    try {
+      setIsLoading(true);
+      setError(null);
 
-    // Camera setup
-    const camera = new THREE.PerspectiveCamera(
-      75,
-      containerRef.current.clientWidth / containerRef.current.clientHeight,
-      1,
-      1e25
-    );
-    camera.position.set(0, 3e8, 5e8);
-    camera.lookAt(0, 0, 0);
-    cameraRef.current = camera;
+      // Scene setup
+      const scene = new THREE.Scene();
+      scene.background = new THREE.Color(0x000814);
+      scene.fog = new THREE.Fog(0x000814, 1e18, 1e20);
+      sceneRef.current = scene;
 
-    // Renderer setup with advanced features
-    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-    renderer.setSize(containerRef.current.clientWidth, containerRef.current.clientHeight);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    renderer.shadowMap.enabled = true;
-    renderer.shadowMap.type = THREE.PCFShadowShadowMap;
-    renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.2;
-    containerRef.current.appendChild(renderer.domElement);
-    rendererRef.current = renderer;
+      // Camera setup with safe aspect ratio
+      const width = containerRef.current.clientWidth || window.innerWidth;
+      const height = containerRef.current.clientHeight || window.innerHeight;
+      const camera = new THREE.PerspectiveCamera(
+        75,
+        width / height,
+        1,
+        1e25
+      );
+      camera.position.set(0, 3e8, 5e8);
+      camera.lookAt(0, 0, 0);
+      cameraRef.current = camera;
 
-    // Advanced lighting
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.3);
-    scene.add(ambientLight);
-
-    const sunLight = new THREE.PointLight(0xffffff, 2);
-    sunLight.position.set(0, 0, 0);
-    sunLight.castShadow = true;
-    sunLight.shadow.mapSize.width = 4096;
-    sunLight.shadow.mapSize.height = 4096;
-    scene.add(sunLight);
-
-    // Atmospheric scattering effect
-    const atmosphereGeometry = new THREE.SphereGeometry(1e10, 64, 64);
-    const atmosphereMaterial = new THREE.MeshPhongMaterial({
-      color: 0x87CEEB,
-      emissive: 0x4A90E2,
-      emissiveIntensity: 0.1,
-      transparent: true,
-      opacity: 0.1,
-      side: THREE.BackSide,
-    });
-    const atmosphere = new THREE.Mesh(atmosphereGeometry, atmosphereMaterial);
-    scene.add(atmosphere);
-
-    // Enhanced starfield with depth
-    const starsGeometry = new THREE.BufferGeometry();
-    const starsPositions = [];
-    const starsColors = [];
-    const starsSizes = [];
-
-    for (let i = 0; i < 50000; i++) {
-      const x = (Math.random() - 0.5) * 1e21;
-      const y = (Math.random() - 0.5) * 1e21;
-      const z = (Math.random() - 0.5) * 1e21;
-      starsPositions.push(x, y, z);
-
-      const brightness = Math.random();
-      starsColors.push(brightness, brightness, brightness);
-      starsSizes.push(Math.random() * 1000 + 200);
-    }
-
-    starsGeometry.setAttribute('position', new THREE.BufferAttribute(new Float32Array(starsPositions), 3));
-    starsGeometry.setAttribute('color', new THREE.BufferAttribute(new Float32Array(starsColors), 3));
-    starsGeometry.setAttribute('size', new THREE.BufferAttribute(new Float32Array(starsSizes), 1));
-
-    const starsMaterial = new THREE.PointsMaterial({
-      size: 500,
-      sizeAttenuation: true,
-      transparent: true,
-      opacity: 0.8,
-      vertexColors: true,
-    });
-
-    const stars = new THREE.Points(starsGeometry, starsMaterial);
-    scene.add(stars);
-
-    // Load celestial bodies
-    loadCelestialBodies(scene);
-
-    // Handle window resize
-    const handleResize = () => {
-      if (!containerRef.current) return;
-      const width = containerRef.current.clientWidth;
-      const height = containerRef.current.clientHeight;
-      camera.aspect = width / height;
-      camera.updateProjectionMatrix();
+      // Renderer setup with advanced features and error handling
+      const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: false });
       renderer.setSize(width, height);
-    };
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      renderer.shadowMap.enabled = true;
+      renderer.shadowMap.type = THREE.PCFShadowShadowMap;
+      renderer.toneMapping = THREE.ACESFilmicToneMapping;
+      renderer.toneMappingExposure = 1.2;
+      renderer.outputColorSpace = THREE.SRGBColorSpace;
+      containerRef.current.appendChild(renderer.domElement);
+      rendererRef.current = renderer;
 
-    window.addEventListener('resize', handleResize);
+      // Advanced lighting
+      const ambientLight = new THREE.AmbientLight(0xffffff, 0.3);
+      scene.add(ambientLight);
 
-    // Animation loop
-    let frameCount = 0;
-    let lastTime = Date.now();
-    let time = 0;
+      const sunLight = new THREE.PointLight(0xffffff, 2);
+      sunLight.position.set(0, 0, 0);
+      sunLight.castShadow = true;
+      sunLight.shadow.mapSize.width = 2048;
+      sunLight.shadow.mapSize.height = 2048;
+      scene.add(sunLight);
 
-    const animate = () => {
-      animationFrameRef.current = requestAnimationFrame(animate);
-      time += 0.016;
+      // Atmospheric scattering effect
+      const atmosphereGeometry = new THREE.SphereGeometry(1e10, 32, 32);
+      const atmosphereMaterial = new THREE.MeshPhongMaterial({
+        color: 0x87CEEB,
+        emissive: 0x4A90E2,
+        emissiveIntensity: 0.1,
+        transparent: true,
+        opacity: 0.1,
+        side: THREE.BackSide,
+      });
+      const atmosphere = new THREE.Mesh(atmosphereGeometry, atmosphereMaterial);
+      scene.add(atmosphere);
 
-      // Update celestial body positions (orbital mechanics)
-      CELESTIAL_BODIES.forEach((body) => {
-        const mesh = bodiesRef.current.get(body.id);
-        if (mesh && body.orbitRadius) {
-          const angle = (time * body.speed) / body.orbitRadius;
-          mesh.position.x = Math.cos(angle) * body.orbitRadius;
-          mesh.position.z = Math.sin(angle) * body.orbitRadius;
+      // Enhanced starfield with depth - optimized for performance
+      const starsGeometry = new THREE.BufferGeometry();
+      const starsPositions = [];
+      const starsColors = [];
+      const starsSizes = [];
 
-          // Rotate body
-          mesh.rotation.y += 0.001;
-        }
+      // Reduced star count for better performance
+      for (let i = 0; i < 25000; i++) {
+        const x = (Math.random() - 0.5) * 1e21;
+        const y = (Math.random() - 0.5) * 1e21;
+        const z = (Math.random() - 0.5) * 1e21;
+        starsPositions.push(x, y, z);
+
+        const brightness = Math.random();
+        starsColors.push(brightness, brightness, brightness);
+        starsSizes.push(Math.random() * 1000 + 200);
+      }
+
+      starsGeometry.setAttribute('position', new THREE.BufferAttribute(new Float32Array(starsPositions), 3));
+      starsGeometry.setAttribute('color', new THREE.BufferAttribute(new Float32Array(starsColors), 3));
+      starsGeometry.setAttribute('size', new THREE.BufferAttribute(new Float32Array(starsSizes), 1));
+
+      const starsMaterial = new THREE.PointsMaterial({
+        size: 500,
+        sizeAttenuation: true,
+        transparent: true,
+        opacity: 0.8,
+        vertexColors: true,
       });
 
-      // Handle smooth camera navigation
-      if (navigationTargetRef.current && navigationStartRef.current) {
-        navigationTimeRef.current += 0.016;
-        const progress = Math.min(navigationTimeRef.current / navigationDurationRef.current, 1);
-        const easeProgress = 1 - Math.pow(1 - progress, 3); // Ease out cubic
+      const stars = new THREE.Points(starsGeometry, starsMaterial);
+      scene.add(stars);
 
-        const currentPos = new THREE.Vector3().lerpVectors(
-          navigationStartRef.current,
-          navigationTargetRef.current.position,
-          easeProgress
-        );
-        camera.position.copy(currentPos);
-        camera.lookAt(navigationTargetRef.current.lookAt);
+      // Load celestial bodies
+      loadCelestialBodies(scene);
+      setIsLoading(false);
 
-        if (progress >= 1) {
-          navigationTargetRef.current = null;
-          navigationStartRef.current = null;
-          setIsNavigating(false);
+      // Handle window resize with ResizeObserver for better performance
+      const handleResize = () => {
+        if (!containerRef.current || !camera || !renderer) return;
+        const width = containerRef.current.clientWidth;
+        const height = containerRef.current.clientHeight;
+        if (width > 0 && height > 0) {
+          camera.aspect = width / height;
+          camera.updateProjectionMatrix();
+          renderer.setSize(width, height);
         }
-      }
+      };
 
-      // Update stats
-      frameCount++;
-      const currentTime = Date.now();
-      if (currentTime - lastTime >= 1000) {
-        const cameraDistance = camera.position.length();
-        setStats({
-          fps: frameCount,
-          distance: cameraDistance,
-          speed: 0,
+      resizeObserverRef.current = new ResizeObserver(handleResize);
+      resizeObserverRef.current.observe(containerRef.current);
+
+      // Animation loop with optimized performance
+      let frameCount = 0;
+      let lastTime = Date.now();
+      let time = 0;
+
+      const animate = () => {
+        animationFrameRef.current = requestAnimationFrame(animate);
+        time += 0.016;
+
+        // Update celestial body positions (orbital mechanics)
+        CELESTIAL_BODIES.forEach((body) => {
+          const mesh = bodiesRef.current.get(body.id);
+          if (mesh && body.orbitRadius) {
+            const angle = (time * body.speed) / body.orbitRadius;
+            mesh.position.x = Math.cos(angle) * body.orbitRadius;
+            mesh.position.z = Math.sin(angle) * body.orbitRadius;
+
+            // Rotate body
+            mesh.rotation.y += 0.001;
+          }
         });
-        frameCount = 0;
-        lastTime = currentTime;
-      }
 
-      renderer.render(scene, camera);
-    };
+        // Handle smooth camera navigation
+        if (navigationTargetRef.current && navigationStartRef.current) {
+          navigationTimeRef.current += 0.016;
+          const progress = Math.min(navigationTimeRef.current / navigationDurationRef.current, 1);
+          const easeProgress = 1 - Math.pow(1 - progress, 3); // Ease out cubic
 
-    animate();
+          const currentPos = new THREE.Vector3().lerpVectors(
+            navigationStartRef.current,
+            navigationTargetRef.current.position,
+            easeProgress
+          );
+          camera.position.copy(currentPos);
+          camera.lookAt(navigationTargetRef.current.lookAt);
 
-    // Raycaster for object selection
-    const raycaster = new THREE.Raycaster();
-    const mouse = new THREE.Vector2();
-
-    const onMouseClick = (event: MouseEvent) => {
-      if (!containerRef.current || isNavigating) return;
-      const rect = containerRef.current.getBoundingClientRect();
-      mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
-      mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
-
-      raycaster.setFromCamera(mouse, camera);
-      const intersects = raycaster.intersectObjects(Array.from(bodiesRef.current.values()));
-
-      if (intersects.length > 0) {
-        const obj = intersects[0].object;
-        const body = CELESTIAL_BODIES.find((b) => bodiesRef.current.get(b.id) === obj);
-        if (body) {
-          setSelectedBody(body);
+          if (progress >= 1) {
+            navigationTargetRef.current = null;
+            navigationStartRef.current = null;
+            setIsNavigating(false);
+          }
         }
-      }
-    };
 
-    containerRef.current.addEventListener('click', onMouseClick);
+        // Update stats
+        frameCount++;
+        const currentTime = Date.now();
+        if (currentTime - lastTime >= 1000) {
+          const cameraDistance = camera.position.length();
+          setStats({
+            fps: frameCount,
+            distance: cameraDistance,
+            speed: 0,
+          });
+          frameCount = 0;
+          lastTime = currentTime;
+        }
 
-    return () => {
-      window.removeEventListener('resize', handleResize);
-      containerRef.current?.removeEventListener('click', onMouseClick);
-      if (animationFrameRef.current) {
-        cancelAnimationFrame(animationFrameRef.current);
-      }
-      containerRef.current?.removeChild(renderer.domElement);
-    };
-  }, [isNavigating]);
+        renderer.render(scene, camera);
+      };
+
+      animate();
+
+      // Raycaster for object selection
+      const raycaster = new THREE.Raycaster();
+      const mouse = new THREE.Vector2();
+
+      const onMouseClick = (event: MouseEvent) => {
+        if (!containerRef.current || isNavigating) return;
+        const rect = containerRef.current.getBoundingClientRect();
+        mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+        mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+
+        raycaster.setFromCamera(mouse, camera);
+        const intersects = raycaster.intersectObjects(Array.from(bodiesRef.current.values()));
+
+        if (intersects.length > 0) {
+          const obj = intersects[0].object;
+          const body = CELESTIAL_BODIES.find((b) => bodiesRef.current.get(b.id) === obj);
+          if (body) {
+            setSelectedBody(body);
+          }
+        }
+      };
+
+      containerRef.current.addEventListener('click', onMouseClick);
+
+      return () => {
+        if (resizeObserverRef.current) {
+          resizeObserverRef.current.disconnect();
+        }
+        containerRef.current?.removeEventListener('click', onMouseClick);
+        if (animationFrameRef.current) {
+          cancelAnimationFrame(animationFrameRef.current);
+        }
+        // Proper cleanup of Three.js resources
+        bodiesRef.current.forEach((mesh) => {
+          if (mesh instanceof THREE.Mesh) {
+            mesh.geometry.dispose();
+            if (Array.isArray(mesh.material)) {
+              mesh.material.forEach((m) => m.dispose());
+            } else {
+              mesh.material.dispose();
+            }
+          }
+        });
+        orbitLinesRef.current.forEach((line) => {
+          line.geometry.dispose();
+          if (Array.isArray(line.material)) {
+            line.material.forEach((m) => m.dispose());
+          } else {
+            line.material.dispose();
+          }
+        });
+        glowsRef.current.forEach((glow) => {
+          glow.geometry.dispose();
+          if (Array.isArray(glow.material)) {
+            glow.material.forEach((m) => m.dispose());
+          } else {
+            glow.material.dispose();
+          }
+        });
+        starsGeometry.dispose();
+        starsMaterial.dispose();
+        atmosphereGeometry.dispose();
+        atmosphereMaterial.dispose();
+        renderer.dispose();
+        containerRef.current?.removeChild(renderer.domElement);
+      };
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to initialize 3D scene');
+      setIsLoading(false);
+    }
+  }, []);
 
   const loadCelestialBodies = (scene: THREE.Scene) => {
     CELESTIAL_BODIES.forEach((body) => {
@@ -425,7 +479,7 @@ export default function NASAEyesUniverseExplorer() {
           opacity: 0.7,
         });
       } else if (body.type === 'nebula') {
-        geometry = new THREE.SphereGeometry(body.size, 32, 32);
+        geometry = new THREE.SphereGeometry(body.size, 16, 16);
         material = new THREE.MeshBasicMaterial({
           color: body.color,
           emissive: body.color,
@@ -434,8 +488,9 @@ export default function NASAEyesUniverseExplorer() {
           opacity: 0.5,
         });
       } else {
-        // Planets and stars as spheres
-        geometry = new THREE.SphereGeometry(body.size, 64, 64);
+        // Planets and stars as spheres - optimized geometry
+        const segments = body.type === 'star' ? 32 : 48;
+        geometry = new THREE.SphereGeometry(body.size, segments, segments);
         material = new THREE.MeshPhongMaterial({
           color: body.color,
           emissive: body.type === 'star' ? body.color : '#000000',
@@ -455,7 +510,7 @@ export default function NASAEyesUniverseExplorer() {
       if (body.orbitRadius && body.type === 'planet') {
         const orbitGeometry = new THREE.BufferGeometry();
         const orbitPoints = [];
-        for (let i = 0; i <= 360; i++) {
+        for (let i = 0; i <= 360; i += 2) {
           const angle = (i * Math.PI) / 180;
           orbitPoints.push(
             Math.cos(angle) * body.orbitRadius,
@@ -476,7 +531,7 @@ export default function NASAEyesUniverseExplorer() {
 
       // Add glow effect for stars
       if (body.type === 'star') {
-        const glowGeometry = new THREE.SphereGeometry(body.size * 1.5, 32, 32);
+        const glowGeometry = new THREE.SphereGeometry(body.size * 1.5, 16, 16);
         const glowMaterial = new THREE.MeshBasicMaterial({
           color: body.color,
           emissive: body.color,
@@ -488,6 +543,7 @@ export default function NASAEyesUniverseExplorer() {
         const glow = new THREE.Mesh(glowGeometry, glowMaterial);
         glow.position.copy(body.position);
         scene.add(glow);
+        glowsRef.current.push(glow);
       }
     });
   };
@@ -540,6 +596,32 @@ export default function NASAEyesUniverseExplorer() {
 
   return (
     <div className="w-full h-screen bg-aerospace-dark flex flex-col overflow-hidden">
+      {/* Loading State */}
+      {isLoading && (
+        <div className="absolute inset-0 flex items-center justify-center bg-aerospace-dark/90 z-50">
+          <div className="text-center">
+            <div className="w-12 h-12 border-4 border-aerospace-blue/30 border-t-aerospace-blue rounded-full animate-spin mx-auto mb-4" />
+            <p className="text-foreground/70 font-mono">Initializing Universe Explorer...</p>
+          </div>
+        </div>
+      )}
+
+      {/* Error State */}
+      {error && (
+        <div className="absolute inset-0 flex items-center justify-center bg-aerospace-dark/90 z-50">
+          <div className="text-center max-w-md">
+            <p className="text-aerospace-danger font-bold mb-2">Error Loading Scene</p>
+            <p className="text-foreground/70 text-sm mb-4">{error}</p>
+            <button
+              onClick={() => window.location.reload()}
+              className="px-4 py-2 bg-aerospace-blue/30 hover:bg-aerospace-blue/50 rounded text-foreground text-sm font-semibold transition-all"
+            >
+              Reload
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Main Viewer */}
       <div ref={containerRef} className="flex-1 relative overflow-hidden" />
 
