@@ -22,6 +22,7 @@ import AstroLabCelestialCoordinatePage from '@/components/pages/AstroLabCelestia
 import AstroLabOrbitalMechanicsPage from '@/components/pages/AstroLabOrbitalMechanicsPage';
 import AstroLabComplete from '@/components/AstroLabComplete';
 import AstroLabPage from '@/components/pages/AstroLabPage';
+import AstroLabEnhancedPage from '@/components/pages/AstroLabEnhancedPage';
 import PremiumAstroLabSuite from '@/components/PremiumAstroLabSuite';
 import UniverseViewerPage from '@/components/pages/UniverseViewerPage';
 import ExoplanetHabitabilityPage from '@/components/pages/ExoplanetHabitabilityPage';
@@ -174,9 +175,16 @@ const router = createBrowserRouter([
       },
       {
         path: "astrolab",
-        element: <AstroLabPage />,
+        element: <AstroLabEnhancedPage />,
         routeMetadata: {
           pageIdentifier: 'astrolab-main',
+        },
+      },
+      {
+        path: "astrolab-legacy",
+        element: <AstroLabPage />,
+        routeMetadata: {
+          pageIdentifier: 'astrolab-legacy',
         },
       },
       {
