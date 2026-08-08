@@ -27,6 +27,7 @@ import ExoplanetHabitabilityPage from '@/components/pages/ExoplanetHabitabilityP
 import BlackHoleSimulatorPage from '@/components/pages/BlackHoleSimulatorPage';
 import CMBExplorerPage from '@/components/pages/CMBExplorerPage';
 import PhysicsAccurateAstroLabPage from '@/components/pages/PhysicsAccurateAstroLabPage';
+import ProfessionalInteractiveLab from '@/components/pages/ProfessionalInteractiveLab';
 
 // Layout component that includes ScrollToTop
 function Layout() {
@@ -217,6 +218,13 @@ const router = createBrowserRouter([
         element: <PhysicsAccurateAstroLabPage />,
         routeMetadata: {
           pageIdentifier: 'physics-accurate-astrolab',
+        },
+      },
+      {
+        path: "professional-interactive-lab",
+        element: <ProfessionalInteractiveLab />,
+        routeMetadata: {
+          pageIdentifier: 'professional-interactive-lab',
         },
       },
       {

@@ -304,11 +304,11 @@ export default function HomePage() {
                   className="pt-8 flex flex-col sm:flex-row gap-4"
                 >
                   <Link 
-                    to="/virtual-lab"
+                    to="/professional-interactive-lab"
                     className="group relative inline-flex items-center justify-center px-10 py-5 bg-aerospace-blue text-white font-mono text-sm uppercase tracking-wider hover:bg-aerospace-accent transition-all duration-300 rounded-lg shadow-xl hover:shadow-2xl hover:-translate-y-1"
                   >
                     <span className="relative z-10 flex items-center gap-2">
-                      {HERO_DATA.cta}
+                      Professional Lab
                       <ChevronRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
                     </span>
                   </Link>
