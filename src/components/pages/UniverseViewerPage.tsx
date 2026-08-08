@@ -1,10 +1,10 @@
 import React from 'react';
-import UniverseViewer from '@/components/UniverseViewer';
+import UniverseExplorer from '@/components/UniverseExplorer';
 
 export default function UniverseViewerPage() {
   return (
     <div className="w-full h-screen bg-aerospace-dark">
-      <UniverseViewer />
+      <UniverseExplorer />
     </div>
   );
 }
