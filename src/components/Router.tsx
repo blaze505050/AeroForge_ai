@@ -13,6 +13,10 @@ import AerodynamicsLabPage from '@/components/pages/AerodynamicsLabPage';
 import AstroLabSpatialGlobeToolPage from '@/components/pages/AstroLabSpatialGlobeToolPage';
 import AstroLabSatelliteConstellationPage from '@/components/pages/AstroLabSatelliteConstellationPage';
 import AstroLabOrbitalMechanicsPage from '@/components/pages/AstroLabOrbitalMechanicsPage';
+import AstroLabExoplanetHabitabilityPage from '@/components/pages/AstroLabExoplanetHabitabilityPage';
+import AstroLabOrbitalMechanicsEnhancedPage from '@/components/pages/AstroLabOrbitalMechanicsEnhancedPage';
+import AstroLabStellarEvolutionPage from '@/components/pages/AstroLabStellarEvolutionPage';
+import AstroLabHubPage from '@/components/pages/AstroLabHubPage';
 
 // Layout component that includes ScrollToTop and Error Boundary
 function Layout() {
@@ -94,10 +98,38 @@ const router = createBrowserRouter([
         },
       },
       {
+        path: "astrolab",
+        element: <AstroLabHubPage />,
+        routeMetadata: {
+          pageIdentifier: 'astrolab-hub',
+        },
+      },
+      {
         path: "astrolab/orbital-mechanics",
         element: <AstroLabOrbitalMechanicsPage />,
         routeMetadata: {
           pageIdentifier: 'astrolab-orbital',
+        },
+      },
+      {
+        path: "astrolab/exoplanet-habitability",
+        element: <AstroLabExoplanetHabitabilityPage />,
+        routeMetadata: {
+          pageIdentifier: 'astrolab-exoplanet',
+        },
+      },
+      {
+        path: "astrolab/orbital-mechanics-enhanced",
+        element: <AstroLabOrbitalMechanicsEnhancedPage />,
+        routeMetadata: {
+          pageIdentifier: 'astrolab-orbital-enhanced',
+        },
+      },
+      {
+        path: "astrolab/stellar-evolution",
+        element: <AstroLabStellarEvolutionPage />,
+        routeMetadata: {
+          pageIdentifier: 'astrolab-stellar-evolution',
         },
       },
       {
