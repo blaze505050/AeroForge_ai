@@ -32,6 +32,14 @@ import AstroLabAcademyPage from '@/components/pages/AstroLabAcademyPage';
 import AstroLabProfessionalPage from '@/components/pages/AstroLabProfessionalPage';
 import InvestorDemoPage from '@/components/pages/InvestorDemoPage';
 import ProductionStatusPage from '@/components/pages/ProductionStatusPage';
+import AstroLabP0OrbitalPage from '@/components/pages/AstroLabP0OrbitalPage';
+import AstroLabP0GravityPage from '@/components/pages/AstroLabP0GravityPage';
+import AstroLabP0TransitPage from '@/components/pages/AstroLabP0TransitPage';
+import AstroLabP0StellarPage from '@/components/pages/AstroLabP0StellarPage';
+import MyLabPage from '@/components/pages/MyLabPage';
+import SpaceProblemsPage from '@/components/pages/SpaceProblemsPage';
+import AstroLabInvestorDemoPage from '@/components/pages/AstroLabInvestorDemoPage';
+import AstroLabP0HubPage from '@/components/pages/AstroLabP0HubPage';
 
 // Layout component that includes ScrollToTop and Error Boundary
 function Layout() {
@@ -243,6 +251,62 @@ const router = createBrowserRouter([
         element: <ProductionStatusPage />,
         routeMetadata: {
           pageIdentifier: 'production-status',
+        },
+      },
+      {
+        path: "astrolab/p0/orbital",
+        element: <AstroLabP0OrbitalPage />,
+        routeMetadata: {
+          pageIdentifier: 'astrolab-p0-orbital',
+        },
+      },
+      {
+        path: "astrolab/p0/gravity",
+        element: <AstroLabP0GravityPage />,
+        routeMetadata: {
+          pageIdentifier: 'astrolab-p0-gravity',
+        },
+      },
+      {
+        path: "astrolab/p0/transit",
+        element: <AstroLabP0TransitPage />,
+        routeMetadata: {
+          pageIdentifier: 'astrolab-p0-transit',
+        },
+      },
+      {
+        path: "astrolab/p0/stellar",
+        element: <AstroLabP0StellarPage />,
+        routeMetadata: {
+          pageIdentifier: 'astrolab-p0-stellar',
+        },
+      },
+      {
+        path: "my-lab",
+        element: <MyLabPage />,
+        routeMetadata: {
+          pageIdentifier: 'my-lab',
+        },
+      },
+      {
+        path: "space-problems",
+        element: <SpaceProblemsPage />,
+        routeMetadata: {
+          pageIdentifier: 'space-problems',
+        },
+      },
+      {
+        path: "astrolab/investor-demo",
+        element: <AstroLabInvestorDemoPage />,
+        routeMetadata: {
+          pageIdentifier: 'astrolab-investor-demo-p0',
+        },
+      },
+      {
+        path: "astrolab/p0-hub",
+        element: <AstroLabP0HubPage />,
+        routeMetadata: {
+          pageIdentifier: 'astrolab-p0-hub',
         },
       },
       {
