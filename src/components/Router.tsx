@@ -17,6 +17,18 @@ import AstroLabExoplanetHabitabilityPage from '@/components/pages/AstroLabExopla
 import AstroLabOrbitalMechanicsEnhancedPage from '@/components/pages/AstroLabOrbitalMechanicsEnhancedPage';
 import AstroLabStellarEvolutionPage from '@/components/pages/AstroLabStellarEvolutionPage';
 import AstroLabHubPage from '@/components/pages/AstroLabHubPage';
+import AstroLabMainPage from '@/components/pages/AstroLabMainPage';
+import VirtualObservatoryPage from '@/components/pages/VirtualObservatoryPage';
+import RadioAstronomyPage from '@/components/pages/RadioAstronomyPage';
+import SpaceflightDynamicsPage from '@/components/pages/SpaceflightDynamicsPage';
+import AstrobiologyLabPage from '@/components/pages/AstrobiologyLabPage';
+import CosmologyExplorerPage from '@/components/pages/CosmologyExplorerPage';
+import ExoplanetImagingPage from '@/components/pages/ExoplanetImagingPage';
+import CelestialMechanicsPage from '@/components/pages/CelestialMechanicsPage';
+import AtmosphericSciencePage from '@/components/pages/AtmosphericSciencePage';
+import QuantumAstrophysicsPage from '@/components/pages/QuantumAstrophysicsPage';
+import MissionControlPage from '@/components/pages/MissionControlPage';
+import AstroLabAcademyPage from '@/components/pages/AstroLabAcademyPage';
 
 // Layout component that includes ScrollToTop and Error Boundary
 function Layout() {
@@ -99,9 +111,37 @@ const router = createBrowserRouter([
       },
       {
         path: "astrolab",
+        element: <AstroLabMainPage />,
+        routeMetadata: {
+          pageIdentifier: 'astrolab-main',
+        },
+      },
+      {
+        path: "astrolab/hub",
         element: <AstroLabHubPage />,
         routeMetadata: {
           pageIdentifier: 'astrolab-hub',
+        },
+      },
+      {
+        path: "astrolab/virtual-observatory",
+        element: <VirtualObservatoryPage />,
+        routeMetadata: {
+          pageIdentifier: 'astrolab-observatory',
+        },
+      },
+      {
+        path: "astrolab/radio-astronomy",
+        element: <RadioAstronomyPage />,
+        routeMetadata: {
+          pageIdentifier: 'astrolab-radio',
+        },
+      },
+      {
+        path: "astrolab/spaceflight-dynamics",
+        element: <SpaceflightDynamicsPage />,
+        routeMetadata: {
+          pageIdentifier: 'astrolab-spaceflight',
         },
       },
       {
@@ -126,10 +166,59 @@ const router = createBrowserRouter([
         },
       },
       {
-        path: "astrolab/stellar-evolution",
-        element: <AstroLabStellarEvolutionPage />,
+        path: "astrolab/astrobiology-lab",
+        element: <AstrobiologyLabPage />,
         routeMetadata: {
-          pageIdentifier: 'astrolab-stellar-evolution',
+          pageIdentifier: 'astrolab-astrobiology',
+        },
+      },
+      {
+        path: "astrolab/cosmology-explorer",
+        element: <CosmologyExplorerPage />,
+        routeMetadata: {
+          pageIdentifier: 'astrolab-cosmology',
+        },
+      },
+      {
+        path: "astrolab/exoplanet-imaging",
+        element: <ExoplanetImagingPage />,
+        routeMetadata: {
+          pageIdentifier: 'astrolab-imaging',
+        },
+      },
+      {
+        path: "astrolab/celestial-mechanics",
+        element: <CelestialMechanicsPage />,
+        routeMetadata: {
+          pageIdentifier: 'astrolab-celestial-mechanics',
+        },
+      },
+      {
+        path: "astrolab/atmospheric-science",
+        element: <AtmosphericSciencePage />,
+        routeMetadata: {
+          pageIdentifier: 'astrolab-atmospheric',
+        },
+      },
+      {
+        path: "astrolab/quantum-astrophysics",
+        element: <QuantumAstrophysicsPage />,
+        routeMetadata: {
+          pageIdentifier: 'astrolab-quantum',
+        },
+      },
+      {
+        path: "astrolab/mission-control",
+        element: <MissionControlPage />,
+        routeMetadata: {
+          pageIdentifier: 'astrolab-mission-control',
+        },
+      },
+      {
+        path: "astrolab/academy",
+        element: <AstroLabAcademyPage />,
+        routeMetadata: {
+          pageIdentifier: 'astrolab-academy',
         },
       },
       {
