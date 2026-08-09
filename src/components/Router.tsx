@@ -6,30 +6,13 @@ import ErrorBoundary from '@/components/ErrorBoundary';
 import HomePage from '@/components/pages/HomePage';
 import VirtualLabPage from '@/components/pages/VirtualLabPage';
 import DocumentationPage from '@/components/pages/DocumentationPage';
-import AdvancedToolsPage from '@/components/pages/AdvancedToolsPage';
-import CompilerPage from '@/components/pages/CompilerPage';
 import DashboardPage from '@/components/pages/DashboardPage';
 import ProjectsPage from '@/components/pages/ProjectsPage';
 import ProjectWorkspacePage from '@/components/pages/ProjectWorkspacePage';
 import AerodynamicsLabPage from '@/components/pages/AerodynamicsLabPage';
 import AstroLabSpatialGlobeToolPage from '@/components/pages/AstroLabSpatialGlobeToolPage';
-import AstroLabDeepSpaceObservationPage from '@/components/pages/AstroLabDeepSpaceObservationPage';
-import AstroLabPhotometrySuitePage from '@/components/pages/AstroLabPhotometrySuitePage';
-import AstroLabAstrodynamicsSandboxPage from '@/components/pages/AstroLabAstrodynamicsSandboxPage';
-import AstroLabDualModeExperiencePage from '@/components/pages/AstroLabDualModeExperiencePage';
 import AstroLabSatelliteConstellationPage from '@/components/pages/AstroLabSatelliteConstellationPage';
-import AstroLabCelestialCoordinatePage from '@/components/pages/AstroLabCelestialCoordinatePage';
 import AstroLabOrbitalMechanicsPage from '@/components/pages/AstroLabOrbitalMechanicsPage';
-import AstroLabComplete from '@/components/AstroLabComplete';
-import AstroLabPage from '@/components/pages/AstroLabPage';
-import AstroLabEnhancedPage from '@/components/pages/AstroLabEnhancedPage';
-import PremiumAstroLabSuite from '@/components/PremiumAstroLabSuite';
-import UniverseViewerPage from '@/components/pages/UniverseViewerPage';
-import ExoplanetHabitabilityPage from '@/components/pages/ExoplanetHabitabilityPage';
-import BlackHoleSimulatorPage from '@/components/pages/BlackHoleSimulatorPage';
-import CMBExplorerPage from '@/components/pages/CMBExplorerPage';
-import PhysicsAccurateAstroLabPage from '@/components/pages/PhysicsAccurateAstroLabPage';
-import ProfessionalInteractiveLab from '@/components/pages/ProfessionalInteractiveLab';
 
 // Layout component that includes ScrollToTop and Error Boundary
 function Layout() {
@@ -69,20 +52,6 @@ const router = createBrowserRouter([
         },
       },
       {
-        path: "advanced-tools",
-        element: <AdvancedToolsPage />,
-        routeMetadata: {
-          pageIdentifier: 'advanced-tools',
-        },
-      },
-      {
-        path: "compiler",
-        element: <CompilerPage />,
-        routeMetadata: {
-          pageIdentifier: 'compiler',
-        },
-      },
-      {
         path: "dashboard",
         element: <DashboardPage />,
         routeMetadata: {
@@ -118,34 +87,6 @@ const router = createBrowserRouter([
         },
       },
       {
-        path: "astrolab/deep-space-observation",
-        element: <AstroLabDeepSpaceObservationPage />,
-        routeMetadata: {
-          pageIdentifier: 'astrolab-deep-space',
-        },
-      },
-      {
-        path: "astrolab/photometry-suite",
-        element: <AstroLabPhotometrySuitePage />,
-        routeMetadata: {
-          pageIdentifier: 'astrolab-photometry',
-        },
-      },
-      {
-        path: "astrolab/astrodynamics-sandbox",
-        element: <AstroLabAstrodynamicsSandboxPage />,
-        routeMetadata: {
-          pageIdentifier: 'astrolab-astrodynamics',
-        },
-      },
-      {
-        path: "astrolab/dual-mode",
-        element: <AstroLabDualModeExperiencePage />,
-        routeMetadata: {
-          pageIdentifier: 'astrolab-dual-mode',
-        },
-      },
-      {
         path: "astrolab/satellite-constellation",
         element: <AstroLabSatelliteConstellationPage />,
         routeMetadata: {
@@ -153,87 +94,10 @@ const router = createBrowserRouter([
         },
       },
       {
-        path: "astrolab/celestial-coordinate",
-        element: <AstroLabCelestialCoordinatePage />,
-        routeMetadata: {
-          pageIdentifier: 'astrolab-celestial',
-        },
-      },
-      {
         path: "astrolab/orbital-mechanics",
         element: <AstroLabOrbitalMechanicsPage />,
         routeMetadata: {
           pageIdentifier: 'astrolab-orbital',
-        },
-      },
-      {
-        path: "astrolab-suite",
-        element: <AstroLabComplete />,
-        routeMetadata: {
-          pageIdentifier: 'astrolab-suite',
-        },
-      },
-      {
-        path: "astrolab",
-        element: <AstroLabEnhancedPage />,
-        routeMetadata: {
-          pageIdentifier: 'astrolab-main',
-        },
-      },
-      {
-        path: "astrolab-legacy",
-        element: <AstroLabPage />,
-        routeMetadata: {
-          pageIdentifier: 'astrolab-legacy',
-        },
-      },
-      {
-        path: "premium-astrolab",
-        element: <PremiumAstroLabSuite />,
-        routeMetadata: {
-          pageIdentifier: 'premium-astrolab',
-        },
-      },
-      {
-        path: "universe-viewer",
-        element: <UniverseViewerPage />,
-        routeMetadata: {
-          pageIdentifier: 'universe-viewer',
-        },
-      },
-      {
-        path: "exoplanet-habitability",
-        element: <ExoplanetHabitabilityPage />,
-        routeMetadata: {
-          pageIdentifier: 'exoplanet-habitability',
-        },
-      },
-      {
-        path: "black-hole-simulator",
-        element: <BlackHoleSimulatorPage />,
-        routeMetadata: {
-          pageIdentifier: 'black-hole-simulator',
-        },
-      },
-      {
-        path: "cmb-explorer",
-        element: <CMBExplorerPage />,
-        routeMetadata: {
-          pageIdentifier: 'cmb-explorer',
-        },
-      },
-      {
-        path: "physics-accurate-astrolab",
-        element: <PhysicsAccurateAstroLabPage />,
-        routeMetadata: {
-          pageIdentifier: 'physics-accurate-astrolab',
-        },
-      },
-      {
-        path: "professional-interactive-lab",
-        element: <ProfessionalInteractiveLab />,
-        routeMetadata: {
-          pageIdentifier: 'professional-interactive-lab',
         },
       },
       {

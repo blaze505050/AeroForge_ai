@@ -9,18 +9,13 @@ export default function Header() {
   
   const isActive = (path: string) => location.pathname === path;
   
-  // Simplified navigation - only core pages
+  // Minimalist navigation - only essential pages
   const navLinks = [
     { path: '/', label: 'Home' },
-    { path: '/professional-interactive-lab', label: 'Professional Lab' },
-    { path: '/physics-accurate-astrolab', label: 'Physics AstroLab' },
-    { path: '/universe-viewer', label: 'Universe Viewer' },
-    { path: '/virtual-lab', label: 'Virtual Lab' },
-    { path: '/labs/aerodynamics', label: 'Aerodynamics Lab' },
+    { path: '/virtual-lab', label: 'Labs' },
     { path: '/dashboard', label: 'Dashboard' },
     { path: '/projects', label: 'Projects' },
-    { path: '/compiler', label: 'Compiler' },
-    { path: '/documentation', label: 'Documentation' },
+    { path: '/documentation', label: 'Docs' },
   ];
   
   return (

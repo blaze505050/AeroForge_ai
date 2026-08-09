@@ -9,28 +9,19 @@ export default function Footer() {
     {
       title: 'Platform',
       links: [
-        { label: 'Compiler', path: '/compiler' },
-        { label: 'Tools', path: '/tools' },
-        { label: 'Optimization', path: '/optimization' },
-        { label: 'Virtual Lab', path: '/virtual-lab' }
+        { label: 'Virtual Lab', path: '/virtual-lab' },
+        { label: 'Dashboard', path: '/dashboard' },
+        { label: 'Projects', path: '/projects' },
+        { label: 'Documentation', path: '/documentation' }
       ]
     },
     {
-      title: 'Learn',
+      title: 'Resources',
       links: [
-        { label: 'Architecture', path: '/architecture' },
-        { label: 'DSL Documentation', path: '/dsl-docs' },
-        { label: 'API Reference', path: '/api' },
-        { label: 'Results', path: '/results' }
-      ]
-    },
-    {
-      title: 'Company',
-      links: [
-        { label: 'About', external: true, href: 'https://aeroforge.ai/about' },
-        { label: 'Blog', external: true, href: 'https://aeroforge.ai/blog' },
         { label: 'Contact', external: true, href: 'mailto:info@aeroforge.ai' },
-        { label: 'Status', external: true, href: 'https://status.aeroforge.ai' }
+        { label: 'Support', external: true, href: 'https://aeroforge.ai/support' },
+        { label: 'Status', external: true, href: 'https://status.aeroforge.ai' },
+        { label: 'Blog', external: true, href: 'https://aeroforge.ai/blog' }
       ]
     },
     {
@@ -48,9 +39,9 @@ export default function Footer() {
     <footer className="w-full bg-aerospace-dark border-t border-secondary/20 mt-auto">
       {/* Main Footer Content */}
       <div className="max-w-[120rem] mx-auto px-6 md:px-[8%] py-16">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12 mb-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
           {/* Brand Column */}
-          <div className="lg:col-span-1">
+          <div>
             <Link to="/" className="flex items-center gap-2 mb-6">
               <Image 
                 src="https://static.wixstatic.com/media/18a222_a061b26960ac4418850c196f62b8a14a~mv2.png"
@@ -65,7 +56,7 @@ export default function Footer() {
               </div>
             </Link>
             <p className="font-paragraph text-sm text-secondary-foreground leading-relaxed">
-              Deterministic AI-powered design compiler for aerospace and manufacturing.
+              Physics-accurate design platform for aerospace innovation.
             </p>
           </div>
 
