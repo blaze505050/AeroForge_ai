@@ -31,6 +31,7 @@ import MissionControlPage from '@/components/pages/MissionControlPage';
 import AstroLabAcademyPage from '@/components/pages/AstroLabAcademyPage';
 import AstroLabProfessionalPage from '@/components/pages/AstroLabProfessionalPage';
 import InvestorDemoPage from '@/components/pages/InvestorDemoPage';
+import ProductionStatusPage from '@/components/pages/ProductionStatusPage';
 
 // Layout component that includes ScrollToTop and Error Boundary
 function Layout() {
@@ -235,6 +236,13 @@ const router = createBrowserRouter([
         element: <InvestorDemoPage />,
         routeMetadata: {
           pageIdentifier: 'astrolab-investor-demo',
+        },
+      },
+      {
+        path: "production-status",
+        element: <ProductionStatusPage />,
+        routeMetadata: {
+          pageIdentifier: 'production-status',
         },
       },
       {
