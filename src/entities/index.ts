@@ -261,6 +261,54 @@ export interface DesignVersions {
 
 
 /**
+ * Collection ID: experimentreports
+ * Interface for ExperimentReports
+ */
+export interface ExperimentReports {
+  _id: string;
+  _createdDate?: Date;
+  _updatedDate?: Date;
+  /** @wixFieldType text */
+  reportTitle?: string;
+  /** @wixFieldType text */
+  analysisSummary?: string;
+  /** @wixFieldType image - Contains image URL, render with <Image> component, NOT as text */
+  dataVisualizationChart?: string;
+  /** @wixFieldType text */
+  conclusionsFindings?: string;
+  /** @wixFieldType datetime */
+  reportDate?: Date | string;
+  /** @wixFieldType text */
+  authorName?: string;
+  /** @wixFieldType number */
+  reportVersion?: number;
+}
+
+
+/**
+ * Collection ID: experiments
+ * Interface for Experiments
+ */
+export interface Experiments {
+  _id: string;
+  _createdDate?: Date;
+  _updatedDate?: Date;
+  /** @wixFieldType text */
+  experimentName?: string;
+  /** @wixFieldType text */
+  parameters?: string;
+  /** @wixFieldType text */
+  results?: string;
+  /** @wixFieldType datetime */
+  conductedAt?: Date | string;
+  /** @wixFieldType text */
+  userNotes?: string;
+  /** @wixFieldType text */
+  status?: string;
+}
+
+
+/**
  * Collection ID: knowledgebasearticles
  * Interface for KnowledgeBaseArticles
  */
@@ -288,6 +336,29 @@ export interface KnowledgeBaseArticles {
   mainImage?: string;
   /** @wixFieldType text */
   relatedTopics?: string;
+}
+
+
+/**
+ * Collection ID: labmodes
+ * Interface for LabModes
+ */
+export interface LabModes {
+  _id: string;
+  _createdDate?: Date;
+  _updatedDate?: Date;
+  /** @wixFieldType text */
+  modeName?: string;
+  /** @wixFieldType text */
+  description?: string;
+  /** @wixFieldType boolean */
+  isActive?: boolean;
+  /** @wixFieldType text */
+  defaultPermissions?: string;
+  /** @wixFieldType text */
+  configurationSettings?: string;
+  /** @wixFieldType text */
+  targetAudience?: string;
 }
 
 
@@ -384,4 +455,27 @@ export interface Simulations {
   simulationDate?: Date | string;
   /** @wixFieldType image - Contains image URL, render with <Image> component, NOT as text */
   visualizations?: string;
+}
+
+
+/**
+ * Collection ID: spacechallenges
+ * Interface for SpaceChallenges
+ */
+export interface SpaceChallenges {
+  _id: string;
+  _createdDate?: Date;
+  _updatedDate?: Date;
+  /** @wixFieldType text */
+  challengeName?: string;
+  /** @wixFieldType text */
+  description?: string;
+  /** @wixFieldType text */
+  difficultyLevel?: string;
+  /** @wixFieldType text */
+  solutionSteps?: string;
+  /** @wixFieldType text */
+  hints?: string;
+  /** @wixFieldType image - Contains image URL, render with <Image> component, NOT as text */
+  challengeImage?: string;
 }

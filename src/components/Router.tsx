@@ -29,6 +29,8 @@ import AtmosphericSciencePage from '@/components/pages/AtmosphericSciencePage';
 import QuantumAstrophysicsPage from '@/components/pages/QuantumAstrophysicsPage';
 import MissionControlPage from '@/components/pages/MissionControlPage';
 import AstroLabAcademyPage from '@/components/pages/AstroLabAcademyPage';
+import AstroLabProfessionalPage from '@/components/pages/AstroLabProfessionalPage';
+import InvestorDemoPage from '@/components/pages/InvestorDemoPage';
 
 // Layout component that includes ScrollToTop and Error Boundary
 function Layout() {
@@ -219,6 +221,20 @@ const router = createBrowserRouter([
         element: <AstroLabAcademyPage />,
         routeMetadata: {
           pageIdentifier: 'astrolab-academy',
+        },
+      },
+      {
+        path: "astrolab/professional",
+        element: <AstroLabProfessionalPage />,
+        routeMetadata: {
+          pageIdentifier: 'astrolab-professional',
+        },
+      },
+      {
+        path: "astrolab/investor-demo",
+        element: <InvestorDemoPage />,
+        routeMetadata: {
+          pageIdentifier: 'astrolab-investor-demo',
         },
       },
       {
