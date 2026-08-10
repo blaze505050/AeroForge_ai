@@ -546,3 +546,41 @@ export function validateStarClassification(
     feedback,
   };
 }
+
+// ============================================================================
+// 6. FORMATTING UTILITIES
+// ============================================================================
+
+/**
+ * Format distance for display
+ * Automatically selects appropriate units (m, km, AU, ly)
+ */
+export function formatDistance(meters: number): string {
+  if (meters < 0) return '0 m';
+  
+  if (meters < 1000) {
+    return `${meters.toFixed(2)} m`;
+  } else if (meters < 1e9) {
+    return `${(meters / 1000).toFixed(2)} km`;
+  } else if (meters < PHYSICS_CONSTANTS.AU * 100) {
+    return `${(meters / PHYSICS_CONSTANTS.AU).toFixed(4)} AU`;
+  } else {
+    // Light-year
+    const lightYear = 9.461e15; // meters
+    return `${(meters / lightYear).toFixed(6)} ly`;
+  }
+}
+
+/**
+ * Format velocity for display
+ * Automatically selects appropriate units (m/s, km/s)
+ */
+export function formatVelocity(metersPerSecond: number): string {
+  if (metersPerSecond < 0) return '0 m/s';
+  
+  if (metersPerSecond < 1000) {
+    return `${metersPerSecond.toFixed(2)} m/s`;
+  } else {
+    return `${(metersPerSecond / 1000).toFixed(3)} km/s`;
+  }
+}
