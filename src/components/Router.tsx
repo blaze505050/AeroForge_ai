@@ -40,6 +40,10 @@ import MyLabPage from '@/components/pages/MyLabPage';
 import SpaceProblemsPage from '@/components/pages/SpaceProblemsPage';
 import AstroLabInvestorDemoPage from '@/components/pages/AstroLabInvestorDemoPage';
 import AstroLabP0HubPage from '@/components/pages/AstroLabP0HubPage';
+import AstroLabExplorerPage from '@/components/pages/AstroLabExplorerPage';
+import AstroLabSimulationsPage from '@/components/pages/AstroLabSimulationsPage';
+import AstroLabReportsPage from '@/components/pages/AstroLabReportsPage';
+import NotFoundPage from '@/components/pages/NotFoundPage';
 
 // Layout component that includes ScrollToTop and Error Boundary
 function Layout() {
@@ -310,8 +314,29 @@ const router = createBrowserRouter([
         },
       },
       {
+        path: "astrolab/explorer",
+        element: <AstroLabExplorerPage />,
+        routeMetadata: {
+          pageIdentifier: 'astrolab-explorer',
+        },
+      },
+      {
+        path: "astrolab/simulations",
+        element: <AstroLabSimulationsPage />,
+        routeMetadata: {
+          pageIdentifier: 'astrolab-simulations',
+        },
+      },
+      {
+        path: "astrolab/reports",
+        element: <AstroLabReportsPage />,
+        routeMetadata: {
+          pageIdentifier: 'astrolab-reports',
+        },
+      },
+      {
         path: "*",
-        element: <Navigate to="/" replace />,
+        element: <NotFoundPage />,
       },
     ],
   },

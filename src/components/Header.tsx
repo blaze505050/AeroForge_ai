@@ -12,10 +12,11 @@ export default function Header() {
   // Minimalist navigation - only essential pages
   const navLinks = [
     { path: '/', label: 'Home' },
-    { path: '/virtual-lab', label: 'Labs' },
-    { path: '/dashboard', label: 'Dashboard' },
-    { path: '/projects', label: 'Projects' },
-    { path: '/documentation', label: 'Docs' },
+    { path: '/astrolab/explorer', label: 'Explorer' },
+    { path: '/astrolab/simulations', label: 'Simulations' },
+    { path: '/my-lab', label: 'My Lab' },
+    { path: '/space-problems', label: 'Problems' },
+    { path: '/astrolab/reports', label: 'Reports' },
   ];
   
   return (
