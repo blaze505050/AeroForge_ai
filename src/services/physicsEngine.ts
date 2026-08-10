@@ -191,17 +191,27 @@ export interface GravityForceResult {
 /**
  * Calculate gravitational force between two masses
  * F = G * m1 * m2 / r^2
+ * EDGE-CASE HARDENED: Rejects r<=0, m<=0, returns error state instead of Infinity
  */
 export function calculateGravitationalForce(
   mass1: number,
   mass2: number,
   distance: number
 ): GravityForceResult {
+  // CRITICAL: Validate all inputs to prevent Infinity/NaN
   if (distance <= 0) {
     return {
-      force: Infinity,
-      acceleration: Infinity,
-      distanceValidation: 'Distance must be positive',
+      force: 0,
+      acceleration: 0,
+      distanceValidation: 'ERROR: Distance must be > 0 (minimum surface contact)',
+    };
+  }
+
+  if (mass1 <= 0 || mass2 <= 0) {
+    return {
+      force: 0,
+      acceleration: 0,
+      distanceValidation: 'ERROR: Mass must be positive (minimum 1e-10 kg)',
     };
   }
 
@@ -241,13 +251,33 @@ export interface TransitLightCurve {
 /**
  * Calculate transit depth
  * Transit Depth ≈ (R_p / R_s)^2
+ * EDGE-CASE HARDENED: Validates Rp <= Rs, clamps invalid ratios
  */
 export function calculateTransitDepth(
   planetRadius: number,
   starRadius: number
 ): number {
-  if (starRadius <= 0) return 0;
-  const ratio = planetRadius / starRadius;
+  // CRITICAL: Validate inputs
+  if (starRadius <= 0) {
+    console.warn('ERROR: Star radius must be positive');
+    return 0;
+  }
+
+  if (planetRadius <= 0) {
+    console.warn('ERROR: Planet radius must be positive');
+    return 0;
+  }
+
+  // CRITICAL: Clamp planet radius to star radius (physical constraint)
+  const clampedPlanetRadius = Math.min(planetRadius, starRadius);
+  
+  if (planetRadius > starRadius) {
+    console.warn(
+      `PHYSICS ERROR: Planet radius (${(planetRadius / 1e6).toFixed(1)} Mm) exceeds star radius (${(starRadius / 1e6).toFixed(1)} Mm). Clamping to stellar radius.`
+    );
+  }
+
+  const ratio = clampedPlanetRadius / starRadius;
   return ratio * ratio * 100; // as percentage
 }
 
@@ -356,16 +386,36 @@ export function classifySpectralType(temperatureK: number): string {
 
 /**
  * Compute complete stellar properties
+ * EDGE-CASE HARDENED: Enforces main-sequence mass bounds (0.08 - 150 M_sun)
  */
 export function computeStellarProperties(massInSolarMasses: number): StellarProperties {
-  const lifetime = calculateMainSequenceLifetime(massInSolarMasses);
-  const temp = calculateSurfaceTemperature(massInSolarMasses);
-  const luminosity = calculateLuminosity(massInSolarMasses);
-  const radius = calculateStellarRadius(massInSolarMasses);
+  // CRITICAL: Enforce main-sequence mass bounds
+  const MIN_MAIN_SEQUENCE_MASS = 0.08; // M_sun (brown dwarf limit)
+  const MAX_MAIN_SEQUENCE_MASS = 150; // M_sun (upper limit for stable MS)
+
+  let validatedMass = massInSolarMasses;
+  let warning = '';
+
+  if (massInSolarMasses < MIN_MAIN_SEQUENCE_MASS) {
+    validatedMass = MIN_MAIN_SEQUENCE_MASS;
+    warning = `Mass below main-sequence limit (0.08 M_sun). Clamping to brown dwarf threshold.`;
+  } else if (massInSolarMasses > MAX_MAIN_SEQUENCE_MASS) {
+    validatedMass = MAX_MAIN_SEQUENCE_MASS;
+    warning = `Mass exceeds stable main-sequence limit (150 M_sun). Clamping to upper bound.`;
+  }
+
+  if (warning) {
+    console.warn(`STELLAR BOUNDS: ${warning}`);
+  }
+
+  const lifetime = calculateMainSequenceLifetime(validatedMass);
+  const temp = calculateSurfaceTemperature(validatedMass);
+  const luminosity = calculateLuminosity(validatedMass);
+  const radius = calculateStellarRadius(validatedMass);
   const spectralClass = classifySpectralType(temp);
 
   return {
-    mass: massInSolarMasses,
+    mass: validatedMass,
     mainSequenceLifetime: lifetime,
     surfaceTemperature: temp,
     luminosity,
@@ -381,6 +431,7 @@ export function computeStellarProperties(massInSolarMasses: number): StellarProp
 /**
  * Problem 1: Design a Stable LEO
  * Required circular velocity at 400 km altitude ≈ 7.67 km/s
+ * HARDENED: Strict 5% tolerance, real Earth constants
  */
 export function validateLEOVelocity(userVelocity: number): {
   isCorrect: boolean;
@@ -390,22 +441,25 @@ export function validateLEOVelocity(userVelocity: number): {
 } {
   const altitudeKm = 400;
   const altitudeM = altitudeKm * 1000;
-  const earthRadius = PHYSICS_CONSTANTS.R_EARTH;
-  const orbitalRadius = earthRadius + altitudeM;
+  const earthRadius = PHYSICS_CONSTANTS.R_EARTH; // 6,371 km
+  const orbitalRadius = earthRadius + altitudeM; // 6,771 km
 
   const requiredVelocity = calculateOrbitalVelocity(PHYSICS_CONSTANTS.M_EARTH, orbitalRadius);
   const requiredVelocityKmS = requiredVelocity / 1000;
 
   const errorPercent = Math.abs((userVelocity - requiredVelocityKmS) / requiredVelocityKmS) * 100;
-  const isCorrect = errorPercent < 5; // within 5%
+  const TOLERANCE = 5; // ±5% tolerance
+  const isCorrect = errorPercent <= TOLERANCE;
 
   let feedback = '';
-  if (errorPercent < 5) {
-    feedback = '✓ Excellent! Your velocity matches the required circular orbit.';
+  if (isCorrect) {
+    feedback = `✓ Excellent! Your velocity (${userVelocity.toFixed(3)} km/s) matches the required circular orbit within ±${TOLERANCE}% tolerance.`;
   } else if (userVelocity < requiredVelocityKmS) {
-    feedback = `Too slow. Increase velocity by ${(requiredVelocityKmS - userVelocity).toFixed(2)} km/s.`;
+    const deficit = requiredVelocityKmS - userVelocity;
+    feedback = `✗ Too slow by ${deficit.toFixed(3)} km/s (${errorPercent.toFixed(1)}% error). Required: ${requiredVelocityKmS.toFixed(3)} km/s.`;
   } else {
-    feedback = `Too fast. Decrease velocity by ${(userVelocity - requiredVelocityKmS).toFixed(2)} km/s.`;
+    const excess = userVelocity - requiredVelocityKmS;
+    feedback = `✗ Too fast by ${excess.toFixed(3)} km/s (${errorPercent.toFixed(1)}% error). Required: ${requiredVelocityKmS.toFixed(3)} km/s.`;
   }
 
   return {
@@ -419,6 +473,8 @@ export function validateLEOVelocity(userVelocity: number): {
 /**
  * Problem 2: Detect an Exoplanet
  * Validate if measured transit depth matches expected depth
+ * Formula: Rp = Rs * sqrt(d) where d is transit depth fraction
+ * HARDENED: Validates Rp <= Rs constraint
  */
 export function validateTransitDetection(
   measuredDepthPercent: number,
@@ -430,17 +486,28 @@ export function validateTransitDetection(
   error: number;
   feedback: string;
 } {
+  // CRITICAL: Validate physical constraints
+  if (planetRadiusKm > starRadiusKm) {
+    return {
+      isCorrect: false,
+      expectedDepth: 0,
+      error: 100,
+      feedback: `✗ PHYSICS ERROR: Planet radius (${planetRadiusKm} km) cannot exceed star radius (${starRadiusKm} km).`,
+    };
+  }
+
   const expectedDepth = calculateTransitDepth(planetRadiusKm * 1000, starRadiusKm * 1000);
   const errorPercent = Math.abs((measuredDepthPercent - expectedDepth) / expectedDepth) * 100;
-  const isCorrect = errorPercent < 10; // within 10%
+  const TOLERANCE = 10; // ±10% tolerance for observational error
+  const isCorrect = errorPercent <= TOLERANCE;
 
   let feedback = '';
   if (isCorrect) {
-    feedback = '✓ Correct! You detected the exoplanet transit.';
+    feedback = `✓ Correct! Transit depth ${measuredDepthPercent.toFixed(4)}% matches expected ${expectedDepth.toFixed(4)}% within ±${TOLERANCE}% tolerance.`;
   } else if (measuredDepthPercent < expectedDepth) {
-    feedback = `Transit depth too shallow. Expected ~${expectedDepth.toFixed(3)}%.`;
+    feedback = `✗ Transit depth too shallow (${errorPercent.toFixed(1)}% error). Expected ~${expectedDepth.toFixed(4)}%.`;
   } else {
-    feedback = `Transit depth too deep. Expected ~${expectedDepth.toFixed(3)}%.`;
+    feedback = `✗ Transit depth too deep (${errorPercent.toFixed(1)}% error). Expected ~${expectedDepth.toFixed(4)}%.`;
   }
 
   return {
